@@ -12,10 +12,9 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    /* White Form Background */
     body {
       background-color: #ffffff;
-      color: #0d253f; /* Dark Navy Blue default text */
+      color: #0d253f;
       padding: 16px;
       padding-bottom: 90px;
     }
@@ -24,89 +23,99 @@
       margin-bottom: 20px;
       margin-top: 10px;
     }
-    /* Logo Styling */
     .logo-img {
       max-width: 160px;
       height: auto;
       margin-bottom: 12px;
       border-radius: 8px;
     }
-    /* Primary Navy Blue Header */
     .header h2 {
       font-size: 20px;
-      color: #0b2545; /* Navy Blue */
+      color: #0b2545;
       margin-bottom: 4px;
     }
     .header p {
       font-size: 13px;
-      color: #134074; /* Royal Navy */
+      color: #134074;
     }
-    /* Section Headers in Navy Blue */
     .section-title {
       font-size: 15px;
       font-weight: bold;
-      color: #0b2545; /* Navy Blue */
+      color: #0b2545;
       margin: 20px 0 10px 0;
       padding-bottom: 6px;
-      border-bottom: 2px solid #8da9c4; /* Light Slate Blue underline */
+      border-bottom: 2px solid #8da9c4;
     }
     .form-group {
       margin-bottom: 14px;
     }
-    /* Field Labels in Navy Blue */
     label {
       display: block;
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 6px;
-      color: #0b2545; /* Navy Blue */
+      color: #0b2545;
     }
-
-    /* SOFT RED FIELD BOXES WITH BLUE TEXT */
     input[type="text"],
     input[type="tel"],
-    input[type="number"],
+    input[type="url"],
     select,
     textarea {
       width: 100%;
       padding: 12px;
       font-size: 14px;
       border-radius: 8px;
-      border: 1px solid #fca5a5; /* Soft Red Border */
-      background-color: #fef2f2; /* Soft Red Box Background */
-      color: #003566; /* Deep Blue Typed Text */
+      border: 1px solid #fca5a5;
+      background-color: #fef2f2;
+      color: #003566;
       font-weight: 500;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
-
-    /* Placeholder Text in Muted Blue */
     input::placeholder,
     textarea::placeholder {
-      color: #4682b4; /* Muted Steel Blue */
+      color: #4682b4;
       opacity: 0.7;
     }
-
-    /* Active Focus State */
     input:focus,
     select:focus,
     textarea:focus {
-      border-color: #ef4444; /* Stronger Red Border on Focus */
+      border-color: #ef4444;
       background-color: #fff5f5;
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
-      color: #001d3d; /* Very Dark Navy on active typing */
+      color: #001d3d;
     }
-
     textarea {
       resize: vertical;
       min-height: 80px;
     }
 
-    /* Soft Red File Upload Wrapper with Blue Text */
+    /* Google Maps Button Styling */
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0b2545;
+      background-color: #e2e8f0;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+    .map-btn:active {
+      background-color: #cbd5e1;
+    }
+
+    /* Soft Red File Upload Wrapper */
     .file-input-wrapper {
       position: relative;
-      background: #fef2f2; /* Soft Red Background */
-      border: 2px dashed #fca5a5; /* Soft Red Dashed Border */
+      background: #fef2f2;
+      border: 2px dashed #fca5a5;
       border-radius: 8px;
       padding: 20px;
       text-align: center;
@@ -127,12 +136,12 @@
     }
     .file-label {
       font-size: 13px;
-      color: #003566; /* Deep Blue Text */
+      color: #003566;
       font-weight: 600;
     }
     .file-count {
       font-size: 12px;
-      color: #1d3557; /* Navy Blue Text */
+      color: #1d3557;
       margin-top: 4px;
     }
 
@@ -149,7 +158,7 @@
     }
     .submit-btn {
       width: 100%;
-      background-color: #003566; /* Deep Navy Blue Button */
+      background-color: #003566;
       color: #ffffff;
       border: none;
       padding: 14px;
@@ -170,7 +179,6 @@
 <body>
 
   <div class="header">
-    <!-- LOGO ADDED HERE -->
     <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
     <h2>🏠 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
     <p>Property Listing Form</p>
@@ -231,9 +239,13 @@
       <input type="text" id="price" required placeholder="ឧ. $150,000 ឬ $500/ខែ">
     </div>
 
+    <!-- Updated Location Field with Google Maps Link Button -->
     <div class="form-group">
-      <label>ទីតាំង / Location *</label>
-      <input type="text" id="location" required placeholder="ឧ. ខណ្ឌសែនសុខ, ភ្នំពេញ">
+      <label>ទីតាំង (Google Maps Link) / Location Link *</label>
+      <input type="url" id="location" required placeholder="https://maps.google.com/...">
+      <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="map-btn">
+        📍 បើក Google Maps ដើម្បីចម្លង Link / Open Google Maps
+      </a>
     </div>
 
     <div class="form-group">
@@ -246,14 +258,30 @@
       <input type="text" id="landSize" placeholder="ឧ. 5m x 20m">
     </div>
 
+    <!-- Updated Bedrooms Dropdown -->
     <div class="form-group">
       <label>បន្ទប់គេង / Bedrooms</label>
-      <input type="number" id="bedrooms" placeholder="ឧ. 4">
+      <select id="bedrooms">
+        <option value="មិនច្បាស់ / N/A">-- ជ្រើសរើស / Select --</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5+">5+</option>
+      </select>
     </div>
 
+    <!-- Updated Bathrooms Dropdown -->
     <div class="form-group">
       <label>បន្ទប់ទឹក / Bathrooms</label>
-      <input type="number" id="bathrooms" placeholder="ឧ. 5">
+      <select id="bathrooms">
+        <option value="មិនច្បាស់ / N/A">-- ជ្រើសរើស / Select --</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5+">5+</option>
+      </select>
     </div>
 
     <div class="form-group">
