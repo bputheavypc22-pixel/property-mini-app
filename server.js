@@ -51,25 +51,25 @@ app.post('/api/register', async (req, res) => {
 
   // Formatted message without strict markdown formatting
   const message = 
-`🏠 ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY
+`👥ព័ត៌មានភ្ញៀវថ្មី/NEW CLIENT INQUIRY
 ━━━━━━━━━━━━━━━━━━━━━
-👤 ព័ត៌មានភ្ញៀវ / Client Profile
-🧑‍🦱 ឈ្មោះ / Name: ${name}
+👤ព័ត៌មានភ្ញៀវ/Client Profile
+🧑‍🦱 ឈ្មោះ/Name: ${name}
 📞 Tel: ${phone}
 💬 Telegram: ${clientTelegram}
 ━━━━━━━━━━━━━━━━━━━━━
-🎯 គោលបំណង / Target: ${target}
-🏗️ ប្រភេទ / Type: ${propertyType}
-💰 តម្លៃ / Price Rank: ${priceRank}
-📍 តំបន់ / Area:
+🎯 គោលបំណង/Target: ${target}
+🏗️ ប្រភេទ/Type: ${propertyType}
+💰 តម្លៃ/Price Rank: ${priceRank}
+📍 តំបន់/Area:
 ${area}
-🧱 ទំហំអគារ / Building Size: ${buildingSize}
-📐 ទំហំដី / Land Size: ${landSize}
-🛏 បន្ទប់គេង / Bedrooms: ${bedrooms}
-🛁 បន្ទប់ទឹក / Bathrooms: ${bathrooms}
-🧭 ទិស / Direction: ${direction}
-🅿️ ចំណត / Parking: ${parking}
-✏️ សម្គាល់ / Remark: ${remark}
+🧱 ទំហំអគារ/Building Size: ${buildingSize}
+📐 ទំហំដី/Land Size: ${landSize}
+🛏 បន្ទប់គេង/Bedrooms: ${bedrooms}
+🛁 បន្ទប់ទឹក/Bathrooms: ${bathrooms}
+🧭 ទិស/Direction: ${direction}
+🅿️ ចំណត/Parking: ${parking}
+✏️ សម្គាល់/Remark: ${remark}
 ━━━━━━━━━━━━━━━━━━━━━
 Submitted by: ${submittedBy}
 Date: ${formattedDate}`;
