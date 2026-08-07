@@ -180,7 +180,7 @@
 
   <div class="header">
     <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-    <h2>🏠 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
+    <h2>🏰 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
     <p>Property Listing Form</p>
   </div>
 
@@ -239,7 +239,6 @@
       <input type="text" id="price" required placeholder="ឧ. $150,000 ឬ $500/ខែ">
     </div>
 
-    <!-- Updated Location Field with Google Maps Link Button -->
     <div class="form-group">
       <label>ទីតាំង (Google Maps Link) / Location Link *</label>
       <input type="url" id="location" required placeholder="https://maps.google.com/...">
@@ -258,7 +257,6 @@
       <input type="text" id="landSize" placeholder="ឧ. 5m x 20m">
     </div>
 
-    <!-- Updated Bedrooms Dropdown -->
     <div class="form-group">
       <label>បន្ទប់គេង / Bedrooms</label>
       <select id="bedrooms">
@@ -271,7 +269,6 @@
       </select>
     </div>
 
-    <!-- Updated Bathrooms Dropdown -->
     <div class="form-group">
       <label>បន្ទប់ទឹក / Bathrooms</label>
       <select id="bathrooms">
@@ -302,6 +299,40 @@
     <div class="form-group">
       <label>ទីធ្លាចំណត / Parking Space</label>
       <input type="text" id="parking" placeholder="ឧ. ឡាន ១, ម៉ូតូ ២">
+    </div>
+
+    <!-- Payment Condition Section -->
+    <div class="section-title">💳 លក្ខខណ្ឌទូទាត់ / Payment Condition</div>
+
+    <div class="form-group">
+      <label>ការបង់ប្រាក់ / Payment Term</label>
+      <select id="paymentTerm">
+        <option value="">-- ជ្រើសរើស / Select --</option>
+        <option value="បង់មុន1ខែ">បង់មុន1ខែ</option>
+        <option value="បង់មុន2ខែ">បង់មុន2ខែ</option>
+        <option value="អាចចចារបាន">អាចចចារបាន</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>ប្រាក់កក់ / Deposit</label>
+      <select id="deposit">
+        <option value="">-- ជ្រើសរើស / Select --</option>
+        <option value="កក់1ខែ">កក់1ខែ</option>
+        <option value="កក់2ខែ">កក់2ខែ</option>
+        <option value="Negotiate">Negotiate</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>កុងត្រា / Contract</label>
+      <select id="contract">
+        <option value="">-- ជ្រើសរើស / Select --</option>
+        <option value="6ខែ">6ខែ</option>
+        <option value="1ឆ្នាំ">1ឆ្នាំ</option>
+        <option value="2ឆ្នាំ">2ឆ្នាំ</option>
+        <option value="បន្ថែម">បន្ថែម</option>
+      </select>
     </div>
 
     <div class="form-group">
@@ -373,6 +404,11 @@
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
       formData.append('parking', document.getElementById('parking').value);
+      // New Payment Data
+      formData.append('paymentTerm', document.getElementById('paymentTerm').value);
+      formData.append('deposit', document.getElementById('deposit').value);
+      formData.append('contract', document.getElementById('contract').value);
+      
       formData.append('remark', document.getElementById('remark').value);
       formData.append('submittedBy', submittedBy);
 
@@ -391,7 +427,7 @@
 
         if (result.success) {
           if (tg) {
-            tg.showAlert('លោកអ្នកបានផ្ញើព័ត៌មានអចលនទ្រព្យជោគជ័យ!🎉 / Submitted successfully!', () => {
+            tg.showAlert('លោកអ្នកបានផ្ញើព័ត៌មានអចលនទ្រព្យជោគជ័យ! / Submitted successfully!', () => {
               tg.close();
             });
           } else {
