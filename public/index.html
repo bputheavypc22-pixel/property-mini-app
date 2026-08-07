@@ -19,15 +19,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       min-height: 100vh;
     }
     .container {
       width: 100%;
       max-width: 400px;
       text-align: center;
+      margin-top: 20px;
     }
-    .logo {
+    .logo-img {
+      max-width: 100px; /* Adjust width as needed */
+      height: auto;
+      margin-bottom: 15px;
+    }
+    .title {
       font-size: 22px;
       font-weight: bold;
       margin-bottom: 8px;
@@ -36,7 +41,7 @@
     .subtitle {
       font-size: 14px;
       color: var(--tg-theme-hint-color, #666);
-      margin-bottom: 24px;
+      margin-bottom: 30px;
     }
     .card {
       background: var(--tg-theme-secondary-bg-color, #ffffff);
@@ -76,12 +81,15 @@
 <body>
 
   <div class="container">
-    <div class="logo">Twenty5 Realty 🙏</div>
+    <!-- Direct path to image in public folder -->
+    <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
+
+    <div class="title">Twenty5 Realty 🙏</div>
     <div class="subtitle">សូមជ្រើសរើសទម្រង់បែបបទ / Please Select a Form</div>
 
     <!-- Choice 1: Client Inquiry -->
     <a href="client.html" class="card">
-      <div class="icon">🏠</div>
+      <div class="icon">👥</div>
       <div class="text-container">
         <div class="card-title">ចុះឈ្មោះភ្ញៀវ</div>
         <div class="card-desc">Client Inquiry Form</div>
@@ -90,7 +98,7 @@
 
     <!-- Choice 2: Property Listing -->
     <a href="property.html" class="card">
-      <div class="icon">🏰</div>
+      <div class="icon">🏠</div>
       <div class="text-container">
         <div class="card-title">ដាក់លក់/ជួល អចលនទ្រព្យ</div>
         <div class="card-desc">Property Listing Form</div>
