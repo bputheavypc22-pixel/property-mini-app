@@ -65,26 +65,26 @@ app.post('/api/register', async (req, res) => {
 
     // Construct Telegram message using HTML parse mode
     const message = 
-`👥 <b>ព័ត៌មានភ្ញៀវថ្មី/ NEW CLIENT INQUIRY</b>
+`👥 <b>ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY</b>
 ━━━━━━━━━━━━━━━━━━━━━
-👤 <b>ព័ត៌មានភ្ញៀវ/ Client Profile</b>
-📇 ឈ្មោះ/ Name: ${name}
+👤 <b>ព័ត៌មានភ្ញៀវ / Client Profile</b>
+📇 ឈ្មោះ / Name: ${name}
 📞 Tel1: ${tel1 || 'N/A'}
 📞 Tel2: ${tel2 || 'N/A'}
 💬 Telegram: ${clientTelegram || 'N/A'}
 ━━━━━━━━━━━━━━━━━━━━━
-🎯 គោលបំណង/ Target: ${target}
-🏗️ ប្រភេទ/ Type: ${propertyType}
-💰 តម្លៃ/ Price Rank: ${priceRank}
-📍 តំបន់/ Area:
+🎯 គោលបំណង / Target: ${target}
+🏗️ ប្រភេទ / Type: ${propertyType}
+💰 តម្លៃ / Price Rank: ${priceRank}
+📍 តំបន់ / Area:
 ${area}
-🧱 ទំហំអគារ/ Building Size: ${buildingSize}
-📐 ទំហំដី/ Land Size: ${landSize}
-🛏 បន្ទប់គេង/ Bedrooms: ${bedrooms}
-🛁 បន្ទប់ទឹក/ Bathrooms: ${bathrooms}
-🧭 ទិស/ Direction: ${direction}
-🅿️ ចំណត/ Parking: ${parking}
-✏️ សម្គាល់/ Remark: ${remark}
+🧱 ទំហំអគារ / Building Size: ${buildingSize}
+📐 ទំហំដី / Land Size: ${landSize}
+🛏 បន្ទប់គេង / Bedrooms: ${bedrooms}
+🛁 បន្ទប់ទឹក / Bathrooms: ${bathrooms}
+🧭 ទិស / Direction: ${direction}
+🅿️ ចំណត / Parking: ${parking}
+✏️ សម្គាល់ / Remark: ${remark}
 ━━━━━━━━━━━━━━━━━━━━━
 <i>Submitted by: ${submittedBy}</i>
 <i>Date: ${formattedDate}</i>`;
