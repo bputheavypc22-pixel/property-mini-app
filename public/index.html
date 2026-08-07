@@ -268,13 +268,12 @@
       submitBtn.innerText = "Sending...";
 
       const tel1 = document.getElementById('tel1').value;
-      const tel2 = document.getElementById('tel2').value;
-      const fullTel = tel2 ? `${tel1} / ${tel2}` : tel1;
+      const tel2 = document.getElementById('tel2').value || "N/A";
 
       const area1 = document.getElementById('area1').value;
       const area2 = document.getElementById('area2').value;
       const area3 = document.getElementById('area3').value;
-      const fullArea = `1. ${area1}\n2. ${area2}\n3. ${area3}`;
+      const fullArea = `      1. ${area1}\n      2. ${area2}\n      3. ${area3}`;
 
       const type = document.getElementById('propertyType').value;
 
@@ -289,7 +288,8 @@
 
       const payload = {
         name: document.getElementById('name').value,
-        phone: fullTel,
+        tel1: tel1,
+        tel2: tel2,
         clientTelegram: document.getElementById('clientTelegram').value || 'N/A',
         target: document.getElementById('target').value,
         propertyType: type,
