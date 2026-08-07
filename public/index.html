@@ -6,20 +6,16 @@
   <title>New Client Inquiry</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root {
-      --bg-color: var(--tg-theme-bg-color, #ffffff);
-      --text-color: var(--tg-theme-text-color, #222222);
-      --btn-color: var(--tg-theme-button-color, #2481cc);
-      --btn-text: var(--tg-theme-button-text-color, #ffffff);
-    }
+    /* Fixed Colors: White background & Dark readable text */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      background-color: #ffffff !important;
+      color: #1c1c1e !important;
       padding: 16px;
       margin: 0;
     }
     
+    /* Logo Styling */
     .logo-container {
       text-align: center;
       margin-bottom: 12px;
@@ -30,29 +26,61 @@
       border-radius: 8px;
     }
 
-    h2 { margin-top: 0; text-align: center; font-size: 18px; color: #2481cc; }
+    h2 { 
+      margin-top: 0; 
+      text-align: center; 
+      font-size: 18px; 
+      color: #0056b3; 
+    }
+
     .section-title {
       font-weight: bold;
-      margin: 15px 0 10px 0;
-      border-bottom: 2px solid #2481cc;
+      margin: 18px 0 12px 0;
+      border-bottom: 2px solid #0056b3;
       padding-bottom: 4px;
       font-size: 15px;
+      color: #0056b3;
     }
-    .form-group { margin-bottom: 12px; }
-    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; }
+
+    .form-group { margin-bottom: 14px; }
+    
+    label { 
+      display: block; 
+      margin-bottom: 6px; 
+      font-weight: 600; 
+      font-size: 13px; 
+      color: #2c3e50;
+    }
+
+    /* Light Blue Field Boxes */
     input, select, textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
+      padding: 11px;
+      background-color: #eef6ff !important; /* Soft light blue */
+      color: #1c1c1e !important;
+      border: 1px solid #b8daff; /* Light blue border */
       border-radius: 8px;
       box-sizing: border-box;
       font-size: 14px;
+      outline: none;
     }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #0056b3;
+      background-color: #e3f0ff !important;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #7a8b9e;
+    }
+
     .hidden { display: none; }
+
+    /* Submit Button */
     button {
       width: 100%;
-      background-color: var(--btn-color);
-      color: var(--btn-text);
+      background-color: #0056b3;
+      color: #ffffff;
       border: none;
       padding: 14px;
       border-radius: 8px;
@@ -60,6 +88,10 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 15px;
+    }
+
+    button:active {
+      background-color: #004085;
     }
   </style>
 </head>
@@ -300,4 +332,3 @@
   </script>
 </body>
 </html>
-
