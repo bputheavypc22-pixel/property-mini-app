@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Property Registration</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #ffffff !important;
+      color: #1c1c1e !important;
+      padding: 16px;
+      margin: 0;
+    }
+    .logo-container { text-align: center; margin-bottom: 12px; }
+    .logo-container img { max-width: 140px; height: auto; border-radius: 8px; }
+    h2 { margin-top: 0; text-align: center; font-size: 18px; color: #0056b3; }
+    .section-title {
+      font-weight: bold; margin: 18px 0 12px 0; border-bottom: 2px solid #0056b3;
+      padding-bottom: 4px; font-size: 15px; color: #0056b3;
+    }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #2c3e50; }
+    input, select, textarea {
+      width: 100%; padding: 11px; background-color: #eef6ff !important;
+      color: #1c1c1e !important; border: 1px solid #b8daff; border-radius: 8px;
+      box-sizing: border-box; font-size: 14px; outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #0056b3; background-color: #e3f0ff !important; }
+    .btn-map {
+      display: inline-block; background-color: #34a853; color: white; text-align: center;
+      padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold;
+      font-size: 13px; margin-bottom: 8px; width: 100%; box-sizing: border-box;
+    }
+    button[type="submit"] {
+      width: 100%; background-color: #0056b3; color: #ffffff; border: none;
+      padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold;
+      cursor: pointer; margin-top: 15px;
+    }
+    button:active { background-color: #004085; }
+    .file-hint { font-size: 11px; color: #666; margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+  <div class="logo-container">
+    <img src="logo.png" alt="Twenty5 Realty Logo">
+  </div>
+
+  <h2>🏠 អចលនទ្រព្យថ្មី / NEW PROPERTY</h2>
+
+  <form id="propForm" enctype="multipart/form-data">
+    <div class="section-title">👤 ម្ចាស់អចលនទ្រព្យ / Property Owner</div>
+
+    <div class="form-group">
+      <label>📇 ឈ្មោះ / Name</label>
+      <input type="text" id="name" placeholder="Owner Name (Optional)">
+    </div>
+
+    <div class="form-group">
+      <label>📞 Tel1 *</label>
+      <input type="tel" id="tel1" required placeholder="e.g. 012 345 678">
+    </div>
+
+    <div class="form-group">
+      <label>📞 Tel2</label>
+      <input type="tel" id="tel2" placeholder="e.g. 098 765 432 (Optional)">
+    </div>
+
+    <div class="form-group">
+      <label>💬 Telegram</label>
+      <input type="text" id="clientTelegram" placeholder="@username or phone (Optional)">
+    </div>
+
+    <div class="section-title">🏗️ ព័ត៌មានអចលនទ្រព្យ / Property Details</div>
+
+    <div class="form-group">
+      <label>🎯 គោលបំណង / Target *</label>
+      <select id="target" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="ដាក់ជួល / For Rent">ដាក់ជួល / For Rent</option>
+        <option value="ដាក់លក់ / For Sell">ដាក់លក់ / For Sell</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🏗️ ប្រភេទ / Type *</label>
+      <select id="propertyType" required onchange="handleTypeChange()">
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="ផ្ទះ / House">ផ្ទះ / House</option>
+        <option value="វីឡា / Villa">វីឡា / Villa</option>
+        <option value="ដី / Land">ដី / Land</option>
+        <option value="ឃ្លាំង / Warehouse">ឃ្លាំង / Warehouse</option>
+        <option value="ខុនដូ / Condo">ខុនដូ / Condo</option>
+        <option value="Other">ផ្សេងៗ / Other</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="otherTypeGroup" style="display: none;">
+      <label>Specify Type *</label>
+      <input type="text" id="otherTypeInput" placeholder="Enter custom property type">
+    </div>
+
+    <div class="form-group">
+      <label>💰 តម្លៃ / Price *</label>
+      <input type="text" id="price" required placeholder="e.g. $800/month or $120,000">
+    </div>
+
+    <div class="form-group">
+      <label>📍 ទីតាំងអចលនទ្រព្យ / Location (Google Map Link) *</label>
+      <a href="https://maps.google.com" target="_blank" class="btn-map">🗺️ Open Google Maps to Copy Link</a>
+      <input type="url" id="location" required placeholder="Paste Google Maps link here (https://maps.google.com/...)">
+    </div>
+
+    <div class="form-group" id="bSizeGroup">
+      <label>🧱 ទំហំអគារ / Building Size</label>
+      <input type="text" id="buildingSize" placeholder="e.g. 8m x 12m">
+    </div>
+
+    <div class="form-group" id="lSizeGroup">
+      <label>📐 ទំហំដី / Land Size</label>
+      <input type="text" id="landSize" placeholder="e.g. 10m x 20m">
+    </div>
+
+    <div class="form-group" id="bedGroup">
+      <label>🛏 បន្ទប់គេង / Bedrooms</label>
+      <select id="bedrooms">
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5+">5+</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="bathGroup">
+      <label>🛁 បន្ទប់ទឹក / Bathrooms</label>
+      <select id="bathrooms">
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5+">5+</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🧭 ទិស / Direction *</label>
+      <select id="direction" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="កើត / East">កើត / East</option>
+        <option value="លិច / West">លិច / West</option>
+        <option value="ត្បូង / South">ត្បូង / South</option>
+        <option value="ជើង / North">ជើង / North</option>
+        <option value="ឦសាន / North-East">ឦសាន / North-East</option>
+        <option value="ពាយ័ព្យ / North-West">ពាយ័ព្យ / North-West</option>
+        <option value="អាគ្នេយ៍ / South-East">អាគ្នេយ៍ / South-East</option>
+        <option value="និរតី / South-West">និរតី / South-West</option>
+        <option value="មិនកំណត់ / Any">មិនកំណត់ / Any</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🅿️ ទីធ្លាចំណត / Parking Space *</label>
+      <select id="parking" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="🚗រថយន្តបាន / Car">🚗រថយន្តបាន / Car</option>
+        <option value="🏍️បានតែម៉ូតូ / Moto Only">🏍️បានតែម៉ូតូ / Moto Only</option>
+        <option value="🙅មិនមានទេ / Not Available">🙅មិនមានទេ / Not Available</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>✏️ សម្គាល់ / Remark</label>
+      <textarea id="remark" rows="3" placeholder="Other notes..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>🖼️ រូបភាពអចលទ្រព្យ / Property Pictures * (Up to 10)</label>
+      <input type="file" id="photos" accept="image/*" multiple required>
+      <div class="file-hint">Select up to 10 photos.</div>
+    </div>
+
+    <button type="submit" id="submitBtn">Submit Property</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function handleTypeChange() {
+      const type = document.getElementById('propertyType').value;
+      const otherGroup = document.getElementById('otherTypeGroup');
+      const bSizeGroup = document.getElementById('bSizeGroup');
+      const lSizeGroup = document.getElementById('lSizeGroup');
+      const bedGroup = document.getElementById('bedGroup');
+      const bathGroup = document.getElementById('bathGroup');
+
+      // Toggle Custom "Other" field
+      otherGroup.style.display = (type === 'Other') ? 'block' : 'none';
+      document.getElementById('otherTypeInput').required = (type === 'Other');
+
+      // Reset visibility
+      bSizeGroup.style.display = 'block';
+      lSizeGroup.style.display = 'block';
+      bedGroup.style.display = 'block';
+      bathGroup.style.display = 'block';
+
+      // Rule: Not required/hidden for Land
+      if (type.includes('Land')) {
+        bSizeGroup.style.display = 'none';
+        bedGroup.style.display = 'none';
+        bathGroup.style.display = 'none';
+      }
+      // Rule: Land size not required for Condo
+      if (type.includes('Condo')) {
+        lSizeGroup.style.display = 'none';
+      }
+    }
+
+    document.getElementById('propForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const files = document.getElementById('photos').files;
+      if (files.length > 10) {
+        alert('You can upload a maximum of 10 pictures.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Uploading & Sending...";
+
+      const rawType = document.getElementById('propertyType').value;
+      const selectedType = (rawType === 'Other') ? document.getElementById('otherTypeInput').value : rawType;
+
+      let username = 'Anonymous User';
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        if (tg.initDataUnsafe.user.username) {
+          username = '@' + tg.initDataUnsafe.user.username;
+        } else if (tg.initDataUnsafe.user.first_name) {
+          username = tg.initDataUnsafe.user.first_name;
+        }
+      }
+
+      const formData = new FormData();
+      formData.append('name', document.getElementById('name').value || 'N/A');
+      formData.append('tel1', document.getElementById('tel1').value);
+      formData.append('tel2', document.getElementById('tel2').value || 'N/A');
+      formData.append('clientTelegram', document.getElementById('clientTelegram').value || 'N/A');
+      formData.append('target', document.getElementById('target').value);
+      formData.append('propertyType', selectedType);
+      formData.append('price', document.getElementById('price').value);
+      formData.append('location', document.getElementById('location').value);
+      formData.append('buildingSize', document.getElementById('buildingSize').value || 'N/A');
+      formData.append('landSize', document.getElementById('landSize').value || 'N/A');
+      formData.append('bedrooms', document.getElementById('bedrooms').value || 'N/A');
+      formData.append('bathrooms', document.getElementById('bathrooms').value || 'N/A');
+      formData.append('direction', document.getElementById('direction').value);
+      formData.append('parking', document.getElementById('parking').value);
+      formData.append('remark', document.getElementById('remark').value || 'N/A');
+      formData.append('submittedBy', username);
+
+      for (let i = 0; i < files.length; i++) {
+        formData.append('photos', files[i]);
+      }
+
+      try {
+        const response = await fetch('/api/register-property', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          tg.showAlert('ព័ត៌មានអចលនទ្រព្យត្រូវបានបញ្ជូនជោគជ័យ! / Property Registered Successfully!', () => {
+            tg.close();
+          });
+        } else {
+          alert('Error submitting form: ' + result.error);
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Submit Property";
+        }
+      } catch (err) {
+        alert('Network error. Check connection.');
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Property";
+      }
+    });
+  </script>
+</body>
+</html>
