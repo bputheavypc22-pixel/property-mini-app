@@ -12,44 +12,49 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+    /* White Form Background */
     body {
-      background-color: var(--tg-theme-bg-color, #f8f9fa);
-      color: var(--tg-theme-text-color, #333);
+      background-color: #ffffff;
+      color: #0d253f; /* Dark Navy Blue default text */
       padding: 16px;
-      padding-bottom: 90px; /* Space for fixed submit button */
+      padding-bottom: 90px;
     }
     .header {
       text-align: center;
       margin-bottom: 20px;
     }
+    /* Primary Navy Blue Header */
     .header h2 {
       font-size: 20px;
-      color: #c53030;
+      color: #0b2545; /* Navy Blue */
       margin-bottom: 4px;
     }
     .header p {
       font-size: 13px;
-      color: var(--tg-theme-hint-color, #666);
+      color: #134074; /* Royal Navy */
     }
+    /* Section Headers in Navy Blue */
     .section-title {
       font-size: 15px;
       font-weight: bold;
-      color: #9b2c2c;
+      color: #0b2545; /* Navy Blue */
       margin: 20px 0 10px 0;
-      padding-bottom: 4px;
-      border-bottom: 2px solid #feb2b2;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #8da9c4; /* Light Slate Blue underline */
     }
     .form-group {
       margin-bottom: 14px;
     }
+    /* Field Labels in Navy Blue */
     label {
       display: block;
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 6px;
-      color: var(--tg-theme-text-color, #444);
+      color: #0b2545; /* Navy Blue */
     }
-    /* LIGHT RED FIELD STYLING */
+
+    /* SOFT RED FIELD BOXES WITH BLUE TEXT */
     input[type="text"],
     input[type="tel"],
     input[type="number"],
@@ -59,33 +64,41 @@
       padding: 12px;
       font-size: 14px;
       border-radius: 8px;
-      border: 1px solid #feb2b2;
-      background-color: #fff5f5; /* Light red tint */
-      color: #2d3748;
+      border: 1px solid #fca5a5; /* Soft Red Border */
+      background-color: #fef2f2; /* Soft Red Box Background */
+      color: #003566; /* Deep Blue Typed Text */
+      font-weight: 500;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
+
+    /* Placeholder Text in Muted Blue */
     input::placeholder,
     textarea::placeholder {
-      color: #e53e3e;
-      opacity: 0.5;
+      color: #4682b4; /* Muted Steel Blue */
+      opacity: 0.7;
     }
+
+    /* Active Focus State */
     input:focus,
     select:focus,
     textarea:focus {
-      border-color: #e53e3e;
-      background-color: #fff;
-      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+      border-color: #ef4444; /* Stronger Red Border on Focus */
+      background-color: #fff5f5;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+      color: #001d3d; /* Very Dark Navy on active typing */
     }
+
     textarea {
       resize: vertical;
       min-height: 80px;
     }
-    /* File Upload Styling */
+
+    /* Soft Red File Upload Wrapper with Blue Text */
     .file-input-wrapper {
       position: relative;
-      background: #fff5f5;
-      border: 2px dashed #feb2b2;
+      background: #fef2f2; /* Soft Red Background */
+      border: 2px dashed #fca5a5; /* Soft Red Dashed Border */
       border-radius: 8px;
       padding: 20px;
       text-align: center;
@@ -93,7 +106,7 @@
       transition: background-color 0.2s;
     }
     .file-input-wrapper:active {
-      background-color: #fed7d7;
+      background-color: #fee2e2;
     }
     .file-input-wrapper input[type="file"] {
       position: absolute;
@@ -106,28 +119,29 @@
     }
     .file-label {
       font-size: 13px;
-      color: #c53030;
+      color: #003566; /* Deep Blue Text */
       font-weight: 600;
     }
     .file-count {
       font-size: 12px;
-      color: #718096;
+      color: #1d3557; /* Navy Blue Text */
       margin-top: 4px;
     }
-    /* Fixed Bottom Button */
+
+    /* Fixed Bottom Button Bar */
     .btn-container {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--tg-theme-bg-color, #fff);
+      background: #ffffff;
       padding: 12px 16px;
       box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
       z-index: 100;
     }
     .submit-btn {
       width: 100%;
-      background-color: #e53e3e;
+      background-color: #003566; /* Deep Navy Blue Button */
       color: #ffffff;
       border: none;
       padding: 14px;
@@ -135,9 +149,13 @@
       font-weight: bold;
       border-radius: 10px;
       cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .submit-btn:active {
+      background-color: #001d3d;
     }
     .submit-btn:disabled {
-      background-color: #cbd5e0;
+      background-color: #94a3b8;
     }
   </style>
 </head>
@@ -276,7 +294,6 @@
       tg.expand();
     }
 
-    // Photo Counter Display
     const photosInput = document.getElementById('photos');
     const fileCount = document.getElementById('fileCount');
 
@@ -293,7 +310,6 @@
       }
     });
 
-    // Form Submit Handler
     document.getElementById('propertyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -322,7 +338,6 @@
       formData.append('remark', document.getElementById('remark').value);
       formData.append('submittedBy', submittedBy);
 
-      // Attach photos
       const files = photosInput.files;
       for (let i = 0; i < files.length; i++) {
         formData.append('photos', files[i]);
