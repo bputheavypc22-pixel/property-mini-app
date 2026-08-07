@@ -231,9 +231,18 @@
       const area1 = document.getElementById('area1').value;
       const area2 = document.getElementById('area2').value;
       const area3 = document.getElementById('area3').value;
-      const fullArea = `1. ${area1}\n   2. ${area2}\n   3. ${area3}`;
+      const fullArea = `1. ${area1}\n2. ${area2}\n3. ${area3}`;
 
       const type = document.getElementById('propertyType').value;
+
+      let username = 'Anonymous User';
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        if (tg.initDataUnsafe.user.username) {
+          username = '@' + tg.initDataUnsafe.user.username;
+        } else if (tg.initDataUnsafe.user.first_name) {
+          username = tg.initDataUnsafe.user.first_name;
+        }
+      }
 
       const payload = {
         name: document.getElementById('name').value,
@@ -250,7 +259,7 @@
         direction: document.getElementById('direction').value,
         parking: document.getElementById('parking').value,
         remark: document.getElementById('remark').value || 'N/A',
-        submittedBy: tg.initDataUnsafe?.user?.username ? `@${tg.initDataUnsafe.user.username}` : (tg.initDataUnsafe?.user?.first_name || 'Anonymous User')
+        submittedBy: username
       };
 
       try {
@@ -267,7 +276,7 @@
             tg.close();
           });
         } else {
-          alert('Failed to send data. Please try again.');
+          alert('Failed to send data. Check bot group permissions.');
           submitBtn.disabled = false;
           submitBtn.innerText = "Submit Registration";
         }
