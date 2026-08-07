@@ -49,11 +49,11 @@ app.post('/api/register', async (req, res) => {
   };
   const formattedDate = now.toLocaleString('en-US', dateOptions);
 
-  // Exact requested card layout
+  // Formatted message without strict markdown formatting
   const message = 
-`*🏠 ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY*
+`🏠 ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY
 ━━━━━━━━━━━━━━━━━━━━━
-*👤 ព័ត៌មានភ្ញៀវ / Client Profile*
+👤 ព័ត៌មានភ្ញៀវ / Client Profile
 🧑‍🦱 ឈ្មោះ / Name: ${name}
 📞 Tel: ${phone}
 💬 Telegram: ${clientTelegram}
@@ -71,14 +71,14 @@ ${area}
 🅿️ ចំណត / Parking: ${parking}
 ✏️ សម្គាល់ / Remark: ${remark}
 ━━━━━━━━━━━━━━━━━━━━━
-_Submitted by: ${submittedBy}_
-_Date: ${formattedDate}_`;
+Submitted by: ${submittedBy}
+Date: ${formattedDate}`;
 
   try {
-    await bot.sendMessage(process.env.TELEGRAM_GROUP_ID, message, { parse_mode: 'Markdown' });
+    await bot.sendMessage(process.env.TELEGRAM_GROUP_ID, message);
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Error sending message to Telegram:', error);
+    console.error('Error sending message to Telegram:', error?.response?.body || error.message);
     res.status(500).json({ success: false });
   }
 });
