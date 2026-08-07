@@ -152,7 +152,7 @@
 
     <div class="form-group">
       <label>💰 តម្លៃ / Price Rank *</label>
-      <input type="text" id="priceRank" required placeholder="e.g. $500 - $800 / month or $150k">
+      <input type="text" id="priceRank" required placeholder="e.g. $250 - $500 / month or $1k">
     </div>
 
     <div class="form-group">
@@ -306,7 +306,8 @@
       };
 
       try {
-        const response = await fetch('/api/register', {
+        // Updated Endpoint: /api/register-client
+        const response = await fetch('/api/register-client', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
