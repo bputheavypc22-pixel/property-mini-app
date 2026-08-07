@@ -25,9 +25,10 @@ const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Bot /start listener with options to choose forms
+// Bot /start handler with inline buttons for form choices
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
+  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
   const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
 
   bot.sendMessage(chatId, welcomeMessage, {
@@ -36,13 +37,13 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
-            web_app: { url: `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-url.onrender.com'}/client.html` }
+            web_app: { url: `${baseUrl}/client.html` }
           }
         ],
         [
           {
             text: "🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
-            web_app: { url: `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-url.onrender.com'}/property.html` }
+            web_app: { url: `${baseUrl}/property.html` }
           }
         ]
       ]
