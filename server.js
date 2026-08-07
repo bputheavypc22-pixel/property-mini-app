@@ -1,116 +1,229 @@
+require('dotenv').config();
 const express = require('express');
+const TelegramBot = require('node-telegram-bot-api');
 const multer = require('multer');
-const FormData = require('form-data');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Multer setup for memory storage (holds files temporarily in RAM before sending to Telegram)
-const upload = multer({ storage: multer.memoryStorage() });
+// Setup Multer for handling up to 10 image uploads in memory
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB per image limit
+});
 
-// Middleware
+// Environment Variables
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
+const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID;
+const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
+const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
+
+// Initialize bot with polling enabled to handle /start
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// YOUR TELEGRAM BOT CONFIGURATION
-const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
-const CHAT_ID = 'YOUR_TELEGRAM_GROUP_CHAT_ID';
+// Bot /start handler with inline buttons for form choices
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
+  const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
 
-// API Route for Property Registration
-app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
+  bot.sendMessage(chatId, welcomeMessage, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
+            web_app: { url: `${baseUrl}/client.html` }
+          }
+        ],
+        [
+          {
+            text: "🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
+            web_app: { url: `${baseUrl}/property.html` }
+          }
+        ]
+      ]
+    }
+  });
+});
+
+// Health check endpoint for UptimeRobot / Render
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
+// Helper function to format Cambodia local time
+function getFormattedDate() {
+  return new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+}
+
+// ==========================================
+// 1. CLIENT INQUIRY ENDPOINT
+// ==========================================
+app.post('/api/register-client', async (req, res) => {
   try {
-    const data = req.body;
-    const files = req.files || [];
+    const {
+      name, tel1, tel2, clientTelegram, target, propertyType,
+      priceRank, area, buildingSize, landSize, bedrooms, bathrooms,
+      direction, parking, remark, submittedBy
+    } = req.body;
 
-    // Formatted Caption Text
-    const captionText = `
-🏠 *អចលនទ្រព្យថ្មី / Property Register*
-──────────────────
-👤 *ឈ្មោះម្ចាស់ / Name:* ${data.name || 'N/A'}
-📞 *Tel1:* ${data.tel1 || 'N/A'}
-📞 *Tel2:* ${data.tel2 || 'N/A'}
-💬 *Telegram:* ${data.clientTelegram || 'N/A'}
-──────────────────
-🎯 *គោលបំណង / Target:* ${data.target || 'N/A'}
-🏗 *ប្រភេទ / Type:* ${data.propertyType || 'N/A'}
-💰 *តម្លៃ / Price:* ${data.price || 'N/A'}
-📍 *ទីតាំង / Location:* ${data.location || 'N/A'}
-📦 *ទំហំអគារ / Building Size:* ${data.buildingSize || 'N/A'}
-📐 *ទំហំដី / Land Size:* ${data.landSize || 'N/A'}
-🛏 *បន្ទប់គេង / Bedrooms:* ${data.bedrooms || 'N/A'}
-🛁 *បន្ទប់ទឹក / Bathrooms:* ${data.bathrooms || 'N/A'}
-🧭 *ទិស / Direction:* ${data.direction || 'N/A'}
-🅿️ *ទីធ្លាចំណត / Parking:* ${data.parking || 'N/A'}
-──────────────────
-💳 *ការបង់ប្រាក់ / Payment:* ${data.paymentTerm || 'N/A'}
-💵 *ប្រាក់កក់ / Deposit:* ${data.deposit || 'N/A'}
-📝 *កុងត្រា / Contract:* ${data.contract || 'N/A'}
-✏️ *សម្គាល់ / Remark:* ${data.remark || 'N/A'}
-🖼 *រូបភាព / Photos:* ${files.length}
-──────────────────
-_Submitted by: ${data.submittedBy || 'Unknown'}_
-_Date: ${new Date().toLocaleString()}_
-`.trim();
+    const message = 
+`👥 <b>ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY</b>
+━━━━━━━━━━━━━━━━━━━━━
+👤 <b>ព័ត៌មានភ្ញៀវ / Client Profile</b>
+📇 ឈ្មោះ / Name: ${name}
+📞 Tel1: ${tel1 || 'N/A'}
+📞 Tel2: ${tel2 || 'N/A'}
+💬 Telegram: ${clientTelegram || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━
+🎯 គោលបំណង / Target: ${target}
+🏗️ ប្រភេទ / Type: ${propertyType}
+💰 តម្លៃ / Price Rank: ${priceRank}
+📍 តំបន់ / Area:
+${area}
+🧱 ទំហំអគារ / Building Size: ${buildingSize}
+📐 ទំហំដី / Land Size: ${landSize}
+🛏 បន្ទប់គេង / Bedrooms: ${bedrooms}
+🛁 បន្ទប់ទឹក / Bathrooms: ${bathrooms}
+🧭 ទិស / Direction: ${direction}
+🅿️ ចំណត / Parking: ${parking}
+✏️ សម្គាល់ / Remark: ${remark}
+━━━━━━━━━━━━━━━━━━━━━
+<i>Submitted by: ${submittedBy}</i>
+<i>Date: ${getFormattedDate()}</i>`;
 
-    if (files.length > 0) {
-      const form = new FormData();
-      const mediaArray = [];
+    const telegramPayload = {
+      chat_id: GROUP_CHAT_ID,
+      text: message,
+      parse_mode: 'HTML'
+    };
 
-      files.forEach((file, index) => {
-        const attachName = `photo_${index}`;
-        
-        // Append raw file buffer directly to form data
-        form.append(attachName, file.buffer, { filename: file.originalname });
-
-        const mediaItem = {
-          type: 'photo',
-          media: `attach://${attachName}`
-        };
-
-        // Attach text caption to ONLY the first media item so it pins underneath the album
-        if (index === 0) {
-          mediaItem.caption = captionText;
-          mediaItem.parse_mode = 'Markdown';
-        }
-
-        mediaArray.push(mediaItem);
-      });
-
-      form.append('chat_id', CHAT_ID);
-      form.append('media', JSON.stringify(mediaArray));
-
-      const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
-        method: 'POST',
-        body: form
-      });
-
-      const result = await telegramRes.json();
-      if (!result.ok) {
-        throw new Error(result.description || 'Failed to send photos to Telegram');
-      }
-
-    } else {
-      // Fallback if no images were attached
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: captionText,
-          parse_mode: 'Markdown'
-        })
-      });
+    if (CLIENT_TOPIC_ID) {
+      telegramPayload.message_thread_id = parseInt(CLIENT_TOPIC_ID, 10);
     }
 
-    res.json({ success: true });
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(telegramPayload)
+    });
+
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.description);
+
+    res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Error sending Telegram message:', error);
+    console.error('Error Client Form:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ==========================================
+// 2. PROPERTY LISTING ENDPOINT (WITH MEDIA CAPTION)
+// ==========================================
+app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
+  try {
+    const {
+      name, tel1, tel2, clientTelegram, target, propertyType,
+      price, location, buildingSize, landSize, bedrooms, bathrooms,
+      direction, parking, paymentTerm, deposit, contract, remark, submittedBy
+    } = req.body;
+
+    const message = 
+`🏠 <b>អចលនទ្រព្យថ្មី / NEW PROPERTY</b>
+━━━━━━━━━━━━━━━━━━━━━
+👤 <b>ម្ចាស់អចលនទ្រព្យ / Property Owner</b>
+📇 ឈ្មោះ / Name: ${name || 'N/A'}
+📞 Tel1: ${tel1}
+📞 Tel2: ${tel2 || 'N/A'}
+💬 Telegram: ${clientTelegram || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━
+🎯 គោលបំណង / Target: ${target}
+🏗️ ប្រភេទ / Type: ${propertyType}
+💰 តម្លៃ / Price: ${price}
+📍 ទីតាំង / Location: ${location}
+🧱 ទំហំអគារ / Building Size: ${buildingSize || 'N/A'}
+📐 ទំហំដី / Land Size: ${landSize || 'N/A'}
+🛏 បន្ទប់គេង / Bedrooms: ${bedrooms || 'N/A'}
+🛁 បន្ទប់ទឹក / Bathrooms: ${bathrooms || 'N/A'}
+🧭 ទិស / Direction: ${direction || 'N/A'}
+🅿️ ទីធ្លាចំណត / Parking Space: ${parking || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━
+💳 ការបង់ប្រាក់ / Payment Term: ${paymentTerm || 'N/A'}
+💵 ប្រាក់កក់ / Deposit: ${deposit || 'N/A'}
+📝 កុងត្រា / Contract: ${contract || 'N/A'}
+✏️ សម្គាល់ / Remark: ${remark || 'N/A'}
+🖼️ រូបភាពអចលនទ្រព្យ / Pictures Attached: ${req.files ? req.files.length : 0}
+━━━━━━━━━━━━━━━━━━━━━
+<i>Submitted by: ${submittedBy || 'N/A'}</i>
+<i>Date: ${getFormattedDate()}</i>`;
+
+    const topicThreadId = PROPERTY_TOPIC_ID ? parseInt(PROPERTY_TOPIC_ID, 10) : undefined;
+
+    if (req.files && req.files.length > 0) {
+      // Send photos with caption attached to the first image (photos display on top, text underneath)
+      const formData = new FormData();
+      formData.append('chat_id', GROUP_CHAT_ID);
+      if (topicThreadId) formData.append('message_thread_id', topicThreadId);
+
+      const mediaGroup = req.files.map((file, idx) => {
+        const attachName = `photo_${idx}`;
+        const blob = new Blob([file.buffer], { type: file.mimetype });
+        formData.append(attachName, blob, file.originalname);
+
+        const item = { type: 'photo', media: `attach://${attachName}` };
+        if (idx === 0) {
+          item.caption = message;
+          item.parse_mode = 'HTML';
+        }
+        return item;
+      });
+
+      formData.append('media', JSON.stringify(mediaGroup));
+
+      const mediaRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
+        method: 'POST',
+        body: formData
+      });
+      const mediaData = await mediaRes.json();
+      if (!mediaData.ok) throw new Error(mediaData.description);
+
+    } else {
+      // Fallback if no photos are uploaded
+      const msgPayload = {
+        chat_id: GROUP_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      };
+      if (topicThreadId) msgPayload.message_thread_id = topicThreadId;
+
+      const summaryRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(msgPayload)
+      });
+      const summaryData = await summaryRes.json();
+      if (!summaryData.ok) throw new Error(summaryData.description);
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error Property Form:', error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
