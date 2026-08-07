@@ -6,13 +6,13 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Initialize Bot
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false });
+// Initialize bot WITH polling enabled so it responds to /start
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- NEW: Listen for /start command ---
+// Respond to /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមចុចប្រអប់ Menu ដើម្បីចូលចុះឈ្មោះ";
