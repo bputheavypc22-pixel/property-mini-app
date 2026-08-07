@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
 const path = require('path');
 
 const app = express();
@@ -89,16 +88,28 @@ ${area}
 <i>Submitted by: ${submittedBy}</i>
 <i>Date: ${formattedDate}</i>`;
 
-    // Send payload using HTML parse mode to ensure safe rendering
-    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      chat_id: GROUP_CHAT_ID,
-      text: message,
-      parse_mode: 'HTML'
+    // Send payload using native fetch
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: GROUP_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
     });
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.description || 'Failed to send message to Telegram');
+    }
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Error sending message:', error?.response?.data || error.message);
+    console.error('Error sending message:', error.message);
     res.status(500).json({ success: false, error: 'Failed to send message' });
   }
 });
