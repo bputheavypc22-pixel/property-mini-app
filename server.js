@@ -19,12 +19,13 @@ const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 
+// Initialize bot with polling enabled to handle /start
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Bot /start command
+// Bot /start listener with options to choose forms
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
@@ -49,9 +50,10 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
+// Health check endpoint for UptimeRobot / Render
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
-// Helper to format date in Cambodia Time
+// Helper function to format Cambodia local time
 function getFormattedDate() {
   return new Date().toLocaleString('en-US', {
     timeZone: 'Asia/Phnom_Penh',
@@ -164,7 +166,7 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
 
     const topicThreadId = PROPERTY_TOPIC_ID ? parseInt(PROPERTY_TOPIC_ID, 10) : undefined;
 
-    // Send property textual summary first
+    // Send property summary message first using native fetch
     const msgPayload = {
       chat_id: GROUP_CHAT_ID,
       text: message,
@@ -180,7 +182,7 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
     const summaryData = await summaryRes.json();
     if (!summaryData.ok) throw new Error(summaryData.description);
 
-    // Send attached pictures into the same topic thread using sendMediaGroup
+    // Send images via sendMediaGroup using native FormData and fetch
     if (req.files && req.files.length > 0) {
       const formData = new FormData();
       formData.append('chat_id', GROUP_CHAT_ID);
@@ -195,10 +197,12 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
 
       formData.append('media', JSON.stringify(mediaGroup));
 
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
+      const mediaRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
         method: 'POST',
         body: formData
       });
+      const mediaData = await mediaRes.json();
+      if (!mediaData.ok) console.error('Media upload warning:', mediaData.description);
     }
 
     res.status(200).json({ success: true });
