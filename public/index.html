@@ -152,7 +152,7 @@
 
     <div class="form-group">
       <label>💰 តម្លៃ / Price Rank *</label>
-      <input type="text" id="priceRank" required placeholder="e.g. $200 - $500 / month or $1k">
+      <input type="text" id="priceRank" required placeholder="e.g. $500 - $800 / month or $150k">
     </div>
 
     <div class="form-group">
@@ -315,7 +315,7 @@
         const result = await response.json();
 
         if (result.success) {
-          tg.showAlert('🎉ព័ត៌មានត្រូវបានបញ្ជូនជោគជ័យ! / Submitted Successfully!', () => {
+          tg.showAlert('ព័ត៌មានត្រូវបានបញ្ជូនជោគជ័យ!🎉 / Submitted Successfully!', () => {
             tg.close();
           });
         } else {
