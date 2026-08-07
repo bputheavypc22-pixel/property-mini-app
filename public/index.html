@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Client Inquiry</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #ffffff);
+      --text-color: var(--tg-theme-text-color, #222222);
+      --btn-color: var(--tg-theme-button-color, #2481cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      margin: 0;
+    }
+    
+    .logo-container {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .logo-container img {
+      max-width: 140px;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    h2 { margin-top: 0; text-align: center; font-size: 18px; color: #2481cc; }
+    .section-title {
+      font-weight: bold;
+      margin: 15px 0 10px 0;
+      border-bottom: 2px solid #2481cc;
+      padding-bottom: 4px;
+      font-size: 15px;
+    }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    .hidden { display: none; }
+    button {
+      width: 100%;
+      background-color: var(--btn-color);
+      color: var(--btn-text);
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo Banner -->
+  <div class="logo-container">
+    <img src="logo.png" alt="Twenty5 Realty Logo">
+  </div>
+
+  <h2>🏠 ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY</h2>
+  
+  <form id="regForm">
+    <div class="section-title">👤 ព័ត៌មានភ្ញៀវ / Client Profile</div>
+
+    <div class="form-group">
+      <label>🧑‍🦱 ឈ្មោះ / Name *</label>
+      <input type="text" id="name" required placeholder="Enter client name">
+    </div>
+
+    <div class="form-group">
+      <label>📞 Tel (Line 1) *</label>
+      <input type="tel" id="tel1" required placeholder="e.g. 012 345 678">
+    </div>
+
+    <div class="form-group">
+      <label>📞 Tel (Line 2 - Optional)</label>
+      <input type="tel" id="tel2" placeholder="e.g. 098 765 432">
+    </div>
+
+    <div class="form-group">
+      <label>💬 Telegram User / Link</label>
+      <input type="text" id="clientTelegram" placeholder="e.g. @username or phone number">
+    </div>
+
+    <div class="section-title">🎯 តម្រូវការភ្ញៀវ / Target Requirements</div>
+
+    <div class="form-group">
+      <label>🎯 គោលបំណង / Target *</label>
+      <select id="target" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="រកជួល / Rent">រកជួល / Rent</option>
+        <option value="រកទិញ / Buy">រកទិញ / Buy</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🏗️ ប្រភេទ / Type *</label>
+      <select id="propertyType" required onchange="toggleConditionalFields()">
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="ផ្ទះ / House">ផ្ទះ / House</option>
+        <option value="វីឡា / Villa">វីឡា / Villa</option>
+        <option value="ដី / Land">ដី / Land</option>
+        <option value="ឃ្លាំង / Warehouse">ឃ្លាំង / Warehouse</option>
+        <option value="ខុនដូ / Condo">ខុនដូ / Condo</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>💰 តម្លៃ / Price Rank *</label>
+      <input type="text" id="priceRank" required placeholder="e.g. $500 - $800 / month or $150k">
+    </div>
+
+    <div class="form-group">
+      <label>📍 តំបន់ / Target Areas (3 Fields Required) *</label>
+      <input type="text" id="area1" required placeholder="Area 1 (e.g. Tuol Kouk)" style="margin-bottom: 6px;">
+      <input type="text" id="area2" required placeholder="Area 2 (e.g. BKK1)" style="margin-bottom: 6px;">
+      <input type="text" id="area3" required placeholder="Area 3 (e.g. Chroy Changvar)">
+    </div>
+
+    <div class="form-group hidden" id="buildingSizeGroup">
+      <label>🧱 ទំហំអគារ / Building Size *</label>
+      <input type="text" id="buildingSize" placeholder="e.g. 20m x 30m">
+    </div>
+
+    <div class="form-group hidden" id="landSizeGroup">
+      <label>📐 ទំហំដី / Land Size *</label>
+      <input type="text" id="landSize" placeholder="e.g. 10m x 25m or 500 sqm">
+    </div>
+
+    <div class="form-group">
+      <label>🛏 បន្ទប់គេង / Bedrooms *</label>
+      <select id="bedrooms" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5+">5+</option>
+        <option value="N/A">N/A (Not Applicable)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🛁 បន្ទប់ទឹក / Bathrooms *</label>
+      <select id="bathrooms" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5+">5+</option>
+        <option value="N/A">N/A (Not Applicable)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🧭 ទិស / Direction *</label>
+      <select id="direction" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="កើត / East">កើត / East</option>
+        <option value="លិច / West">លិច / West</option>
+        <option value="ត្បូង / South">ត្បូង / South</option>
+        <option value="ជើង / North">ជើង / North</option>
+        <option value="ឦសាន / North-East">ឦសាន / North-East</option>
+        <option value="ពាយ័ព្យ / North-West">ពាយ័ព្យ / North-West</option>
+        <option value="អាគ្នេយ៍ / South-East">អាគ្នេយ៍ / South-East</option>
+        <option value="និរតី / South-West">និរតី / South-West</option>
+        <option value="មិនកំណត់ / Any">មិនកំណត់ / Any</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🅿️ ចំណត / Parking *</label>
+      <select id="parking" required>
+        <option value="">--ជ្រើសរើស / Select--</option>
+        <option value="🚗រថយន្តបាន / Car">🚗រថយន្តបាន / Car</option>
+        <option value="ម៉ូតូ / Only Moto">ម៉ូតូ / Only Moto</option>
+        <option value="មិនចាំបាច់ / Not Required">មិនចាំបាច់ / Not Required</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>✏️ សម្គាល់ / Remark</label>
+      <textarea id="remark" rows="3" placeholder="Other preferences or special requests..."></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">Submit Registration</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function toggleConditionalFields() {
+      const type = document.getElementById('propertyType').value;
+      const bGroup = document.getElementById('buildingSizeGroup');
+      const bInput = document.getElementById('buildingSize');
+      const lGroup = document.getElementById('landSizeGroup');
+      const lInput = document.getElementById('landSize');
+
+      bGroup.classList.add('hidden');
+      bInput.required = false;
+      lGroup.classList.add('hidden');
+      lInput.required = false;
+
+      if (type.includes('Warehouse')) {
+        bGroup.classList.remove('hidden');
+        bInput.required = true;
+        lGroup.classList.remove('hidden');
+        lInput.required = true;
+      } 
+      else if (type.includes('Land')) {
+        lGroup.classList.remove('hidden');
+        lInput.required = true;
+      }
+    }
+
+    document.getElementById('regForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Sending...";
+
+      const tel1 = document.getElementById('tel1').value;
+      const tel2 = document.getElementById('tel2').value;
+      const fullTel = tel2 ? `${tel1} / ${tel2}` : tel1;
+
+      const area1 = document.getElementById('area1').value;
+      const area2 = document.getElementById('area2').value;
+      const area3 = document.getElementById('area3').value;
+      const fullArea = `1. ${area1}\n2. ${area2}\n3. ${area3}`;
+
+      const type = document.getElementById('propertyType').value;
+
+      let username = 'Anonymous User';
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        if (tg.initDataUnsafe.user.username) {
+          username = '@' + tg.initDataUnsafe.user.username;
+        } else if (tg.initDataUnsafe.user.first_name) {
+          username = tg.initDataUnsafe.user.first_name;
+        }
+      }
+
+      const payload = {
+        name: document.getElementById('name').value,
+        phone: fullTel,
+        clientTelegram: document.getElementById('clientTelegram').value || 'N/A',
+        target: document.getElementById('target').value,
+        propertyType: type,
+        priceRank: document.getElementById('priceRank').value,
+        area: fullArea,
+        buildingSize: type.includes('Warehouse') ? document.getElementById('buildingSize').value : 'N/A',
+        landSize: (type.includes('Land') || type.includes('Warehouse')) ? document.getElementById('landSize').value : 'N/A',
+        bedrooms: document.getElementById('bedrooms').value,
+        bathrooms: document.getElementById('bathrooms').value,
+        direction: document.getElementById('direction').value,
+        parking: document.getElementById('parking').value,
+        remark: document.getElementById('remark').value || 'N/A',
+        submittedBy: username
+      };
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          tg.showAlert('ព័ត៌មានត្រូវបានបញ្ជូនជោគជ័យ! / Submitted Successfully!', () => {
+            tg.close();
+          });
+        } else {
+          alert('Failed to send data. Check bot group permissions.');
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Submit Registration";
+        }
+      } catch (err) {
+        alert('Network error. Check connection.');
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Registration";
+      }
+    });
+  </script>
+</body>
+</html>
 
