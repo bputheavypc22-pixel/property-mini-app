@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 // Environment Variables
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
 const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID;
+const TOPIC_ID = process.env.TELEGRAM_TOPIC_ID; // Your Forum/Topic Thread ID
 
 // Initialize bot with polling enabled to handle /start
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
@@ -88,17 +89,25 @@ ${area}
 <i>Submitted by: ${submittedBy}</i>
 <i>Date: ${formattedDate}</i>`;
 
-    // Send payload using native fetch
+    // Construct API Payload
+    const telegramPayload = {
+      chat_id: GROUP_CHAT_ID,
+      text: message,
+      parse_mode: 'HTML'
+    };
+
+    // If TOPIC_ID is defined, attach message_thread_id
+    if (TOPIC_ID) {
+      telegramPayload.message_thread_id = parseInt(TOPIC_ID, 10);
+    }
+
+    // Send payload to Telegram
     const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        chat_id: GROUP_CHAT_ID,
-        text: message,
-        parse_mode: 'HTML'
-      })
+      body: JSON.stringify(telegramPayload)
     });
 
     const data = await response.json();
