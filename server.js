@@ -42,7 +42,7 @@ bot.onText(/\/start/, (msg) => {
         ],
         [
           {
-            text: "🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
+            text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
             web_app: { url: `${baseUrl}/property.html` }
           }
         ]
@@ -81,24 +81,25 @@ app.post('/api/register-client', async (req, res) => {
     const message = 
 `👥 <b>ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY</b>
 ━━━━━━━━━━━━━━━━━━━━━
-👤 <b>ព័ត៌មានភ្ញៀវ / Client Profile</b>
-📇 ឈ្មោះ / Name: ${name}
+👤 <b>ព័ត៌មានភ្ញៀវ/ Client Profile</b>
+📇 ឈ្មោះ/ Name: ${name}
 📞 Tel1: ${tel1 || 'N/A'}
 📞 Tel2: ${tel2 || 'N/A'}
 💬 Telegram: ${clientTelegram || 'N/A'}
 ━━━━━━━━━━━━━━━━━━━━━
-🎯 គោលបំណង / Target: ${target}
-🏗️ ប្រភេទ / Type: ${propertyType}
-💰 តម្លៃ / Price Rank: ${priceRank}
-📍 តំបន់ / Area:
+🎯 គោលបំណង/ Target: ${target}
+━━━━━━━━━━━━━━━━━━━━━
+🏗️ ប្រភេទ/ Type: ${propertyType}
+💰 តម្លៃ/ Price Rank: ${priceRank}
+📍 តំបន់/ Area:
 ${area}
-🧱 ទំហំអគារ / Building Size: ${buildingSize}
-📐 ទំហំដី / Land Size: ${landSize}
-🛏 បន្ទប់គេង / Bedrooms: ${bedrooms}
-🛁 បន្ទប់ទឹក / Bathrooms: ${bathrooms}
-🧭 ទិស / Direction: ${direction}
-🅿️ ចំណត / Parking: ${parking}
-✏️ សម្គាល់ / Remark: ${remark}
+🧱 ទំហំអគារ/ Building Size: ${buildingSize}
+📐 ទំហំដី/ Land Size: ${landSize}
+🛏 បន្ទប់គេង/ Bedrooms: ${bedrooms}
+🛁 បន្ទប់ទឹក/ Bathrooms: ${bathrooms}
+🧭 ទិស/ Direction: ${direction}
+🅿️ ចំណត/ Parking: ${parking}
+✏️ សម្គាល់/ Remark: ${remark}
 ━━━━━━━━━━━━━━━━━━━━━
 <i>Submitted by: ${submittedBy}</i>
 <i>Date: ${getFormattedDate()}</i>`;
@@ -144,27 +145,28 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
 `🏠 <b>អចលនទ្រព្យថ្មី / NEW PROPERTY</b>
 ━━━━━━━━━━━━━━━━━━━━━
 👤 <b>ម្ចាស់អចលនទ្រព្យ / Property Owner</b>
-📇 ឈ្មោះ / Name: ${name || 'N/A'}
+📇 ឈ្មោះ/ Name: ${name || 'N/A'}
 📞 Tel1: ${tel1}
 📞 Tel2: ${tel2 || 'N/A'}
 💬 Telegram: ${clientTelegram || 'N/A'}
 ━━━━━━━━━━━━━━━━━━━━━
-🎯 គោលបំណង / Target: ${target}
-🏗️ ប្រភេទ / Type: ${propertyType}
-💰 តម្លៃ / Price: ${price}
-📍 ទីតាំង / Location: ${location}
-🧱 ទំហំអគារ / Building Size: ${buildingSize || 'N/A'}
-📐 ទំហំដី / Land Size: ${landSize || 'N/A'}
-🛏 បន្ទប់គេង / Bedrooms: ${bedrooms || 'N/A'}
-🛁 បន្ទប់ទឹក / Bathrooms: ${bathrooms || 'N/A'}
-🧭 ទិស / Direction: ${direction || 'N/A'}
-🅿️ ទីធ្លាចំណត / Parking Space: ${parking || 'N/A'}
+🎯 គោលបំណង/ Target: ${target}
 ━━━━━━━━━━━━━━━━━━━━━
-💳 ការបង់ប្រាក់ / Payment Term: ${paymentTerm || 'N/A'}
-💵 ប្រាក់កក់ / Deposit: ${deposit || 'N/A'}
-📝 កុងត្រា / Contract: ${contract || 'N/A'}
-✏️ សម្គាល់ / Remark: ${remark || 'N/A'}
-🖼️ រូបភាពអចលនទ្រព្យ / Pictures Attached: ${req.files ? req.files.length : 0}
+🏗️ ប្រភេទ/ Type: ${propertyType}
+💰 តម្លៃ/ Price: ${price}
+📍 ទីតាំង/ Location: ${location}
+🧱 ទំហំអគារ/ Building Size: ${buildingSize || 'N/A'}
+📐 ទំហំដី/ Land Size: ${landSize || 'N/A'}
+🛏 បន្ទប់គេង/ Bedrooms: ${bedrooms || 'N/A'}
+🛁 បន្ទប់ទឹក/ Bathrooms: ${bathrooms || 'N/A'}
+🧭 ទិស/ Direction: ${direction || 'N/A'}
+🅿️ ទីធ្លាចំណត/ Parking Space: ${parking || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━
+💳 ការបង់ប្រាក់/ Payment Term: ${paymentTerm || 'N/A'}
+💵 ប្រាក់កក់/ Deposit: ${deposit || 'N/A'}
+📝 កុងត្រា/ Contract: ${contract || 'N/A'}
+✏️ សម្គាល់/ Remark: ${remark || 'N/A'}
+🖼️ រូបភាពអចលនទ្រព្យ/ Pictures Attached: ${req.files ? req.files.length : 0}
 ━━━━━━━━━━━━━━━━━━━━━
 <i>Submitted by: ${submittedBy || 'N/A'}</i>
 <i>Date: ${getFormattedDate()}</i>`;
