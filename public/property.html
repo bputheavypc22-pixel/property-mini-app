@@ -180,7 +180,7 @@
 
   <div class="header">
     <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-    <h2>🏠 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
+    <h2>🏰 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
     <p>Property Listing Form</p>
   </div>
 
@@ -340,14 +340,14 @@
       <textarea id="remark" placeholder="ព័ត៌មានបន្ថែមផ្សេងៗ..."></textarea>
     </div>
 
-    <!-- Image Upload -->
-    <div class="section-title">🖼️ រូបភាពអចលនទ្រព្យ / Photos (Max 10)</div>
+    <!-- Image Upload (REQUIRED AT LEAST 1 PHOTO) -->
+    <div class="section-title">🖼️ រូបភាពអចលនទ្រព្យ / Photos (Max 10) *</div>
     
     <div class="form-group">
       <div class="file-input-wrapper">
-        <div class="file-label">📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព / Select Photos</div>
+        <div class="file-label">📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព / Select Photos *</div>
         <div class="file-count" id="fileCount">មិនទាន់ជ្រើសរើសរូបភាព / No photos selected</div>
-        <input type="file" id="photos" multiple accept="image/*">
+        <input type="file" id="photos" multiple accept="image/*" required>
       </div>
     </div>
 
@@ -382,6 +382,16 @@
     document.getElementById('propertyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      // Check if user uploaded at least 1 photo
+      if (!photosInput.files || photosInput.files.length === 0) {
+        if (tg) {
+          tg.showAlert('សូមបញ្ជូនរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក! / Please upload at least 1 photo.');
+        } else {
+          alert('សូមបញ្ជូនរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក! / Please upload at least 1 photo.');
+        }
+        return;
+      }
+
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
       submitBtn.textContent = 'កំពុងបញ្ជូន... / Submitting...';
@@ -404,7 +414,7 @@
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
       formData.append('parking', document.getElementById('parking').value);
-      // New Payment Data
+      
       formData.append('paymentTerm', document.getElementById('paymentTerm').value);
       formData.append('deposit', document.getElementById('deposit').value);
       formData.append('contract', document.getElementById('contract').value);
@@ -427,7 +437,7 @@
 
         if (result.success) {
           if (tg) {
-            tg.showAlert('លោកអ្នកបានផ្ញើព័ត៌មានអចលនទ្រព្យជោគជ័យ!🎉 / Submitted successfully!', () => {
+            tg.showAlert('លោកអ្នកបានផ្ញើព័ត៌មានអចលនទ្រព្យជោគជ័យ! / Submitted successfully!', () => {
               tg.close();
             });
           } else {
