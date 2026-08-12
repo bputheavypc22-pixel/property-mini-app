@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 // Setup Multer for handling up to 10 image uploads in memory
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB per image limit
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
 });
 
 // Environment Variables
@@ -19,70 +19,27 @@ const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 
-// Initialize bot with polling enabled
+// Initialize Telegram Bot
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// UPDATED /start HANDLER (WORKS IN GROUPS & PRIVATE CHATS)
+// CLEAN /start HANDLER (TEXT ONLY, NO INLINE BUTTONS)
 // ==========================================
-bot.onText(/\/start(@\w+)?/, async (msg) => {
+bot.onText(/\/start(@\w+)?/, (msg) => {
   const chatId = msg.chat.id;
-  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
-  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
-  
-  let botUsername = '';
-  try {
-    const botInfo = await bot.getMe();
-    botUsername = botInfo.username;
-  } catch (err) {
-    console.error('Error fetching bot info:', err.message);
-  }
 
-  let inlineKeyboard = [];
+  const welcomeMessage = 
+`ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
 
-  if (isGroup) {
-    // In Groups: Send direct links to private chat because Telegram blocks WebApps directly in groups
-    inlineKeyboard = [
-      [
-        {
-          text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
-          url: `https://t.me/${botUsername}?start=client`
-        }
-      ],
-      [
-        {
-          text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
-          url: `https://t.me/${botUsername}?start=property`
-        }
-      ]
-    ];
-  } else {
-    // In Private Chat: Send direct Web App mini-app buttons
-    inlineKeyboard = [
-      [
-        {
-          text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
-          web_app: { url: `${baseUrl}/client.html` }
-        }
-      ],
-      [
-        {
-          text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
-          web_app: { url: `${baseUrl}/property.html` }
-        }
-      ]
-    ];
-  }
-
-  const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
+សូមចុចប៊ូតុង **Menu** (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើសទម្រង់បែបបទ៖
+• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
+• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
 
   const options = {
-    reply_markup: {
-      inline_keyboard: inlineKeyboard
-    }
+    parse_mode: 'Markdown'
   };
 
   // Reply inside the specific topic thread if sent in a forum topic
@@ -93,7 +50,7 @@ bot.onText(/\/start(@\w+)?/, async (msg) => {
   bot.sendMessage(chatId, welcomeMessage, options);
 });
 
-// Health check endpoint for UptimeRobot / Render
+// Health check endpoint for Render / UptimeRobot
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
 // Helper function to format Cambodia local time
