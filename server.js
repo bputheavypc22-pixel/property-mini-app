@@ -19,19 +19,21 @@ const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 
-// Initialize bot with polling enabled to handle /start
+// Initialize bot with polling enabled to handle /start in private & group chats
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Bot /start handler with inline buttons for form choices
+// ==========================================
+// UPDATED /start HANDLER (WORKS IN ANY GROUP & TOPIC)
+// ==========================================
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
   const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
 
-  bot.sendMessage(chatId, welcomeMessage, {
+  const options = {
     reply_markup: {
       inline_keyboard: [
         [
@@ -48,7 +50,14 @@ bot.onText(/\/start/, (msg) => {
         ]
       ]
     }
-  });
+  };
+
+  // If /start is typed inside a forum topic thread, reply inside that thread
+  if (msg.message_thread_id) {
+    options.message_thread_id = msg.message_thread_id;
+  }
+
+  bot.sendMessage(chatId, welcomeMessage, options);
 });
 
 // Health check endpoint for UptimeRobot / Render
@@ -174,7 +183,6 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
     const topicThreadId = PROPERTY_TOPIC_ID ? parseInt(PROPERTY_TOPIC_ID, 10) : undefined;
 
     if (req.files && req.files.length > 0) {
-      // Send photos with caption attached to the first image (photos display on top, text underneath)
       const formData = new FormData();
       formData.append('chat_id', GROUP_CHAT_ID);
       if (topicThreadId) formData.append('message_thread_id', topicThreadId);
@@ -202,7 +210,6 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       if (!mediaData.ok) throw new Error(mediaData.description);
 
     } else {
-      // Fallback if no photos are uploaded
       const msgPayload = {
         chat_id: GROUP_CHAT_ID,
         text: message,
