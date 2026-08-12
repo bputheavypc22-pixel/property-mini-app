@@ -19,40 +19,73 @@ const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 
-// Initialize bot with polling enabled to handle /start in private & group chats
+// Initialize bot with polling enabled
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// UPDATED /start HANDLER (WORKS IN ANY GROUP & TOPIC)
+// UPDATED /start HANDLER (WORKS IN GROUPS & PRIVATE CHATS)
 // ==========================================
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start(@\w+)?/, async (msg) => {
   const chatId = msg.chat.id;
+  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
   const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
+  
+  let botUsername = '';
+  try {
+    const botInfo = await bot.getMe();
+    botUsername = botInfo.username;
+  } catch (err) {
+    console.error('Error fetching bot info:', err.message);
+  }
+
+  let inlineKeyboard = [];
+
+  if (isGroup) {
+    // In Groups: Send direct links to private chat because Telegram blocks WebApps directly in groups
+    inlineKeyboard = [
+      [
+        {
+          text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
+          url: `https://t.me/${botUsername}?start=client`
+        }
+      ],
+      [
+        {
+          text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
+          url: `https://t.me/${botUsername}?start=property`
+        }
+      ]
+    ];
+  } else {
+    // In Private Chat: Send direct Web App mini-app buttons
+    inlineKeyboard = [
+      [
+        {
+          text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
+          web_app: { url: `${baseUrl}/client.html` }
+        }
+      ],
+      [
+        {
+          text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
+          web_app: { url: `${baseUrl}/property.html` }
+        }
+      ]
+    ];
+  }
+
   const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
 
   const options = {
     reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
-            web_app: { url: `${baseUrl}/client.html` }
-          }
-        ],
-        [
-          {
-            text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
-            web_app: { url: `${baseUrl}/property.html` }
-          }
-        ]
-      ]
+      inline_keyboard: inlineKeyboard
     }
   };
 
-  // If /start is typed inside a forum topic thread, reply inside that thread
+  // Reply inside the specific topic thread if sent in a forum topic
   if (msg.message_thread_id) {
     options.message_thread_id = msg.message_thread_id;
   }
