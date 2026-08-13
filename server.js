@@ -3,6 +3,8 @@ const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const multer = require('multer');
 const path = require('path');
+const { JWT } = require('google-auth-library');
+const { GoogleSpreadsheet } = require('google-spreadsheet');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +20,38 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
 const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID;
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
+
+const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
+const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
+// Handle escaped newlines in private key
+const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n') : null;
+
+// Initialize Google Sheets Doc
+let doc = null;
+
+async function initGoogleSheets() {
+  if (!GOOGLE_SHEET_ID || !GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+    console.warn('⚠️ Google Sheets credentials missing. Skipping Sheets integration.');
+    return;
+  }
+
+  try {
+    const serviceAccountAuth = new JWT({
+      email: GOOGLE_CLIENT_EMAIL,
+      key: GOOGLE_PRIVATE_KEY,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    doc = new GoogleSpreadsheet(GOOGLE_SHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+    console.log(`✅ Google Sheets connected: "${doc.title}"`);
+  } catch (error) {
+    console.error('❌ Failed to connect to Google Sheets:', error.message);
+  }
+}
+
+// Initialize Sheets Connection
+initGoogleSheets();
 
 // Initialize Telegram Bot
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
@@ -36,6 +70,23 @@ function getFormattedDate() {
     minute: '2-digit',
     hour12: true
   });
+}
+
+// Helper function to safely append row to a specific worksheet
+async function appendToSheet(sheetTitle, rowData) {
+  if (!doc) return;
+  try {
+    await doc.loadInfo();
+    const sheet = doc.sheetsByTitle[sheetTitle];
+    if (sheet) {
+      await sheet.addRow(rowData);
+      console.log(`📊 Successfully logged entry to sheet: "${sheetTitle}"`);
+    } else {
+      console.error(`❌ Sheet tab titled "${sheetTitle}" not found in Google Sheet.`);
+    }
+  } catch (err) {
+    console.error(`❌ Error appending to Google Sheet ("${sheetTitle}"):`, err.message);
+  }
 }
 
 // ==========================================
@@ -70,7 +121,6 @@ bot.onText(/\/start(@\w+)?/, async (msg) => {
       }
     };
 
-    // Reply in specific topic thread if inside a group topic
     if (msg.message_thread_id) {
       groupOptions.message_thread_id = msg.message_thread_id;
     }
@@ -78,18 +128,18 @@ bot.onText(/\/start(@\w+)?/, async (msg) => {
     return bot.sendMessage(chatId, groupMessage, groupOptions);
   }
 
-  // 2. IF IN PRIVATE CHAT: Send ONLY welcome message + instructions (No buttons)
+  // 2. IF IN PRIVATE CHAT: Send ONLY welcome message + instructions
   const welcomePrivateMessage = 
 `ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
 
 សូមចុចប៊ូតុង **Menu** (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើស និងបើកទម្រង់បែបបទ៖
-• 👤 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
-• 🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
+• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
+• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
 
   bot.sendMessage(chatId, welcomePrivateMessage, { parse_mode: 'Markdown' });
 });
 
-// Health check endpoint for Render / UptimeRobot
+// Health check endpoint
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
 // ==========================================
@@ -103,6 +153,9 @@ app.post('/api/register-client', async (req, res) => {
       direction, parking, remark, submittedBy
     } = req.body;
 
+    const formattedDate = getFormattedDate();
+
+    // 1. Format Telegram Message
     const message = 
 `👥 <b>ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY</b>
 ━━━━━━━━━━━━━━━━━━━━━
@@ -127,7 +180,7 @@ ${area}
 ✏️ សម្គាល់/ Remark: ${remark}
 ━━━━━━━━━━━━━━━━━━━━━
 <i>Submitted by: ${submittedBy}</i>
-<i>Date: ${getFormattedDate()}</i>`;
+<i>Date: ${formattedDate}</i>`;
 
     const telegramPayload = {
       chat_id: GROUP_CHAT_ID,
@@ -139,6 +192,7 @@ ${area}
       telegramPayload.message_thread_id = parseInt(CLIENT_TOPIC_ID, 10);
     }
 
+    // Send to Telegram
     const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -148,7 +202,30 @@ ${area}
     const data = await response.json();
     if (!data.ok) throw new Error(data.description);
 
-    res.status(200).json({ success: true });
+    const telegramMsgId = data.result ? data.result.message_id : '';
+
+    // 2. Save to Google Sheets
+    await appendToSheet('Client Inquiries', {
+      'Register Date': formattedDate,
+      'Name': name || '',
+      'Tel 1': tel1 || '',
+      'Tel 2': tel2 || '',
+      'Telegram': clientTelegram || '',
+      'Target': target || '',
+      'Property Type': propertyType || '',
+      'Price Rank': priceRank || '',
+      'Area': area || '',
+      'Building Size': buildingSize || '',
+      'Land Size': landSize || '',
+      'Bedrooms': bedrooms || '',
+      'Bathrooms': bathrooms || '',
+      'Direction': direction || '',
+      'Parking': parking || '',
+      'Remark': remark || '',
+      'Submitted By': submittedBy || ''
+    });
+
+    res.status(200).json({ success: true, messageId: telegramMsgId });
   } catch (error) {
     console.error('Error Client Form:', error.message);
     res.status(500).json({ success: false, error: error.message });
@@ -156,7 +233,7 @@ ${area}
 });
 
 // ==========================================
-// 2. PROPERTY LISTING ENDPOINT (WITH MEDIA CAPTION)
+// 2. PROPERTY LISTING ENDPOINT
 // ==========================================
 app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
   try {
@@ -166,6 +243,10 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       direction, parking, paymentTerm, deposit, contract, remark, submittedBy
     } = req.body;
 
+    const formattedDate = getFormattedDate();
+    const photoCount = req.files ? req.files.length : 0;
+
+    // 1. Format Telegram Message
     const message = 
 `🏠 <b>អចលនទ្រព្យថ្មី / NEW PROPERTY</b>
 ━━━━━━━━━━━━━━━━━━━━━
@@ -191,13 +272,15 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
 💵 ប្រាក់កក់/ Deposit: ${deposit || 'N/A'}
 📝 កុងត្រា/ Contract: ${contract || 'N/A'}
 ✏️ សម្គាល់/ Remark: ${remark || 'N/A'}
-🖼️ រូបភាពអចលនទ្រព្យ/ Pictures Attached: ${req.files ? req.files.length : 0}
+🖼️ រូបភាពអចលនទ្រព្យ/ Pictures Attached: ${photoCount}
 ━━━━━━━━━━━━━━━━━━━━━
 <i>Submitted by: ${submittedBy || 'N/A'}</i>
-<i>Date: ${getFormattedDate()}</i>`;
+<i>Date: ${formattedDate}</i>`;
 
     const topicThreadId = PROPERTY_TOPIC_ID ? parseInt(PROPERTY_TOPIC_ID, 10) : undefined;
+    let telegramMsgId = '';
 
+    // Send Media / Message to Telegram Group
     if (req.files && req.files.length > 0) {
       const formData = new FormData();
       formData.append('chat_id', GROUP_CHAT_ID);
@@ -224,6 +307,10 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       });
       const mediaData = await mediaRes.json();
       if (!mediaData.ok) throw new Error(mediaData.description);
+      
+      if (mediaData.result && mediaData.result.length > 0) {
+        telegramMsgId = mediaData.result[0].message_id;
+      }
 
     } else {
       const msgPayload = {
@@ -240,9 +327,38 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       });
       const summaryData = await summaryRes.json();
       if (!summaryData.ok) throw new Error(summaryData.description);
+
+      if (summaryData.result) {
+        telegramMsgId = summaryData.result.message_id;
+      }
     }
 
-    res.status(200).json({ success: true });
+    // 2. Save to Google Sheets
+    await appendToSheet('Property Listings', {
+      'Register Date': formattedDate,
+      'Owner Name': name || '',
+      'Tel 1': tel1 || '',
+      'Tel 2': tel2 || '',
+      'Telegram': clientTelegram || '',
+      'Target': target || '',
+      'Property Type': propertyType || '',
+      'Price': price || '',
+      'Location': location || '',
+      'Building Size': buildingSize || '',
+      'Land Size': landSize || '',
+      'Bedrooms': bedrooms || '',
+      'Bathrooms': bathrooms || '',
+      'Direction': direction || '',
+      'Parking': parking || '',
+      'Payment Term': paymentTerm || '',
+      'Deposit': deposit || '',
+      'Contract': contract || '',
+      'Remark': remark || '',
+      'Photos Count': photoCount,
+      'Submitted By': submittedBy || ''
+    });
+
+    res.status(200).json({ success: true, messageId: telegramMsgId });
   } catch (error) {
     console.error('Error Property Form:', error.message);
     res.status(500).json({ success: false, error: error.message });
