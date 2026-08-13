@@ -26,20 +26,97 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// CLEAN /start HANDLER (TEXT ONLY, NO INLINE BUTTONS)
+// UPDATED /start HANDLER (DIRECT PRIVATE CHAT REDIRECT)
 // ==========================================
-bot.onText(/\/start(@\w+)?/, (msg) => {
+bot.onText(/\/start(@\w+)?/, async (msg) => {
   const chatId = msg.chat.id;
+  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
+  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
+  
+  let botUsername = 'Twenty5RealtyBot';
+  try {
+    const botInfo = await bot.getMe();
+    botUsername = botInfo.username;
+  } catch (err) {
+    console.error('Error fetching bot username:', err.message);
+  }
 
-  const welcomeMessage = 
-`ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
+  // Handle deep-link parameters sent when user lands in private chat (/start client or /start property)
+  const text = msg.text || '';
+  const startParam = text.split(' ')[1];
 
-សូមចុចប៊ូតុង **Menu** (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើសទម្រង់បែបបទ៖
-• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
-• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
+  if (!isGroup && startParam === 'client') {
+    return bot.sendMessage(chatId, "សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើកទម្រង់បែបបទ៖", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { 
+              text: "🏠 បើកទម្រង់បែបបទភ្ញៀវ / Open Client Form", 
+              web_app: { url: `${baseUrl}/client.html` } 
+            }
+          ]
+        ]
+      }
+    });
+  }
+
+  if (!isGroup && startParam === 'property') {
+    return bot.sendMessage(chatId, "សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើកទម្រង់បែបបទ៖", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { 
+              text: "🏠 បើកទម្រង់បែបបទអចលនទ្រព្យ / Open Property Form", 
+              web_app: { url: `${baseUrl}/property.html` } 
+            }
+          ]
+        ]
+      }
+    });
+  }
+
+  let inlineKeyboard = [];
+
+  if (isGroup) {
+    // IN GROUP CHATS: Send deep-link buttons redirecting user to private chat
+    inlineKeyboard = [
+      [
+        {
+          text: "🏠 ចុះឈ្មោះភ្ញៀវ (បើកក្នុង Private Chat)",
+          url: `https://t.me/${botUsername}?start=client`
+        }
+      ],
+      [
+        {
+          text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ (បើកក្នុង Private Chat)",
+          url: `https://t.me/${botUsername}?start=property`
+        }
+      ]
+    ];
+  } else {
+    // IN PRIVATE CHAT: Send direct Telegram Web App buttons
+    inlineKeyboard = [
+      [
+        {
+          text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
+          web_app: { url: `${baseUrl}/client.html` }
+        }
+      ],
+      [
+        {
+          text: "🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
+          web_app: { url: `${baseUrl}/property.html` }
+        }
+      ]
+    ];
+  }
+
+  const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
 
   const options = {
-    parse_mode: 'Markdown'
+    reply_markup: {
+      inline_keyboard: inlineKeyboard
+    }
   };
 
   // Reply inside the specific topic thread if sent in a forum topic
