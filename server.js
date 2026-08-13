@@ -83,8 +83,8 @@ bot.onText(/\/start(@\w+)?/, async (msg) => {
 `ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
 
 សូមចុចប៊ូតុង **Menu** (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើស និងបើកទម្រង់បែបបទ៖
-• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
-• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
+• 👤 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
+• 🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
 
   bot.sendMessage(chatId, welcomePrivateMessage, { parse_mode: 'Markdown' });
 });
