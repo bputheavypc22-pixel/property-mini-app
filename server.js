@@ -39,12 +39,11 @@ function getFormattedDate() {
 }
 
 // ==========================================
-// /start COMMAND HANDLER (2-STEP REDIRECT FLOW)
+// /start COMMAND HANDLER
 // ==========================================
 bot.onText(/\/start(@\w+)?/, async (msg) => {
   const chatId = msg.chat.id;
   const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
-  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
 
   let botUsername = 'Twenty5RealtyBot';
   try {
@@ -79,32 +78,15 @@ bot.onText(/\/start(@\w+)?/, async (msg) => {
     return bot.sendMessage(chatId, groupMessage, groupOptions);
   }
 
-  // 2. IF IN PRIVATE CHAT: Send welcome message & direct Web App buttons
+  // 2. IF IN PRIVATE CHAT: Send ONLY welcome message + instructions (No buttons)
   const welcomePrivateMessage = 
 `ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
 
-សូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម ឬប្រើប្រាស់ប៊ូតុង Menu នៅជ្រុងខាងឆ្វេង៖`;
+សូមចុចប៊ូតុង **Menu** (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើស និងបើកទម្រង់បែបបទ៖
+• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
+• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
 
-  const privateOptions = {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
-            web_app: { url: `${baseUrl}/client.html` }
-          }
-        ],
-        [
-          {
-            text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
-            web_app: { url: `${baseUrl}/property.html` }
-          }
-        ]
-      ]
-    }
-  };
-
-  bot.sendMessage(chatId, welcomePrivateMessage, privateOptions);
+  bot.sendMessage(chatId, welcomePrivateMessage, { parse_mode: 'Markdown' });
 });
 
 // Health check endpoint for Render / UptimeRobot
