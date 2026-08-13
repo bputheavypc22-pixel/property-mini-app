@@ -25,111 +25,6 @@ const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ==========================================
-// UPDATED /start HANDLER (DIRECT PRIVATE CHAT REDIRECT)
-// ==========================================
-bot.onText(/\/start(@\w+)?/, async (msg) => {
-  const chatId = msg.chat.id;
-  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
-  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
-  
-  let botUsername = 'Twenty5RealtyBot';
-  try {
-    const botInfo = await bot.getMe();
-    botUsername = botInfo.username;
-  } catch (err) {
-    console.error('Error fetching bot username:', err.message);
-  }
-
-  // Handle deep-link parameters sent when user lands in private chat (/start client or /start property)
-  const text = msg.text || '';
-  const startParam = text.split(' ')[1];
-
-  if (!isGroup && startParam === 'client') {
-    return bot.sendMessage(chatId, "សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើកទម្រង់បែបបទ៖", {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { 
-              text: "🏠 បើកទម្រង់បែបបទភ្ញៀវ / Open Client Form", 
-              web_app: { url: `${baseUrl}/client.html` } 
-            }
-          ]
-        ]
-      }
-    });
-  }
-
-  if (!isGroup && startParam === 'property') {
-    return bot.sendMessage(chatId, "សូមចុចប៊ូតុងខាងក្រោមដើម្បីបើកទម្រង់បែបបទ៖", {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { 
-              text: "🏠 បើកទម្រង់បែបបទអចលនទ្រព្យ / Open Property Form", 
-              web_app: { url: `${baseUrl}/property.html` } 
-            }
-          ]
-        ]
-      }
-    });
-  }
-
-  let inlineKeyboard = [];
-
-  if (isGroup) {
-    // IN GROUP CHATS: Send deep-link buttons redirecting user to private chat
-    inlineKeyboard = [
-      [
-        {
-          text: "🏠 ចុះឈ្មោះភ្ញៀវ (បើកក្នុង Private Chat)",
-          url: `https://t.me/${botUsername}?start=client`
-        }
-      ],
-      [
-        {
-          text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ (បើកក្នុង Private Chat)",
-          url: `https://t.me/${botUsername}?start=property`
-        }
-      ]
-    ];
-  } else {
-    // IN PRIVATE CHAT: Send direct Telegram Web App buttons
-    inlineKeyboard = [
-      [
-        {
-          text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
-          web_app: { url: `${baseUrl}/client.html` }
-        }
-      ],
-      [
-        {
-          text: "🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
-          web_app: { url: `${baseUrl}/property.html` }
-        }
-      ]
-    ];
-  }
-
-  const welcomeMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty🙏\nសូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម៖";
-
-  const options = {
-    reply_markup: {
-      inline_keyboard: inlineKeyboard
-    }
-  };
-
-  // Reply inside the specific topic thread if sent in a forum topic
-  if (msg.message_thread_id) {
-    options.message_thread_id = msg.message_thread_id;
-  }
-
-  bot.sendMessage(chatId, welcomeMessage, options);
-});
-
-// Health check endpoint for Render / UptimeRobot
-app.get('/health', (req, res) => res.status(200).send('OK'));
-
 // Helper function to format Cambodia local time
 function getFormattedDate() {
   return new Date().toLocaleString('en-US', {
@@ -142,6 +37,78 @@ function getFormattedDate() {
     hour12: true
   });
 }
+
+// ==========================================
+// /start COMMAND HANDLER (2-STEP REDIRECT FLOW)
+// ==========================================
+bot.onText(/\/start(@\w+)?/, async (msg) => {
+  const chatId = msg.chat.id;
+  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
+  const baseUrl = `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'your-app-name.onrender.com'}`;
+
+  let botUsername = 'Twenty5RealtyBot';
+  try {
+    const botInfo = await bot.getMe();
+    botUsername = botInfo.username;
+  } catch (err) {
+    console.error('Error fetching bot username:', err.message);
+  }
+
+  // 1. IF IN GROUP: Reply with 1 inline redirect button
+  if (isGroup) {
+    const groupMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏\nសូមចុចប៊ូតុងខាងក្រោមដើម្បីចូលទៅបំពេញទម្រង់បែបបទ៖";
+    
+    const groupOptions = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "👉 ចុចដើម្បីចូលទៅបំពេញពាក្យ / Click to direct to the form",
+              url: `https://t.me/${botUsername}?start=welcome`
+            }
+          ]
+        ]
+      }
+    };
+
+    // Reply in specific topic thread if inside a group topic
+    if (msg.message_thread_id) {
+      groupOptions.message_thread_id = msg.message_thread_id;
+    }
+
+    return bot.sendMessage(chatId, groupMessage, groupOptions);
+  }
+
+  // 2. IF IN PRIVATE CHAT: Send welcome message & direct Web App buttons
+  const welcomePrivateMessage = 
+`ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
+
+សូមជ្រើសរើសទម្រង់បែបបទខាងក្រោម ឬប្រើប្រាស់ប៊ូតុង Menu នៅជ្រុងខាងឆ្វេង៖`;
+
+  const privateOptions = {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry",
+            web_app: { url: `${baseUrl}/client.html` }
+          }
+        ],
+        [
+          {
+            text: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing",
+            web_app: { url: `${baseUrl}/property.html` }
+          }
+        ]
+      ]
+    }
+  };
+
+  bot.sendMessage(chatId, welcomePrivateMessage, privateOptions);
+});
+
+// Health check endpoint for Render / UptimeRobot
+app.get('/health', (req, res) => res.status(200).send('OK'));
 
 // ==========================================
 // 1. CLIENT INQUIRY ENDPOINT
