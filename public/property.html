@@ -127,26 +127,43 @@
       min-height: 70px;
     }
 
-    /* Map UI Styling */
-    .map-btn {
-      margin-top: 6px;
-      width: 100%;
-      padding: 8px 12px;
+    /* Map Input & Compact Button Layout */
+    .map-input-wrapper {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .map-input-wrapper input {
+      flex: 1;
+    }
+    .btn-gps-small {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 9px 10px;
       background-color: #e0f2fe;
       color: #0284c7;
       border: 1px solid #bae6fd;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      height: 38px;
+    }
+    .btn-gps-small:hover {
+      background-color: #bae6fd;
+    }
+    .map-notice {
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 4px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .map-btn:hover {
-      background-color: #bae6fd;
+      gap: 4px;
     }
     .map-container {
       display: none;
@@ -154,7 +171,7 @@
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid #cbd5e1;
-      height: 200px;
+      height: 180px;
       background: #f1f5f9;
     }
     .map-container iframe {
@@ -235,6 +252,7 @@
     </div>
 
     <form id="listingForm">
+      <!-- Owner Info -->
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
@@ -257,6 +275,7 @@
         <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
       </div>
 
+      <!-- Property Details -->
       <div class="section-title" id="sec-details">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
 
       <div class="form-group">
@@ -291,10 +310,18 @@
         <input type="text" id="location" required data-ph-km="ឧ. សង្កាត់ទួលសង្កែ, ខណ្ឌឫស្សីកែវ" data-ph-en="e.g. Toul Sangke, Russey Keo">
       </div>
 
+      <!-- Required Google Map Link Field -->
       <div class="form-group">
-        <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link)</label>
-        <input type="url" id="mapLink" data-ph-km="https://maps.app.goo.gl/..." data-ph-en="https://maps.app.goo.gl/..." oninput="previewMap()">
-        <button type="button" class="map-btn" onclick="previewMap()" id="btn-previewMap">📍 ពិនិត្យមើលទីតាំងលើផែនទី</button>
+        <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link) *</label>
+        <div class="map-input-wrapper">
+          <input type="url" id="mapLink" required data-ph-km="https://maps.app.goo.gl/..." data-ph-en="https://maps.app.goo.gl/..." oninput="previewMap()">
+          <a href="https://maps.google.com" target="_blank" class="btn-gps-small" id="btn-openMap">
+            📍 Google Maps
+          </a>
+        </div>
+        <div class="map-notice" id="notice-mapLink">
+          * សូមបញ្ចូល/ចម្លងលីង Google Maps ទីតាំងអចលនទ្រព្យដើម្បីបន្ត!
+        </div>
         <div id="map-container" class="map-container">
           <iframe id="map-iframe" src="" allowfullscreen="" loading="lazy"></iframe>
         </div>
@@ -354,6 +381,7 @@
         <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
       </div>
 
+      <!-- Property Images Upload -->
       <div class="form-group">
         <label id="lbl-images">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *</label>
         
@@ -398,8 +426,9 @@
         optBusiness: "អាជីវកម្ម",
         lblPrice: "តម្លៃ ($) *",
         lblLocation: "ទីតាំង / អាសយដ្ឋាន *",
-        lblMapLink: "📍 លីង Google Maps (Google Maps Link)",
-        btnPreviewMap: "📍 ពិនិត្យមើលទីតាំងលើផែនទី",
+        lblMapLink: "📍 លីង Google Maps (Google Maps Link) *",
+        noticeMapLink: "⚠️ សូមបញ្ជូល/ចម្លងលីង Google Maps ទីតាំងអចលនទ្រព្យដើម្បីបន្ត!",
+        btnOpenMap: "📍 Google Maps",
         lblLandSize: "ទំហំដី",
         lblHouseSize: "ទំហំផ្ទះ",
         lblBedrooms: "បន្ទប់គេង",
@@ -445,8 +474,9 @@
         optBusiness: "Business",
         lblPrice: "Price ($) *",
         lblLocation: "Location / Address *",
-        lblMapLink: "📍 Google Maps Link",
-        btnPreviewMap: "📍 Check Location on Map",
+        lblMapLink: "📍 Google Maps Link *",
+        noticeMapLink: "⚠️ Please paste Google Maps link to submit!",
+        btnOpenMap: "📍 Google Maps",
         lblLandSize: "Land Size",
         lblHouseSize: "House Size",
         lblBedrooms: "Bedrooms",
@@ -507,7 +537,8 @@
       document.getElementById('lbl-price').textContent = t.lblPrice;
       document.getElementById('lbl-location').textContent = t.lblLocation;
       document.getElementById('lbl-mapLink').textContent = t.lblMapLink;
-      document.getElementById('btn-previewMap').textContent = t.btnPreviewMap;
+      document.getElementById('notice-mapLink').textContent = t.noticeMapLink;
+      document.getElementById('btn-openMap').textContent = t.btnOpenMap;
       
       document.getElementById('lbl-landSize').textContent = t.lblLandSize;
       document.getElementById('lbl-houseSize').textContent = t.lblHouseSize;
@@ -555,15 +586,7 @@
         return;
       }
 
-      // Convert standard maps query or embed if possible
-      let embedUrl = '';
-      if (url.includes('google.com/maps')) {
-        embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
-      } else {
-        // Fallback search preview for links or query
-        embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
-      }
-
+      let embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
       iframe.src = embedUrl;
       container.style.display = 'block';
     }
