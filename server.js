@@ -5,11 +5,16 @@ const path = require('path');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Environment configuration variables
+// Environment configuration variables matching your Render dashboard
 const PORT = process.env.PORT || 3000;
-const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
-const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID'; // e.g., -1001234567890
-const TOPIC_ID = process.env.TOPIC_ID || null; // Topic thread ID (optional)
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+
+// Ensure CHAT_ID and TOPIC_ID are correctly parsed
+const RAW_CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+const CHAT_ID = RAW_CHAT_ID && !isNaN(RAW_CHAT_ID) ? Number(RAW_CHAT_ID) : RAW_CHAT_ID;
+
+const RAW_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
+const TOPIC_ID = RAW_TOPIC_ID && !isNaN(RAW_TOPIC_ID) ? Number(RAW_TOPIC_ID) : null;
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -113,7 +118,7 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
         parse_mode: 'HTML',
         disable_web_page_preview: false
       };
-      if (TOPIC_ID) payload.message_thread_id = Number(TOPIC_ID);
+      if (TOPIC_ID) payload.message_thread_id = TOPIC_ID;
 
       const resp = await fetch(telegramUrl, {
         method: 'POST',
@@ -122,12 +127,15 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       });
       const resJson = await resp.json();
 
-      if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
+      if (!resJson.ok) {
+        console.error('Telegram API Error Response:', resJson);
+        throw new Error(resJson.description || 'Telegram API Error');
+      }
     } else if (files.length === 1) {
-      // Send single photo with caption using native FormData & Blob
+      // Send single photo with caption
       const form = new FormData();
-      form.append('chat_id', CHAT_ID);
-      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID);
+      form.append('chat_id', CHAT_ID.toString());
+      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID.toString());
       form.append('caption', messageText);
       form.append('parse_mode', 'HTML');
 
@@ -140,9 +148,12 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       });
       const resJson = await resp.json();
 
-      if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
+      if (!resJson.ok) {
+        console.error('Telegram API Error Response:', resJson);
+        throw new Error(resJson.description || 'Telegram API Error');
+      }
     } else {
-      // Send multiple photos as a Media Group using native FormData & Blob
+      // Send multiple photos as a Media Group
       const mediaGroup = files.map((file, idx) => ({
         type: 'photo',
         media: `attach://file_${idx}`,
@@ -151,8 +162,8 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       }));
 
       const form = new FormData();
-      form.append('chat_id', CHAT_ID);
-      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID);
+      form.append('chat_id', CHAT_ID.toString());
+      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID.toString());
       form.append('media', JSON.stringify(mediaGroup));
 
       files.forEach((file, idx) => {
@@ -166,7 +177,10 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       });
       const resJson = await resp.json();
 
-      if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
+      if (!resJson.ok) {
+        console.error('Telegram API Error Response:', resJson);
+        throw new Error(resJson.description || 'Telegram API Error');
+      }
     }
 
     res.json({ success: true, message: 'Property listed successfully!' });
