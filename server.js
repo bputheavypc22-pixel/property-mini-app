@@ -1,17 +1,23 @@
 const express = require('express');
 const path = require('path');
 const TelegramBot = require('node-telegram-bot-api');
+const multer = require('multer');
 
 const app = express();
+
+// Set up Multer for handling multipart/form-data file uploads in memory
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
+});
 
 // ==========================================
 // 1. MIDDLEWARE CONFIGURATION
 // ==========================================
-// Increase body limit to 50mb to handle property image uploads safely
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Serve static frontend files (HTML, CSS, Client JS) from the 'public' directory
+// Serve static frontend files from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -26,10 +32,8 @@ const clientTopicId = process.env.CLIENT_TOPIC_ID;
 let bot;
 
 if (botToken) {
-  // Initialize Telegram Bot with polling for commands like /start
   bot = new TelegramBot(botToken, { polling: true });
 
-  // Handle /start command
   bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const welcomeText = 
@@ -47,20 +51,31 @@ if (botToken) {
   console.warn('⚠️ TELEGRAM_BOT_TOKEN environment variable is missing!');
 }
 
-
-// Helper function to send messages to specific forum topic threads
+// Helper function to send text messages
 async function sendTelegramMessage(text, topicId) {
-  if (!bot || !groupId) {
-    console.warn('⚠️ Cannot send message: Bot token or TELEGRAM_GROUP_ID is missing.');
-    return;
-  }
-
+  if (!bot || !groupId) return;
   const options = { parse_mode: 'HTML' };
-  if (topicId) {
-    options.message_thread_id = parseInt(topicId, 10);
-  }
+  if (topicId) options.message_thread_id = parseInt(topicId, 10);
 
   await bot.sendMessage(groupId, text, options);
+}
+
+// Helper function to send photos
+async function sendTelegramPhotos(files, topicId) {
+  if (!bot || !groupId || !files || files.length === 0) return;
+
+  const options = {};
+  if (topicId) options.message_thread_id = parseInt(topicId, 10);
+
+  if (files.length === 1) {
+    await bot.sendPhoto(groupId, files[0].buffer, options);
+  } else {
+    const mediaGroup = files.slice(0, 10).map((file) => ({
+      type: 'photo',
+      media: file.buffer
+    }));
+    await bot.sendMediaGroup(groupId, mediaGroup, options);
+  }
 }
 
 
@@ -68,37 +83,53 @@ async function sendTelegramMessage(text, topicId) {
 // 3. API ENDPOINTS
 // ==========================================
 
-// --- Property Listing Handler ---
-const handlePropertySubmission = async (req, res) => {
+// --- Property Registration Endpoint (Handles FormData + Multiple Photos) ---
+app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
+    const files = req.files;
 
     const message = `
 <b>🏰 NEW PROPERTY LISTING</b>
 --------------------------------
-<b>🏷 Title / Type:</b> ${data.title || data.propertyType || data.type || 'N/A'}
-<b>📍 Location:</b> ${data.location || data.preferredLocation || 'N/A'}
+<b>👤 Owner Name:</b> ${data.name || 'N/A'}
+<b>📞 Phone 1:</b> ${data.tel1 || 'N/A'}
+<b>📞 Phone 2:</b> ${data.tel2 || 'N/A'}
+<b>💬 Owner Telegram:</b> ${data.clientTelegram || 'N/A'}
+
+<b>🎯 Target:</b> ${data.target || 'N/A'}
+<b>🏠 Property Type:</b> ${data.propertyType || 'N/A'}
 <b>💰 Price:</b> ${data.price || 'N/A'}
-<b>📞 Contact:</b> ${data.contact || data.tel1 || 'N/A'}
-<b>📝 Details:</b> ${data.details || data.remark || 'N/A'}
+<b>📍 Location Link:</b> ${data.location || 'N/A'}
+<b>🏢 Building Size:</b> ${data.buildingSize || 'N/A'}
+<b>📐 Land Size:</b> ${data.landSize || 'N/A'}
+<b>🛏 Bedrooms:</b> ${data.bedrooms || 'N/A'}
+<b>🚿 Bathrooms:</b> ${data.bathrooms || 'N/A'}
+<b>🧭 Direction:</b> ${data.direction || 'N/A'}
+<b>🚗 Parking:</b> ${data.parking || 'N/A'}
+
+<b>💳 Payment Term:</b> ${data.paymentTerm || 'N/A'}
+<b>💵 Deposit:</b> ${data.deposit || 'N/A'}
+<b>📜 Contract:</b> ${data.contract || 'N/A'}
+<b>📝 Remark:</b> ${data.remark || 'N/A'}
+
 <b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
     `.trim();
 
+    // 1. Send text details to Telegram topic
     await sendTelegramMessage(message, propertyTopicId);
 
-    return res.status(200).json({ success: true, message: 'Property listing submitted successfully!' });
+    // 2. Send property photo attachments to Telegram topic
+    if (files && files.length > 0) {
+      await sendTelegramPhotos(files, propertyTopicId);
+    }
+
+    return res.status(200).json({ success: true, message: 'Property registered successfully!' });
   } catch (error) {
     console.error('Error submitting property listing:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
-};
-
-// Route aliases to catch whichever URL path your frontend property form uses
-app.post('/api/property-listing', handlePropertySubmission);
-app.post('/api/property', handlePropertySubmission);
-app.post('/api/properties', handlePropertySubmission);
-app.post('/api/submit-property', handlePropertySubmission);
-app.post('/api/add-property', handlePropertySubmission);
+});
 
 
 // --- Client Inquiry Endpoint ---
@@ -142,12 +173,10 @@ app.post('/api/client-inquiry', async (req, res) => {
 // ==========================================
 // 4. FALLBACK & ROUTING
 // ==========================================
-// Catch-all API 404 handler for unmatched routes
 app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, error: 'API route not found.' });
 });
 
-// Serve index.html for root path
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
