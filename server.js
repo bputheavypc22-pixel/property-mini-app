@@ -1,217 +1,180 @@
 const express = require('express');
-const path = require('path');
-const TelegramBot = require('node-telegram-bot-api');
 const multer = require('multer');
+const FormData = require('form-data');
+const fetch = require('node-fetch');
+const path = require('path');
 
 const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
 
-// Set up Multer for handling multipart/form-data file uploads in memory
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
-});
+// Configuration variables
+const PORT = process.env.PORT || 3000;
+const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
+const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID'; // e.g., -1001234567890
+const TOPIC_ID = process.env.TOPIC_ID || null; // Topic thread ID (optional)
 
-// ==========================================
-// 1. MIDDLEWARE CONFIGURATION
-// ==========================================
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// Serve static frontend files from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+/**
+ * Formats all submitted property form data into an HTML summary card for Telegram.
+ */
+function generatePropertyTelegramCard(data) {
+  let card = `<b>🏠 NEW PROPERTY LISTING SUBMITTED</b>\n\n`;
 
-// ==========================================
-// 2. ENVIRONMENT VARIABLES & BOT SETUP
-// ==========================================
-const botToken = process.env.TELEGRAM_BOT_TOKEN;
-const groupId = process.env.TELEGRAM_GROUP_ID;
-const propertyTopicId = process.env.PROPERTY_TOPIC_ID;
-const clientTopicId = process.env.CLIENT_TOPIC_ID;
-
-let bot;
-
-if (botToken) {
-  bot = new TelegramBot(botToken, { polling: true });
-
-  bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    const welcomeText = 
-`ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
-
-សូមចុចប៊ូតុង Menu (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើស និងបើកទម្រង់បែបបទ៖
-• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
-• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
-
-    bot.sendMessage(chatId, welcomeText);
-  });
-
-  console.log('🤖 Telegram Bot listener initialized successfully.');
-} else {
-  console.warn('⚠️ TELEGRAM_BOT_TOKEN environment variable is missing!');
-}
-
-
-// ==========================================
-// 3. HELPER FUNCTIONS
-// ==========================================
-
-// Format property message caption (Bilingual Khmer/English matching sample design)
-function formatPropertyCaption(data) {
-  return `
-<b>🏘️ អចលនទ្រព្យថ្មី / NEW PROPERTY</b>
-<b>━━━━━━━━━━━━━━━━━━━━━</b>
-<b>👤 ម្ចាស់អចលនទ្រព្យ / Property Owner</b>
-  <b>ឈ្មោះ / Name:</b> ${data.name || 'N/A'}
-  <b>Tel1:</b> ${data.tel1 || 'N/A'}
-  <b>Tel2:</b> ${data.tel2 || 'N/A'}
-💬 <b>Telegram:</b> ${data.clientTelegram || 'N/A'}
-<b>━━━━━━━━━━━━━━━━━━━━━</b>
-🎯 <b>គោលបំណង / Target:</b> ${data.target || 'N/A'}
-<b>━━━━━━━━━━━━━━━━━━━━━</b>
-🏢 <b>ប្រភេទ / Type:</b> ${data.propertyType || 'N/A'}
-💰 <b>តម្លៃ / Price:</b> ${data.price || 'N/A'}
-📍 <b>ទីតាំង / Location:</b> ${data.location || 'N/A'}
-🏢 <b>ទំហំអគារ / Building Size:</b> ${data.buildingSize || 'N/A'}
-📐 <b>ទំហំដី / Land Size:</b> ${data.landSize || 'N/A'}
-🛏️ <b>បន្ទប់គេង / Bedrooms:</b> ${data.bedrooms || 'N/A'}
-🚿 <b>បន្ទប់ទឹក / Bathrooms:</b> ${data.bathrooms || 'N/A'}
-🧭 <b>ទិស / Direction:</b> ${data.direction || 'N/A'}
-🅿️ <b>ទីធ្លាចំណត / Parking Space:</b> ${data.parking || 'N/A'}
-<b>━━━━━━━━━━━━━━━━━━━━━</b>
-💳 <b>ការបង់ប្រាក់ / Payment Term:</b> ${data.paymentTerm || 'N/A'}
-💵 <b>ប្រាក់កក់ / Deposit:</b> ${data.deposit || 'N/A'}
-📜 <b>កុងត្រា / Contract:</b> ${data.contract || 'N/A'}
-📝 <b>សម្គាល់ / Remark:</b> ${data.remark || 'N/A'}
-<b>━━━━━━━━━━━━━━━━━━━━━</b>
-👤 <b>Submitted By:</b> ${data.submittedBy || 'N/A'}
-  `.trim();
-}
-
-// Helper function to send simple text messages
-async function sendTelegramMessage(text, topicId) {
-  if (!bot || !groupId) return;
-  const options = { parse_mode: 'HTML' };
-  if (topicId) options.message_thread_id = parseInt(topicId, 10);
-
-  await bot.sendMessage(groupId, text, options);
-}
-
-// Helper function to send photos grid with formatted caption underneath
-async function sendTelegramPhotosWithCaption(files, messageText, topicId) {
-  if (!bot || !groupId || !files || files.length === 0) return;
-
-  const options = {};
-  if (topicId) options.message_thread_id = parseInt(topicId, 10);
-
-  if (files.length === 1) {
-    // Single Photo + Caption
-    await bot.sendPhoto(groupId, files[0].buffer, {
-      ...options,
-      caption: messageText,
-      parse_mode: 'HTML'
-    });
-  } else {
-    // Media Album + Caption attached to the first image
-    const mediaGroup = files.slice(0, 10).map((file, index) => {
-      const mediaItem = {
-        type: 'photo',
-        media: file.buffer
-      };
-
-      if (index === 0) {
-        mediaItem.caption = messageText;
-        mediaItem.parse_mode = 'HTML';
-      }
-
-      return mediaItem;
-    });
-
-    await bot.sendMediaGroup(groupId, mediaGroup, options);
+  // --- Owner Information ---
+  card += `<b>👤 OWNER INFORMATION</b>\n`;
+  card += `• <b>Name:</b> ${data.ownerName || 'N/A'}\n`;
+  card += `• <b>Phone 1:</b> ${data.tel1 || 'N/A'}\n`;
+  if (data.tel2) {
+    card += `• <b>Phone 2:</b> ${data.tel2}\n`;
   }
+  if (data.telegram) {
+    card += `• <b>Telegram:</b> ${data.telegram}\n`;
+  }
+
+  // --- Property Core Details ---
+  card += `\n<b>📌 PROPERTY DETAILS</b>\n`;
+  card += `• <b>Purpose:</b> ${data.listingType || 'N/A'}\n`;
+  card += `• <b>Type:</b> ${data.propertyType || 'N/A'}\n`;
+  card += `• <b>Price:</b> $${data.price ? Number(data.price).toLocaleString() : 'N/A'}\n`;
+  card += `• <b>Location:</b> ${data.location || 'N/A'}\n`;
+  if (data.mapLink) {
+    card += `• <b>Google Maps:</b> <a href="${data.mapLink}">View Location</a>\n`;
+  }
+
+  // --- Dimensions & Specifications ---
+  const dimensions = [];
+  if (data.landSize) dimensions.push(`<b>Land:</b> ${data.landSize}`);
+  if (data.houseSize) dimensions.push(`<b>House:</b> ${data.houseSize}`);
+  if (data.frontSpace) dimensions.push(`<b>Front:</b> ${data.frontSpace}`);
+  if (data.backSpace) dimensions.push(`<b>Back:</b> ${data.backSpace}`);
+
+  if (dimensions.length > 0) {
+    card += `\n<b>📐 SPECIFICATIONS</b>\n`;
+    dimensions.forEach(dim => {
+      card += `• ${dim}\n`;
+    });
+  }
+
+  // --- Features & Direction ---
+  const specs = [];
+  if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') specs.push(`🛏️ ${data.bedrooms} Bed`);
+  if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') specs.push(`🚿 ${data.bathrooms} Bath`);
+  if (data.direction && data.direction !== 'មិនកំណត់') specs.push(`🧭 ${data.direction}`);
+
+  if (specs.length > 0) {
+    card += `• <b>Features:</b> ${specs.join(' | ')}\n`;
+  }
+
+  // --- Rental Terms (Conditional) ---
+  const isRent = data.listingType === 'ជួល' || data.listingType === 'For Rent';
+  if (isRent) {
+    card += `\n<b>🔑 RENTAL TERMS</b>\n`;
+    if (data.deposit) card += `• <b>Deposit:</b> ${data.deposit}\n`;
+    if (data.rentFee) card += `• <b>Payment:</b> ${data.rentFee}\n`;
+    if (data.contract) card += `• <b>Contract:</b> ${data.contract}\n`;
+  }
+
+  // --- Property Certificate / Title (Conditional for Sale) ---
+  const isSale = data.listingType === 'លក់' || data.listingType === 'For Sale';
+  if (isSale && data.certificate) {
+    card += `\n<b>📜 LEGAL & TITLE</b>\n`;
+    card += `• <b>Certificate:</b> ${data.certificate}\n`;
+  }
+
+  // --- Additional Notes ---
+  if (data.description) {
+    card += `\n<b>📝 ADDITIONAL NOTES</b>\n`;
+    card += `${data.description}\n`;
+  }
+
+  // --- Submitter Info ---
+  if (data.submittedBy) {
+    card += `\n<b>📥 SUBMITTED BY</b>\n`;
+    card += `• ${data.submittedBy}\n`;
+  }
+
+  return card;
 }
 
-
-// ==========================================
-// 4. API ENDPOINTS
-// ==========================================
-
-// --- Property Registration Endpoint ---
+// API Route for Property Registration
 app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
-    const files = req.files;
+    const files = req.files || [];
+    const messageText = generatePropertyTelegramCard(data);
 
-    const messageText = formatPropertyCaption(data);
+    if (files.length === 0) {
+      // Send text message directly if no photos provided
+      const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      const payload = {
+        chat_id: CHAT_ID,
+        text: messageText,
+        parse_mode: 'HTML',
+        disable_web_page_preview: false
+      };
+      if (TOPIC_ID) payload.message_thread_id = Number(TOPIC_ID);
 
-    if (files && files.length > 0) {
-      await sendTelegramPhotosWithCaption(files, messageText, propertyTopicId);
+      const resp = await fetch(telegramUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const resJson = await resp.json();
+
+      if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
+    } else if (files.length === 1) {
+      // Send single photo with caption
+      const form = new FormData();
+      form.append('chat_id', CHAT_ID);
+      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID);
+      form.append('caption', messageText);
+      form.append('parse_mode', 'HTML');
+      form.append('photo', files[0].buffer, { filename: files[0].originalname });
+
+      const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+        method: 'POST',
+        body: form
+      });
+      const resJson = await resp.json();
+
+      if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
     } else {
-      await sendTelegramMessage(messageText, propertyTopicId);
+      // Send multiple photos as a Media Group
+      const mediaGroup = files.map((file, idx) => ({
+        type: 'photo',
+        media: `attach://file_${idx}`,
+        caption: idx === 0 ? messageText : '',
+        parse_mode: 'HTML'
+      }));
+
+      const form = new FormData();
+      form.append('chat_id', CHAT_ID);
+      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID);
+      form.append('media', JSON.stringify(mediaGroup));
+
+      files.forEach((file, idx) => {
+        form.append(`file_${idx}`, file.buffer, { filename: file.originalname });
+      });
+
+      const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
+        method: 'POST',
+        body: form
+      });
+      const resJson = await resp.json();
+
+      if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
     }
 
-    return res.status(200).json({ success: true, message: 'Property registered successfully!' });
+    res.json({ success: true, message: 'Property listed successfully!' });
   } catch (error) {
-    console.error('Error submitting property listing:', error);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error('Error submitting property:', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-
-// --- Client Inquiry Endpoint ---
-app.post('/api/client-inquiry', async (req, res) => {
-  try {
-    const data = req.body;
-
-    const message = `
-<b>🔍 NEW CLIENT INQUIRY</b>
---------------------------------
-<b>👤 Name:</b> ${data.name || 'N/A'}
-<b>📞 Phone 1:</b> ${data.tel1 || 'N/A'}
-<b>📞 Phone 2:</b> ${data.tel2 || 'N/A'}
-<b>💬 Telegram:</b> ${data.clientTelegram || 'N/A'}
-
-<b>🎯 Looking For:</b> ${data.target || 'N/A'}
-<b>🏠 Property Type:</b> ${data.propertyType || 'N/A'}
-<b>💰 Budget:</b> ${data.budget || 'N/A'}
-<b>📍 Preferred Location:</b> ${data.preferredLocation || 'N/A'}
-<b>🏢 Building Size:</b> ${data.buildingSize || 'N/A'}
-<b>📐 Land Size:</b> ${data.landSize || 'N/A'}
-<b>🛏 Bedrooms:</b> ${data.bedrooms || 'N/A'}
-<b>🚿 Bathrooms:</b> ${data.bathrooms || 'N/A'}
-<b>🧭 Direction:</b> ${data.direction || 'N/A'}
-<b>⚡ Urgency Level:</b> ${data.urgentLevel || 'N/A'}
-<b>📝 Remark:</b> ${data.remark || 'N/A'}
-
-<b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
-    `.trim();
-
-    await sendTelegramMessage(message, clientTopicId);
-
-    return res.status(200).json({ success: true, message: 'Client inquiry submitted successfully!' });
-  } catch (error) {
-    console.error('Error submitting client inquiry:', error);
-    return res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-
-// ==========================================
-// 5. FALLBACK & ROUTING
-// ==========================================
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ success: false, error: 'API route not found.' });
-});
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-
-// ==========================================
-// 6. SERVER INITIALIZATION
-// ==========================================
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
