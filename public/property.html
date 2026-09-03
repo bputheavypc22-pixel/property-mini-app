@@ -337,6 +337,18 @@
         <input type="text" id="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
       </div>
 
+      <!-- Front Space Field -->
+      <div class="form-group">
+        <label id="lbl-frontSpace">សល់មុខផ្ទះ (Front Space)</label>
+        <input type="text" id="frontSpace" data-ph-km="ឧ. សល់មុខ 5m" data-ph-en="e.g. 5m front yard">
+      </div>
+
+      <!-- Back Space Field -->
+      <div class="form-group">
+        <label id="lbl-backSpace">សល់ក្រោយផ្ទះ (Back Space)</label>
+        <input type="text" id="backSpace" data-ph-km="ឧ. សល់ក្រោយ 2m" data-ph-en="e.g. 2m back yard">
+      </div>
+
       <div class="form-group">
         <label id="lbl-bedrooms">បន្ទប់គេង</label>
         <select id="bedrooms">
@@ -427,10 +439,12 @@
         lblPrice: "តម្លៃ ($) *",
         lblLocation: "ទីតាំង / អាសយដ្ឋាន *",
         lblMapLink: "📍 លីង Google Maps (Google Maps Link) *",
-        noticeMapLink: "⚠️ សូមបញ្ជូល/ចម្លងលីង Google Maps ទីតាំងអចលនទ្រព្យដើម្បីបន្ត!",
+        noticeMapLink: "⚠️ សូមបញ្ចូល/ចម្លងលីង Google Maps ទីតាំងអចលនទ្រព្យដើម្បីបន្ត!",
         btnOpenMap: "📍 Google Maps",
         lblLandSize: "ទំហំដី",
         lblHouseSize: "ទំហំផ្ទះ",
+        lblFrontSpace: "សល់មុខផ្ទះ (Front Space)",
+        lblBackSpace: "សល់ក្រោយផ្ទះ (Back Space)",
         lblBedrooms: "បន្ទប់គេង",
         lblBathrooms: "បន្ទប់ទឹក",
         lblDirection: "ទិស",
@@ -479,6 +493,8 @@
         btnOpenMap: "📍 Google Maps",
         lblLandSize: "Land Size",
         lblHouseSize: "House Size",
+        lblFrontSpace: "Front Space",
+        lblBackSpace: "Back Space",
         lblBedrooms: "Bedrooms",
         lblBathrooms: "Bathrooms",
         lblDirection: "Direction",
@@ -542,6 +558,8 @@
       
       document.getElementById('lbl-landSize').textContent = t.lblLandSize;
       document.getElementById('lbl-houseSize').textContent = t.lblHouseSize;
+      document.getElementById('lbl-frontSpace').textContent = t.lblFrontSpace;
+      document.getElementById('lbl-backSpace').textContent = t.lblBackSpace;
       
       document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
       document.getElementById('opt-bed-select').textContent = t.optSelect;
@@ -683,6 +701,8 @@
       formData.append('mapLink', document.getElementById('mapLink').value);
       formData.append('landSize', document.getElementById('landSize').value);
       formData.append('houseSize', document.getElementById('houseSize').value);
+      formData.append('frontSpace', document.getElementById('frontSpace').value);
+      formData.append('backSpace', document.getElementById('backSpace').value);
       formData.append('bedrooms', document.getElementById('bedrooms').value);
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
