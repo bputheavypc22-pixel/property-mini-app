@@ -1,174 +1,110 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Property Listing - Twenty5 Realty</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Property Listing</title>
   <style>
-    :root {
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-color: #333333;
-      --primary-color: #1a73e8;
-      --border-color: #cccccc;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 16px;
+      font-family: Arial, sans-serif;
+      margin: 20px;
     }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #111;
-    }
-
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 15px;
     }
-
     label {
       display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 14px;
+      margin-bottom: 5px;
     }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="tel"],
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
+      padding: 8px;
       box-sizing: border-box;
-      font-size: 14px;
-      background-color: #fff;
     }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--primary-color);
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 4px;
       cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .submit-btn:disabled {
-      background-color: #cccccc;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>🏰 ដាក់លក់/ជួល អចលនទ្រព្យ <br><small style="font-size: 14px; font-weight: normal;">Property Listing</small></h2>
+  <h2>Property Listing Form</h2>
 
-  <form id="propertyForm" enctype="multipart/form-data">
-    
-    <!-- Owner Information -->
+  <form id="propertyForm">
     <div class="form-group">
-      <label for="name">👤 ឈ្មោះម្ចាស់ / Owner Name</label>
-      <input type="text" id="name" name="name" required>
+      <label for="name">Owner Name:</label>
+      <input type="text" id="name" name="name" required />
     </div>
 
     <div class="form-group">
-      <label for="tel1">📞 លេខទូរស័ព្ទទី១ / Phone 1</label>
-      <input type="tel" id="tel1" name="tel1" required>
+      <label for="tel1">Phone 1:</label>
+      <input type="text" id="tel1" name="tel1" required />
     </div>
 
     <div class="form-group">
-      <label for="tel2">📞 លេខទូរស័ព្ទទី២ / Phone 2</label>
-      <input type="tel" id="tel2" name="tel2">
+      <label for="tel2">Phone 2:</label>
+      <input type="text" id="tel2" name="tel2" />
     </div>
 
     <div class="form-group">
-      <label for="clientTelegram">💬 Telegram ម្ចាស់ / Owner Telegram</label>
-      <input type="text" id="clientTelegram" name="clientTelegram" placeholder="https://t.me/username">
-    </div>
-
-    <hr>
-
-    <!-- Property Details -->
-    <div class="form-group">
-      <label for="target">🎯 គោលបំណង / Target</label>
-      <select id="target" name="target" required>
-        <option value="" disabled selected>Select Target</option>
-        <option value="លក់ / Sale">លក់ / Sale</option>
-        <option value="ជួល / Rent">ជួល / Rent</option>
-      </select>
+      <label for="clientTelegram">Owner Telegram:</label>
+      <input type="text" id="clientTelegram" name="clientTelegram" />
     </div>
 
     <div class="form-group">
-      <label for="propertyType">🏢 ប្រភេទអចលនទ្រព្យ / Property Type</label>
-      <input type="text" id="propertyType" name="propertyType" placeholder="e.g. Flat House, Villa, Condo" required>
+      <label for="target">Target:</label>
+      <input type="text" id="target" name="target" />
     </div>
 
     <div class="form-group">
-      <label for="price">💰 តម្លៃ / Price ($)</label>
-      <input type="text" id="price" name="price" required>
+      <label for="propertyType">Property Type:</label>
+      <input type="text" id="propertyType" name="propertyType" />
     </div>
 
     <div class="form-group">
-      <label for="location">📍 ទីតាំង / Location Link</label>
-      <input type="text" id="location" name="location" placeholder="Google Maps link">
+      <label for="price">Price:</label>
+      <input type="text" id="price" name="price" />
     </div>
 
     <div class="form-group">
-      <label for="buildingSize">🏢 ទំហំអគារ / Building Size</label>
-      <input type="text" id="buildingSize" name="buildingSize" placeholder="e.g. 4x12m">
+      <label for="location">Location Link:</label>
+      <input type="text" id="location" name="location" />
     </div>
 
     <div class="form-group">
-      <label for="landSize">📐 ទំហំដី / Land Size</label>
-      <input type="text" id="landSize" name="landSize" placeholder="e.g. 4x18m">
+      <label for="buildingSize">Building Size:</label>
+      <input type="text" id="buildingSize" name="buildingSize" />
     </div>
 
     <div class="form-group">
-      <label for="bedrooms">🛏️ បន្ទប់គេង / Bedrooms</label>
-      <input type="number" id="bedrooms" name="bedrooms">
+      <label for="landSize">Land Size:</label>
+      <input type="text" id="landSize" name="landSize" />
     </div>
 
     <div class="form-group">
-      <label for="bathrooms">🚿 បន្ទប់ទឹក / Bathrooms</label>
-      <input type="number" id="bathrooms" name="bathrooms">
+      <label for="bedrooms">Bedrooms:</label>
+      <input type="text" id="bedrooms" name="bedrooms" />
     </div>
 
     <div class="form-group">
-      <label for="direction">🧭 ទិស / Direction</label>
-      <input type="text" id="direction" name="direction" placeholder="e.g. កើត / East">
+      <label for="bathrooms">Bathrooms:</label>
+      <input type="text" id="bathrooms" name="bathrooms" />
     </div>
 
-    <!-- Parking Space Dropdown -->
     <div class="form-group">
-      <label for="parking">🅿️ ទីធ្លាចំណត / Parking Space</label>
-      <select id="parking" name="parking" required>
+      <label for="direction">Direction:</label>
+      <input type="text" id="direction" name="direction" />
+    </div>
+
+    <!-- Parking Space Dropdown Option -->
+    <div class="form-group">
+      <label for="parking">Parking Space:</label>
+      <select id="parking" name="parking">
         <option value="" disabled selected>Select Parking Option</option>
         <option value="Not Available">Not Available</option>
         <option value="Available for Car">Available for Car</option>
@@ -176,86 +112,57 @@
       </select>
     </div>
 
-    <hr>
-
-    <!-- Financial & Terms -->
     <div class="form-group">
-      <label for="paymentTerm">💳 ការបង់ប្រាក់ / Payment Term</label>
-      <input type="text" id="paymentTerm" name="paymentTerm">
+      <label for="paymentTerm">Payment Term:</label>
+      <input type="text" id="paymentTerm" name="paymentTerm" />
     </div>
 
     <div class="form-group">
-      <label for="deposit">💵 ប្រាក់កក់ / Deposit</label>
-      <input type="text" id="deposit" name="deposit">
+      <label for="deposit">Deposit:</label>
+      <input type="text" id="deposit" name="deposit" />
     </div>
 
     <div class="form-group">
-      <label for="contract">📜 កុងត្រា / Contract</label>
-      <input type="text" id="contract" name="contract">
+      <label for="contract">Contract:</label>
+      <input type="text" id="contract" name="contract" />
     </div>
 
     <div class="form-group">
-      <label for="remark">📝 សម្គាល់ / Remark</label>
+      <label for="remark">Remark:</label>
       <textarea id="remark" name="remark"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="photos">🖼️ រូបភាពអចលនទ្រព្យ / Property Photos (Max 10)</label>
-      <input type="file" id="photos" name="photos" accept="image/*" multiple>
+      <label for="photos">Photos:</label>
+      <input type="file" id="photos" name="photos" multiple />
     </div>
 
-    <input type="hidden" id="submittedBy" name="submittedBy">
-
-    <button type="submit" id="submitBtn" class="submit-btn">បញ្ជូនទិន្នន័យ / Submit</button>
+    <button type="submit">Submit Property</button>
   </form>
-</div>
 
-<script>
-  const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.expand();
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-      const username = user.username ? `@${user.username}` : '';
-      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-      document.getElementById('submittedBy').value = `${fullName} (${username})`.trim();
-    }
-  }
+  <script>
+    document.getElementById('propertyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
 
-  const form = document.getElementById('propertyForm');
-  const submitBtn = document.getElementById('submitBtn');
+      try {
+        const response = await fetch('/api/register-property', {
+          method: 'POST',
+          body: formData
+        });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.innerText = 'កំពុងផ្ញើ... / Sending...';
-
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch('/api/register-property', {
-        method: 'POST',
-        body: formData
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        alert('ចុះឈ្មោះអចលនទ្រព្យជោគជ័យ! / Property registered successfully!');
-        if (tg) tg.close();
-        else form.reset();
-      } else {
-        alert('មានបញ្ហា: ' + (result.error || 'Failed to submit'));
+        const result = await response.json();
+        if (result.success) {
+          alert('Property registered successfully!');
+          this.reset();
+        } else {
+          alert('Failed to register property.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('An error occurred.');
       }
-    } catch (err) {
-      console.error(err);
-      alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server / Network error');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerText = 'បញ្ជូនទិន្នន័យ / Submit';
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
