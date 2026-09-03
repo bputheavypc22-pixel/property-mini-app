@@ -1,13 +1,11 @@
 const express = require('express');
 const multer = require('multer');
-const FormData = require('form-data');
-const fetch = require('node-fetch');
 const path = require('path');
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Configuration variables
+// Environment configuration variables
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
 const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID'; // e.g., -1001234567890
@@ -107,7 +105,7 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
     const messageText = generatePropertyTelegramCard(data);
 
     if (files.length === 0) {
-      // Send text message directly if no photos provided
+      // Send text message directly
       const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
       const payload = {
         chat_id: CHAT_ID,
@@ -126,13 +124,15 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
 
       if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
     } else if (files.length === 1) {
-      // Send single photo with caption
+      // Send single photo with caption using native FormData & Blob
       const form = new FormData();
       form.append('chat_id', CHAT_ID);
       if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID);
       form.append('caption', messageText);
       form.append('parse_mode', 'HTML');
-      form.append('photo', files[0].buffer, { filename: files[0].originalname });
+
+      const blob = new Blob([files[0].buffer], { type: files[0].mimetype });
+      form.append('photo', blob, files[0].originalname);
 
       const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
         method: 'POST',
@@ -142,7 +142,7 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
 
       if (!resJson.ok) throw new Error(resJson.description || 'Telegram API Error');
     } else {
-      // Send multiple photos as a Media Group
+      // Send multiple photos as a Media Group using native FormData & Blob
       const mediaGroup = files.map((file, idx) => ({
         type: 'photo',
         media: `attach://file_${idx}`,
@@ -156,7 +156,8 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
       form.append('media', JSON.stringify(mediaGroup));
 
       files.forEach((file, idx) => {
-        form.append(`file_${idx}`, file.buffer, { filename: file.originalname });
+        const blob = new Blob([file.buffer], { type: file.mimetype });
+        form.append(`file_${idx}`, blob, file.originalname);
       });
 
       const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
