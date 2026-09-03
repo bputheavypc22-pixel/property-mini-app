@@ -102,6 +102,33 @@ function generatePropertyTelegramCard(data) {
   return card;
 }
 
+// Telegram Webhook Handler to respond to /start
+app.post('/webhook', async (req, res) => {
+  try {
+    const update = req.body;
+    if (update.message && update.message.text) {
+      const text = update.message.text;
+      const chatId = update.message.chat.id;
+
+      if (text.startsWith('/start')) {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: '👋 ជម្រាបសួរ! សូមស្វាគមន៍មកកាន់ Twenty5Realty Bot។\n\nលោកអ្នកអាចប្រើប្រាស់ Mini App ឬ Form ដើម្បីបញ្ជូនទិន្នន័យអចលនទ្រព្យបាន។',
+            parse_mode: 'HTML'
+          })
+        });
+      }
+    }
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('Webhook Error:', err);
+    res.sendStatus(500);
+  }
+});
+
 // API Route for Property Registration
 app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
   try {
