@@ -89,7 +89,7 @@ function generatePropertyTelegramCard(data) {
 
   // --- Submission Details ---
   if (data.submittedBy) {
-    card += `<b>Submitted by:</b> • ${data.submittedBy}\n`;
+    card += `<b>Submitted by:</b> ${data.submittedBy}\n`;
   }
 
   // Current Date and Time (ICT / Phnom Penh Time Zone)
