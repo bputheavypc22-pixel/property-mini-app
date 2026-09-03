@@ -13,15 +13,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ==========================================
-// 2. TELEGRAM BOT INITIALIZATION
+// 2. ENVIRONMENT VARIABLES & BOT SETUP
 // ==========================================
-const botToken = process.env.BOT_TOKEN;
-const defaultChatId = process.env.CHAT_ID;
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
+const groupId = process.env.TELEGRAM_GROUP_ID;
+const propertyTopicId = process.env.PROPERTY_TOPIC_ID;
+const clientTopicId = process.env.CLIENT_TOPIC_ID;
 
 let bot;
 
 if (botToken) {
-  // Initialize bot with polling to listen for incoming Telegram messages (/start)
+  // Initialize bot with polling to listen for incoming Telegram commands like /start
   bot = new TelegramBot(botToken, { polling: true });
 
   // Handle /start command
@@ -39,17 +41,27 @@ if (botToken) {
 
   console.log('🤖 Telegram Bot listener initialized successfully.');
 } else {
-  console.warn('⚠️ BOT_TOKEN environment variable is missing!');
+  console.warn('⚠️ TELEGRAM_BOT_TOKEN environment variable is missing!');
 }
 
 
-// Helper function for sending notifications from web forms
-async function sendTelegramNotification(text) {
-  if (!bot || !defaultChatId) {
-    console.warn('⚠️ Cannot send Telegram notification: Bot or CHAT_ID not configured.');
+// Helper function to send messages to specific forum topic threads
+async function sendTelegramMessage(text, topicId) {
+  if (!bot || !groupId) {
+    console.warn('⚠️ Cannot send message: Bot token or TELEGRAM_GROUP_ID is missing.');
     return;
   }
-  await bot.sendMessage(defaultChatId, text, { parse_mode: 'HTML' });
+
+  const options = {
+    parse_mode: 'HTML'
+  };
+
+  // Attach thread ID if sending to a specific topic
+  if (topicId) {
+    options.message_thread_id = parseInt(topicId, 10);
+  }
+
+  await bot.sendMessage(groupId, text, options);
 }
 
 
@@ -73,7 +85,7 @@ app.post('/api/property-listing', async (req, res) => {
 <b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
     `.trim();
 
-    await sendTelegramNotification(message);
+    await sendTelegramMessage(message, propertyTopicId);
 
     return res.status(200).json({ success: true, message: 'Property listing submitted successfully!' });
   } catch (error) {
@@ -111,7 +123,7 @@ app.post('/api/client-inquiry', async (req, res) => {
 <b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
     `.trim();
 
-    await sendTelegramNotification(message);
+    await sendTelegramMessage(message, clientTopicId);
 
     return res.status(200).json({ success: true, message: 'Client inquiry submitted successfully!' });
   } catch (error) {
@@ -122,7 +134,7 @@ app.post('/api/client-inquiry', async (req, res) => {
 
 
 // ==========================================
-// 4. FALLBACK & ERROR HANDLING
+// 4. FALLBACK & ROUTING
 // ==========================================
 app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, error: 'API route not found.' });
