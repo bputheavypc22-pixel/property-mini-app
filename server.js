@@ -7,8 +7,8 @@ const app = express();
 // ==========================================
 // 1. MIDDLEWARE CONFIGURATION
 // ==========================================
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -23,10 +23,8 @@ const clientTopicId = process.env.CLIENT_TOPIC_ID;
 let bot;
 
 if (botToken) {
-  // Initialize bot with polling to listen for incoming Telegram commands like /start
   bot = new TelegramBot(botToken, { polling: true });
 
-  // Handle /start command
   bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const welcomeText = 
@@ -44,19 +42,13 @@ if (botToken) {
   console.warn('⚠️ TELEGRAM_BOT_TOKEN environment variable is missing!');
 }
 
-
-// Helper function to send messages to specific forum topic threads
 async function sendTelegramMessage(text, topicId) {
   if (!bot || !groupId) {
     console.warn('⚠️ Cannot send message: Bot token or TELEGRAM_GROUP_ID is missing.');
     return;
   }
 
-  const options = {
-    parse_mode: 'HTML'
-  };
-
-  // Attach thread ID if sending to a specific topic
+  const options = { parse_mode: 'HTML' };
   if (topicId) {
     options.message_thread_id = parseInt(topicId, 10);
   }
@@ -66,22 +58,22 @@ async function sendTelegramMessage(text, topicId) {
 
 
 // ==========================================
-// 3. API ENDPOINTS (Web App Forms)
+// 3. API ENDPOINTS
 // ==========================================
 
-// --- Property Listing Endpoint ---
-app.post('/api/property-listing', async (req, res) => {
+// --- Property Listing Endpoint (Supports multiple URL path variations) ---
+const handlePropertyListing = async (req, res) => {
   try {
     const data = req.body;
 
     const message = `
-<b>🏠 NEW PROPERTY LISTING</b>
+<b>🏰 NEW PROPERTY LISTING</b>
 --------------------------------
-<b>🏷 Title / Type:</b> ${data.title || data.propertyType || 'N/A'}
-<b>📍 Location:</b> ${data.location || 'N/A'}
+<b>🏷 Title / Type:</b> ${data.title || data.propertyType || data.type || 'N/A'}
+<b>📍 Location:</b> ${data.location || data.preferredLocation || 'N/A'}
 <b>💰 Price:</b> ${data.price || 'N/A'}
-<b>📞 Contact:</b> ${data.contact || 'N/A'}
-<b>📝 Details:</b> ${data.details || 'N/A'}
+<b>📞 Contact:</b> ${data.contact || data.tel1 || 'N/A'}
+<b>📝 Details:</b> ${data.details || data.remark || 'N/A'}
 <b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
     `.trim();
 
@@ -92,7 +84,12 @@ app.post('/api/property-listing', async (req, res) => {
     console.error('Error submitting property listing:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
-});
+};
+
+// Registered routes for property listings
+app.post('/api/property-listing', handlePropertyListing);
+app.post('/api/property', handlePropertyListing);
+app.post('/api/submit-property', handlePropertyListing);
 
 
 // --- Client Inquiry Endpoint ---
