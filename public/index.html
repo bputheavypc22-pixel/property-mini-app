@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Twenty5 Realty - Select Form</title>
+  <title>Twenty5 Realty Bot</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * {
@@ -12,106 +12,179 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    body {
-      background-color: var(--tg-theme-bg-color, #f4f4f7);
-      color: var(--tg-theme-text-color, #222);
+    html, body {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
       padding: 20px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      justify-content: center;
     }
-    .container {
-      width: 100%;
-      max-width: 400px;
+    .lang-switcher {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 4px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+    }
+    .lang-btn {
+      border: none;
+      background: transparent;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .lang-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .logo-container {
       text-align: center;
-      margin-top: 10px;
+      margin-bottom: 24px;
     }
-    /* INCREASED LOGO SIZE HERE */
     .logo-img {
-      max-width: 180px; /* Increased from 100px to 180px */
+      max-width: 160px;
       height: auto;
       margin-bottom: 12px;
-      border-radius: 8px;
     }
     .title {
       font-size: 22px;
       font-weight: bold;
+      color: #0b2545;
       margin-bottom: 6px;
-      color: var(--tg-theme-text-color, #111);
     }
     .subtitle {
       font-size: 14px;
-      color: var(--tg-theme-hint-color, #666);
-      margin-bottom: 24px;
+      color: #64748b;
     }
-    .card {
-      background: var(--tg-theme-secondary-bg-color, #ffffff);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      text-decoration: none;
-      color: inherit;
+    .menu-container {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .menu-card {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
       display: flex;
       align-items: center;
       gap: 16px;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
-      border: 1px solid rgba(0,0,0,0.05);
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: transform 0.15s ease, border-color 0.15s ease;
     }
-    .card:active {
+    .menu-card:active {
       transform: scale(0.98);
+      border-color: #0284c7;
+      background-color: #f0f9ff;
     }
-    .icon {
-      font-size: 32px;
+    .menu-icon {
+      font-size: 28px;
     }
-    .text-container {
-      text-align: left;
-    }
-    .card-title {
+    .menu-text h3 {
       font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--tg-theme-button-color, #0088cc);
+      color: #0b2545;
+      margin-bottom: 2px;
     }
-    .card-desc {
+    .menu-text p {
       font-size: 12px;
-      color: var(--tg-theme-hint-color, #777);
+      color: #64748b;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="lang-switcher">
+    <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
+    <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
+  </div>
+
+  <div class="logo-container">
     <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-
     <div class="title">Twenty5 Realty 🙏</div>
-    <div class="subtitle">សូមជ្រើសរើសទម្រង់បែបបទ / Please Select a Form</div>
+    <div class="subtitle" id="sub-title">សូមជ្រើសរើសទម្រង់បែបបទ / Please Select a Form</div>
+  </div>
 
-    <!-- Choice 1: Client Inquiry -->
-    <a href="client.html" class="card">
-      <div class="icon">👥</div>
-      <div class="text-container">
-        <div class="card-title">ចុះឈ្មោះភ្ញៀវ</div>
-        <div class="card-desc">Client Inquiry Form</div>
+  <div class="menu-container">
+    <a href="client.html" class="menu-card">
+      <div class="menu-icon">👥</div>
+      <div class="menu-text">
+        <h3 id="card1-title">ចុះឈ្មោះភ្ញៀវ</h3>
+        <p id="card1-sub">Client Inquiry Form</p>
       </div>
     </a>
 
-    <!-- Choice 2: Property Listing -->
-    <a href="property.html" class="card">
-      <div class="icon">🏠</div>
-      <div class="text-container">
-        <div class="card-title">ដាក់លក់/ជួល អចលនទ្រព្យ</div>
-        <div class="card-desc">Property Listing Form</div>
+    <a href="property.html" class="menu-card">
+      <div class="menu-icon">🏠</div>
+      <div class="menu-text">
+        <h3 id="card2-title">ដាក់លក់/ជួល អចលនទ្រព្យ</h3>
+        <p id="card2-sub">Property Listing Form</p>
       </div>
     </a>
   </div>
 
   <script>
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
+    const tg = window.Telegram?.WebApp;
+    let currentLang = localStorage.getItem('appLang') || 'km';
+
+    const translations = {
+      km: {
+        subtitle: "សូមជ្រើសរើសទម្រង់បែបបទ",
+        card1Title: "ចុះឈ្មោះភ្ញៀវ",
+        card1Sub: "ទម្រង់បែបបទស្នើសុំស្វែងរកអចលនទ្រព្យ",
+        card2Title: "ដាក់លក់/ជួល អចលនទ្រព្យ",
+        card2Sub: "ទម្រង់បែបបទចុះបញ្ជីអចលនទ្រព្យ"
+      },
+      en: {
+        subtitle: "Please Select a Form",
+        card1Title: "Client Inquiry",
+        card1Sub: "Client Requirement Form",
+        card2Title: "Property Listing",
+        card2Sub: "Property Registration Form"
+      }
+    };
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('appLang', lang);
+
+      document.getElementById('btn-km').classList.toggle('active', lang === 'km');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+      const t = translations[lang];
+      document.getElementById('sub-title').textContent = t.subtitle;
+      document.getElementById('card1-title').textContent = t.card1Title;
+      document.getElementById('card1-sub').textContent = t.card1Sub;
+      document.getElementById('card2-title').textContent = t.card2Title;
+      document.getElementById('card2-sub').textContent = t.card2Sub;
     }
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setBackgroundColor('#ffffff');
+      if (tg.BackButton) tg.BackButton.hide();
+      if (tg.MainButton) tg.MainButton.hide();
+    }
+
+    switchLanguage(currentLang);
   </script>
 </body>
 </html>
