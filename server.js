@@ -1,51 +1,60 @@
 const express = require('express');
 const path = require('path');
+const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
 
 // ==========================================
 // 1. MIDDLEWARE CONFIGURATION
 // ==========================================
-// Parse JSON and URL-encoded bodies sent by fetch / POST requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static frontend files (HTML, CSS, Client JS) from the 'public' directory
-// Adjust 'public' if your HTML files are in a different folder (e.g., './')
 app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ==========================================
-// 2. HELPER FUNCTION: TELEGRAM BOT NOTIFIER
+// 2. TELEGRAM BOT INITIALIZATION
 // ==========================================
-async function sendTelegramMessage(text) {
-  const botToken = process.env.BOT_TOKEN;
-  const chatId = process.env.CHAT_ID;
+const botToken = process.env.BOT_TOKEN;
+const defaultChatId = process.env.CHAT_ID;
 
-  if (!botToken || !chatId) {
-    console.warn('⚠️ BOT_TOKEN or CHAT_ID environment variable missing!');
-    return;
-  }
+let bot;
 
-  const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: text,
-      parse_mode: 'HTML'
-    })
+if (botToken) {
+  // Initialize bot with polling to listen for incoming Telegram messages (/start)
+  bot = new TelegramBot(botToken, { polling: true });
+
+  // Handle /start command
+  bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    const welcomeText = 
+`ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
+
+សូមចុចប៊ូតុង Menu (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើស និងបើកទម្រង់បែបបទ៖
+• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
+• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
+
+    bot.sendMessage(chatId, welcomeText);
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Telegram API Error: ${errorData.description || 'Failed to send message'}`);
+  console.log('🤖 Telegram Bot listener initialized successfully.');
+} else {
+  console.warn('⚠️ BOT_TOKEN environment variable is missing!');
+}
+
+
+// Helper function for sending notifications from web forms
+async function sendTelegramNotification(text) {
+  if (!bot || !defaultChatId) {
+    console.warn('⚠️ Cannot send Telegram notification: Bot or CHAT_ID not configured.');
+    return;
   }
+  await bot.sendMessage(defaultChatId, text, { parse_mode: 'HTML' });
 }
 
 
 // ==========================================
-// 3. API ENDPOINTS
+// 3. API ENDPOINTS (Web App Forms)
 // ==========================================
 
 // --- Property Listing Endpoint ---
@@ -64,7 +73,7 @@ app.post('/api/property-listing', async (req, res) => {
 <b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
     `.trim();
 
-    await sendTelegramMessage(message);
+    await sendTelegramNotification(message);
 
     return res.status(200).json({ success: true, message: 'Property listing submitted successfully!' });
   } catch (error) {
@@ -102,7 +111,7 @@ app.post('/api/client-inquiry', async (req, res) => {
 <b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
     `.trim();
 
-    await sendTelegramMessage(message);
+    await sendTelegramNotification(message);
 
     return res.status(200).json({ success: true, message: 'Client inquiry submitted successfully!' });
   } catch (error) {
@@ -115,13 +124,10 @@ app.post('/api/client-inquiry', async (req, res) => {
 // ==========================================
 // 4. FALLBACK & ERROR HANDLING
 // ==========================================
-
-// Catch-all API 404 handler (Prevents returning HTML error pages when routes are missing)
 app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, error: 'API route not found.' });
 });
 
-// Serve frontend index.html for root path if needed
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
