@@ -13,16 +13,23 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     html, body {
-      background-color: #ffffff !important;
+      background-color: #f8fafc !important;
       color: #0f172a !important;
       padding: 16px;
       padding-bottom: 30px;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .header {
       position: relative;
       text-align: center;
       margin-bottom: 20px;
-      margin-top: 10px;
     }
     .lang-switcher {
       position: absolute;
@@ -31,14 +38,14 @@
       display: flex;
       gap: 4px;
       background: #f1f5f9;
-      padding: 4px;
+      padding: 3px;
       border-radius: 20px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #e2e8f0;
     }
     .lang-btn {
       border: none;
       background: transparent;
-      padding: 5px 10px;
+      padding: 4px 10px;
       font-size: 12px;
       font-weight: 600;
       border-radius: 16px;
@@ -54,37 +61,37 @@
       color: #ffffff;
     }
     .logo-img {
-      max-width: 140px;
+      max-width: 130px;
       height: auto;
-      margin-bottom: 12px;
-      border-radius: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
     }
     .header h2 {
-      font-size: 20px;
+      font-size: 18px;
       color: #0b2545;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
     .header p {
-      font-size: 13px;
-      color: #475569;
+      font-size: 12px;
+      color: #64748b;
     }
     .section-title {
-      font-size: 15px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 700;
       color: #0284c7;
-      margin: 20px 0 10px 0;
-      padding-bottom: 6px;
-      border-bottom: 2px solid #e2e8f0;
+      margin: 18px 0 12px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #f1f5f9;
     }
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     label {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      margin-bottom: 6px;
-      color: #1e293b;
+      margin-bottom: 4px;
+      color: #334155;
     }
     input[type="text"],
     input[type="tel"],
@@ -92,8 +99,8 @@
     select,
     textarea {
       width: 100%;
-      padding: 12px;
-      font-size: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       background-color: #f8fafc;
@@ -112,11 +119,11 @@
     textarea:focus {
       border-color: #0284c7;
       background-color: #ffffff;
-      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
     }
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 70px;
     }
     .map-btn {
       display: inline-flex;
@@ -132,13 +139,14 @@
       border: 1px solid #bae6fd;
       border-radius: 6px;
       text-decoration: none;
+      width: 100%;
     }
     .file-input-wrapper {
       position: relative;
       background: #f8fafc;
       border: 2px dashed #cbd5e1;
       border-radius: 8px;
-      padding: 20px;
+      padding: 16px;
       text-align: center;
       cursor: pointer;
     }
@@ -152,12 +160,12 @@
       cursor: pointer;
     }
     .file-label {
-      font-size: 13px;
+      font-size: 12px;
       color: #0f172a;
       font-weight: 600;
     }
     .file-count {
-      font-size: 12px;
+      font-size: 11px;
       color: #64748b;
       margin-top: 4px;
     }
@@ -165,199 +173,200 @@
 </head>
 <body>
 
-  <div class="header">
-    <div class="lang-switcher">
-      <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
-      <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
-    </div>
-    <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-    <h2 id="header-title">🏠 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
-    <p id="header-subtitle">Property Listing Form</p>
-  </div>
-
-  <form id="propertyForm">
-    <!-- Owner Info -->
-    <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ / Owner Info</div>
-    
-    <div class="form-group">
-      <label id="lbl-name">ឈ្មោះម្ចាស់ / Owner Name</label>
-      <input type="text" id="name" data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-tel1">លេខទូរស័ព្ទទី១ / Phone 1 *</label>
-      <input type="tel" id="tel1" required placeholder="012 345 678">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-tel2">លេខទូរស័ព្ទទី២ / Phone 2</label>
-      <input type="tel" id="tel2" placeholder="098 765 432">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-clientTelegram">Telegram ម្ចាស់ / Owner Telegram</label>
-      <input type="text" id="clientTelegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
-    </div>
-
-    <!-- Property Info -->
-    <div class="section-title" id="sec-property">🏠 ព័ត៌មានអចលនទ្រព្យ / Property Info</div>
-
-    <div class="form-group">
-      <label id="lbl-target">គោលបំណង / Target *</label>
-      <select id="target" required>
-        <option value="" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="លក់ / Sale" class="opt-sale">លក់ / Sale</option>
-        <option value="ជួល / Rent" class="opt-rent">ជួល / Rent</option>
-        <option value="លក់ និង ជួល / Sale & Rent" class="opt-salerent">លក់ និង ជួល / Sale & Rent</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ / Property Type *</label>
-      <select id="propertyType" required>
-        <option value="" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="ផ្ទះល្វែង / Flat House" class="opt-flat">ផ្ទះល្វែង / Flat House</option>
-        <option value="វីឡា / Villa" class="opt-villa">វីឡា / Villa</option>
-        <option value="ខុនដូ / Condo" class="opt-condo">ខុនដូ / Condo</option>
-        <option value="ដី / Land" class="opt-land">ដី / Land</option>
-        <option value="ឃ្លាំង / Warehouse" class="opt-warehouse">ឃ្លាំង / Warehouse</option>
-        <option value="អាជីវកម្ម / Business" class="opt-business">អាជីវកម្ម / Business</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-price">តម្លៃ / Price *</label>
-      <input type="text" id="price" required data-ph-km="ឧ. $150,000 ឬ $500/ខែ" data-ph-en="e.g. $150,000 or $500/month">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-location">ទីតាំង (Google Maps Link) / Location Link *</label>
-      <input type="url" id="location" required placeholder="https://maps.google.com/...">
-      <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="map-btn" id="map-btn-text">
-        📍 បើក Google Maps ដើម្បីចម្លង Link / Open Google Maps
-      </a>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-buildingSize">ទំហំអគារ / Building Size</label>
-      <input type="text" id="buildingSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
-    </div>
-
-    <!-- Added Front Space & Back Space Fields -->
-    <div class="form-group">
-      <label id="lbl-frontSpace">ដីសល់ខាងមុខ / Front Space</label>
-      <input type="text" id="frontSpace" data-ph-km="ឧ. 5m" data-ph-en="e.g. 5m">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-backSpace">ដីសល់ខាងក្រោយ / Back Space</label>
-      <input type="text" id="backSpace" data-ph-km="ឧ. 2m" data-ph-en="e.g. 2m">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-landSize">ទំហំដី / Land Size</label>
-      <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-bedrooms">បន្ទប់គេង / Bedrooms</label>
-      <select id="bedrooms">
-        <option value="មិនច្បាស់ / N/A" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5+">5+</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-bathrooms">បន្ទប់ទឹក / Bathrooms</label>
-      <select id="bathrooms">
-        <option value="មិនច្បាស់ / N/A" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5+">5+</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-direction">ទិស / Direction</label>
-      <select id="direction">
-        <option value="មិនច្បាស់ / N/A" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="កើត / East" class="opt-east">កើត / East</option>
-        <option value="លិច / West" class="opt-west">លិច / West</option>
-        <option value="ត្បូង / South" class="opt-south">ត្បូង / South</option>
-        <option value="ជើង / North" class="opt-north">ជើង / North</option>
-        <option value="កើតត្បូង / SE" class="opt-se">កើតត្បូង / SE</option>
-        <option value="កើតជើង / NE" class="opt-ne">កើតជើង / NE</option>
-        <option value="លិចត្បូង / SW" class="opt-sw">លិចត្បូង / SW</option>
-        <option value="លិចជើង / NW" class="opt-nw">លិចជើង / NW</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-parking">ទីធ្លាចំណត / Parking Space</label>
-      <select id="parking">
-        <option value="មិនច្បាស់ / N/A" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="Not Available">Not Available</option>
-        <option value="Available for Car">Available for Car</option>
-        <option value="Moto Only">Moto Only</option>
-      </select>
-    </div>
-
-    <!-- Payment Condition Section -->
-    <div class="section-title" id="sec-payment">💳 លក្ខខណ្ឌទូទាត់ / Payment Condition</div>
-
-    <div class="form-group">
-      <label id="lbl-paymentTerm">ការបង់ប្រាក់ / Payment Term</label>
-      <select id="paymentTerm">
-        <option value="" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="បង់មុន1ខែ / 1 Month Advance" class="opt-pay1">បង់មុន1ខែ / 1 Month Advance</option>
-        <option value="បង់មុន2ខែ / 2 Months Advance" class="opt-pay2">បង់មុន2ខែ / 2 Months Advance</option>
-        <option value="អាចចចារបាន / Negotiable" class="opt-payneg">អាចចចារបាន / Negotiable</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-deposit">ប្រាក់កក់ / Deposit</label>
-      <select id="deposit">
-        <option value="" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="កក់1ខែ / 1 Month Deposit" class="opt-dep1">កក់1ខែ / 1 Month Deposit</option>
-        <option value="កក់2ខែ / 2 Months Deposit" class="opt-dep2">កក់2ខែ / 2 Months Deposit</option>
-        <option value="អាចចចារបាន / Negotiable" class="opt-depneg">អាចចចារបាន / Negotiable</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-contract">កុងត្រា / Contract</label>
-      <select id="contract">
-        <option value="" class="opt-select">-- ជ្រើសរើស / Select --</option>
-        <option value="6ខែ / 6 Months" class="opt-c6">6ខែ / 6 Months</option>
-        <option value="1ឆ្នាំ / 1 Year" class="opt-c1y">1ឆ្នាំ / 1 Year</option>
-        <option value="2ឆ្នាំ / 2 Years" class="opt-c2y">2ឆ្នាំ / 2 Years</option>
-        <option value="បន្ថែម / More" class="opt-cmore">បន្ថែម / More</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lbl-remark">សម្គាល់បន្ថែម / Remark</label>
-      <textarea id="remark" data-ph-km="ព័ត៌មានបន្ថែមផ្សេងៗ..." data-ph-en="Additional details..."></textarea>
-    </div>
-
-    <!-- Image Upload -->
-    <div class="section-title" id="sec-photos">🖼️ រូបភាពអចលនទ្រព្យ (Max 10) *</div>
-    
-    <div class="form-group">
-      <div class="file-input-wrapper">
-        <div class="file-label" id="file-label-text">📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព / Select Photos *</div>
-        <div class="file-count" id="fileCount">មិនទាន់ជ្រើសរើសរូបភាព / No photos selected</div>
-        <input type="file" id="photos" multiple accept="image/*" required>
+  <div class="container">
+    <div class="header">
+      <div class="lang-switcher">
+        <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
+        <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
       </div>
+      <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
+      <h2 id="header-title">🏠 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
+      <p id="header-subtitle">Property Listing Form</p>
     </div>
-  </form>
+
+    <form id="propertyForm">
+      <!-- Owner Info -->
+      <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
+      
+      <div class="form-group">
+        <label id="lbl-name">ឈ្មោះម្ចាស់</label>
+        <input type="text" id="name" data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
+        <input type="tel" id="tel1" required placeholder="012 345 678">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
+        <input type="tel" id="tel2" placeholder="098 765 432">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-clientTelegram">Telegram ម្ចាស់</label>
+        <input type="text" id="clientTelegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
+      </div>
+
+      <!-- Property Info -->
+      <div class="section-title" id="sec-property">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
+
+      <div class="form-group">
+        <label id="lbl-target">គោលបំណង *</label>
+        <select id="target" required>
+          <option value="" id="opt-target-select">-- ជ្រើសរើស --</option>
+          <option value="លក់" id="opt-target-sale">លក់</option>
+          <option value="ជួល" id="opt-target-rent">ជួល</option>
+          <option value="លក់ និង ជួល" id="opt-target-salerent">លក់ និង ជួល</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
+        <select id="propertyType" required>
+          <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
+          <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
+          <option value="វីឡា" id="opt-type-villa">វីឡា</option>
+          <option value="ខុនដូ" id="opt-type-condo">ខុនដូ</option>
+          <option value="ដី" id="opt-type-land">ដី</option>
+          <option value="ឃ្លាំង" id="opt-type-warehouse">ឃ្លាំង</option>
+          <option value="អាជីវកម្ម" id="opt-type-business">អាជីវកម្ម</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-price">តម្លៃ *</label>
+        <input type="text" id="price" required data-ph-km="ឧ. $150,000 ឬ $500/ខែ" data-ph-en="e.g. $150,000 or $500/month">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-location">ទីតាំង (Google Maps Link) *</label>
+        <input type="url" id="location" required placeholder="https://maps.google.com/...">
+        <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="map-btn" id="map-btn-text">
+          📍 បើក Google Maps ដើម្បីចម្លង Link
+        </a>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-buildingSize">ទំហំអគារ</label>
+        <input type="text" id="buildingSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-frontSpace">ដីសល់ខាងមុខ</label>
+        <input type="text" id="frontSpace" data-ph-km="ឧ. 5m" data-ph-en="e.g. 5m">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-backSpace">ដីសល់ខាងក្រោយ</label>
+        <input type="text" id="backSpace" data-ph-km="ឧ. 2m" data-ph-en="e.g. 2m">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-landSize">ទំហំដី</label>
+        <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-bedrooms">បន្ទប់គេង</label>
+        <select id="bedrooms">
+          <option value="មិនច្បាស់" id="opt-bed-select">-- ជ្រើសរើស --</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5+">5+</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
+        <select id="bathrooms">
+          <option value="មិនច្បាស់" id="opt-bath-select">-- ជ្រើសរើស --</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5+">5+</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-direction">ទិស</label>
+        <select id="direction">
+          <option value="មិនច្បាស់" id="opt-dir-select">-- ជ្រើសរើស --</option>
+          <option value="កើត" id="opt-dir-east">កើត</option>
+          <option value="លិច" id="opt-dir-west">លិច</option>
+          <option value="ត្បូង" id="opt-dir-south">ត្បូង</option>
+          <option value="ជើង" id="opt-dir-north">ជើង</option>
+          <option value="កើតត្បូង" id="opt-dir-se">កើតត្បូង</option>
+          <option value="កើតជើង" id="opt-dir-ne">កើតជើង</option>
+          <option value="លិចត្បូង" id="opt-dir-sw">លិចត្បូង</option>
+          <option value="លិចជើង" id="opt-dir-nw">លិចជើង</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-parking">ទីធ្លាចំណត</label>
+        <select id="parking">
+          <option value="មិនច្បាស់" id="opt-park-select">-- ជ្រើសរើស --</option>
+          <option value="គ្មានចំណត" id="opt-park-none">គ្មានចំណត</option>
+          <option value="ចំណតឡាន" id="opt-park-car">ចំណតឡាន</option>
+          <option value="ចំណតម៉ូតូ" id="opt-park-moto">ចំណតម៉ូតូ</option>
+        </select>
+      </div>
+
+      <!-- Payment Condition Section -->
+      <div class="section-title" id="sec-payment">💳 លក្ខខណ្ឌទូទាត់</div>
+
+      <div class="form-group">
+        <label id="lbl-paymentTerm">ការបង់ប្រាក់</label>
+        <select id="paymentTerm">
+          <option value="" id="opt-pay-select">-- ជ្រើសរើស --</option>
+          <option value="បង់មុន 1 ខែ" id="opt-pay-1m">បង់មុន 1 ខែ</option>
+          <option value="បង់មុន 2 ខែ" id="opt-pay-2m">បង់មុន 2 ខែ</option>
+          <option value="អាចចចារបាន" id="opt-pay-neg">អាចចចារបាន</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-deposit">ប្រាក់កក់</label>
+        <select id="deposit">
+          <option value="" id="opt-dep-select">-- ជ្រើសរើស --</option>
+          <option value="កក់ 1 ខែ" id="opt-dep-1m">កក់ 1 ខែ</option>
+          <option value="កក់ 2 ខែ" id="opt-dep-2m">កក់ 2 ខែ</option>
+          <option value="អាចចចារបាន" id="opt-dep-neg">អាចចចារបាន</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-contract">កុងត្រា</label>
+        <select id="contract">
+          <option value="" id="opt-con-select">-- ជ្រើសរើស --</option>
+          <option value="6 ខែ" id="opt-con-6m">6 ខែ</option>
+          <option value="1 ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ</option>
+          <option value="2 ឆ្នាំ" id="opt-con-2y">2 ឆ្នាំ</option>
+          <option value="បន្ថែម" id="opt-con-more">បន្ថែម</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-remark">សម្គាល់បន្ថែម</label>
+        <textarea id="remark" data-ph-km="ព័ត៌មានបន្ថែមផ្សេងៗ..." data-ph-en="Additional details..."></textarea>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="section-title" id="sec-photos">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា ១០) *</div>
+      
+      <div class="form-group">
+        <div class="file-input-wrapper">
+          <div class="file-label" id="file-label-text">📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *</div>
+          <div class="file-count" id="fileCount">មិនទាន់ជ្រើសរើសរូបភាព</div>
+          <input type="file" id="photos" multiple accept="image/*" required>
+        </div>
+      </div>
+    </form>
+  </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
@@ -374,7 +383,17 @@
         lblClientTelegram: "Telegram ម្ចាស់",
         secProperty: "🏠 ព័ត៌មានអចលនទ្រព្យ",
         lblTarget: "គោលបំណង *",
+        optSelect: "-- ជ្រើសរើស --",
+        optSale: "លក់",
+        optRent: "ជួល",
+        optSaleRent: "លក់ និង ជួល",
         lblPropertyType: "ប្រភេទអចលនទ្រព្យ *",
+        optFlat: "ផ្ទះល្វែង",
+        optVilla: "វីឡា",
+        optCondo: "ខុនដូ",
+        optLand: "ដី",
+        optWarehouse: "ឃ្លាំង",
+        optBusiness: "អាជីវកម្ម",
         lblPrice: "តម្លៃ *",
         lblLocation: "ទីតាំង (Google Maps Link) *",
         mapBtn: "📍 បើក Google Maps ដើម្បីចម្លង Link",
@@ -385,11 +404,32 @@
         lblBedrooms: "បន្ទប់គេង",
         lblBathrooms: "បន្ទប់ទឹក",
         lblDirection: "ទិស",
+        optEast: "កើត",
+        optWest: "លិច",
+        optSouth: "ត្បូង",
+        optNorth: "ជើង",
+        optSE: "កើតត្បូង",
+        optNE: "កើតជើង",
+        optSW: "លិចត្បូង",
+        optNW: "លិចជើង",
         lblParking: "ទីធ្លាចំណត",
+        optParkNone: "គ្មានចំណត",
+        optParkCar: "ចំណតឡាន",
+        optParkMoto: "ចំណតម៉ូតូ",
         secPayment: "💳 លក្ខខណ្ឌទូទាត់",
         lblPaymentTerm: "ការបង់ប្រាក់",
+        optPay1m: "បង់មុន 1 ខែ",
+        optPay2m: "បង់មុន 2 ខែ",
+        optPayNeg: "អាចចចារបាន",
         lblDeposit: "ប្រាក់កក់",
+        optDep1m: "កក់ 1 ខែ",
+        optDep2m: "កក់ 2 ខែ",
+        optDepNeg: "អាចចចារបាន",
         lblContract: "កុងត្រា",
+        optCon6m: "6 ខែ",
+        optCon1y: "1 ឆ្នាំ",
+        optCon2y: "2 ឆ្នាំ",
+        optConMore: "បន្ថែម",
         lblRemark: "សម្គាល់បន្ថែម",
         secPhotos: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា ១០) *",
         fileLabel: "📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
@@ -410,7 +450,17 @@
         lblClientTelegram: "Owner Telegram",
         secProperty: "🏠 Property Details",
         lblTarget: "Target *",
+        optSelect: "-- Select --",
+        optSale: "Sale",
+        optRent: "Rent",
+        optSaleRent: "Sale & Rent",
         lblPropertyType: "Property Type *",
+        optFlat: "Flat House",
+        optVilla: "Villa",
+        optCondo: "Condo",
+        optLand: "Land",
+        optWarehouse: "Warehouse",
+        optBusiness: "Business",
         lblPrice: "Price *",
         lblLocation: "Location (Google Maps Link) *",
         mapBtn: "📍 Open Google Maps to Copy Link",
@@ -421,11 +471,32 @@
         lblBedrooms: "Bedrooms",
         lblBathrooms: "Bathrooms",
         lblDirection: "Direction",
+        optEast: "East",
+        optWest: "West",
+        optSouth: "South",
+        optNorth: "North",
+        optSE: "South East",
+        optNE: "North East",
+        optSW: "South West",
+        optNW: "North West",
         lblParking: "Parking Space",
+        optParkNone: "Not Available",
+        optParkCar: "Car Parking",
+        optParkMoto: "Motorcycle Only",
         secPayment: "💳 Payment Condition",
         lblPaymentTerm: "Payment Term",
+        optPay1m: "1 Month Advance",
+        optPay2m: "2 Months Advance",
+        optPayNeg: "Negotiable",
         lblDeposit: "Deposit",
+        optDep1m: "1 Month Deposit",
+        optDep2m: "2 Months Deposit",
+        optDepNeg: "Negotiable",
         lblContract: "Contract",
+        optCon6m: "6 Months",
+        optCon1y: "1 Year",
+        optCon2y: "2 Years",
+        optConMore: "More",
         lblRemark: "Remark",
         secPhotos: "🖼️ Property Photos (Max 10) *",
         fileLabel: "📷 Click here to select photos *",
@@ -456,7 +527,23 @@
       document.getElementById('lbl-clientTelegram').textContent = t.lblClientTelegram;
       document.getElementById('sec-property').textContent = t.secProperty;
       document.getElementById('lbl-target').textContent = t.lblTarget;
+      
+      // Target Select Options
+      document.getElementById('opt-target-select').textContent = t.optSelect;
+      document.getElementById('opt-target-sale').textContent = t.optSale;
+      document.getElementById('opt-target-rent').textContent = t.optRent;
+      document.getElementById('opt-target-salerent').textContent = t.optSaleRent;
+
       document.getElementById('lbl-propertyType').textContent = t.lblPropertyType;
+      // Property Type Options
+      document.getElementById('opt-type-select').textContent = t.optSelect;
+      document.getElementById('opt-type-flat').textContent = t.optFlat;
+      document.getElementById('opt-type-villa').textContent = t.optVilla;
+      document.getElementById('opt-type-condo').textContent = t.optCondo;
+      document.getElementById('opt-type-land').textContent = t.optLand;
+      document.getElementById('opt-type-warehouse').textContent = t.optWarehouse;
+      document.getElementById('opt-type-business').textContent = t.optBusiness;
+
       document.getElementById('lbl-price').textContent = t.lblPrice;
       document.getElementById('lbl-location').textContent = t.lblLocation;
       document.getElementById('map-btn-text').textContent = t.mapBtn;
@@ -465,13 +552,47 @@
       document.getElementById('lbl-backSpace').textContent = t.lblBackSpace;
       document.getElementById('lbl-landSize').textContent = t.lblLandSize;
       document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
+      document.getElementById('opt-bed-select').textContent = t.optSelect;
       document.getElementById('lbl-bathrooms').textContent = t.lblBathrooms;
+      document.getElementById('opt-bath-select').textContent = t.optSelect;
+      
       document.getElementById('lbl-direction').textContent = t.lblDirection;
+      document.getElementById('opt-dir-select').textContent = t.optSelect;
+      document.getElementById('opt-dir-east').textContent = t.optEast;
+      document.getElementById('opt-dir-west').textContent = t.optWest;
+      document.getElementById('opt-dir-south').textContent = t.optSouth;
+      document.getElementById('opt-dir-north').textContent = t.optNorth;
+      document.getElementById('opt-dir-se').textContent = t.optSE;
+      document.getElementById('opt-dir-ne').textContent = t.optNE;
+      document.getElementById('opt-dir-sw').textContent = t.optSW;
+      document.getElementById('opt-dir-nw').textContent = t.optNW;
+
       document.getElementById('lbl-parking').textContent = t.lblParking;
+      document.getElementById('opt-park-select').textContent = t.optSelect;
+      document.getElementById('opt-park-none').textContent = t.optParkNone;
+      document.getElementById('opt-park-car').textContent = t.optParkCar;
+      document.getElementById('opt-park-moto').textContent = t.optParkMoto;
+
       document.getElementById('sec-payment').textContent = t.secPayment;
       document.getElementById('lbl-paymentTerm').textContent = t.lblPaymentTerm;
+      document.getElementById('opt-pay-select').textContent = t.optSelect;
+      document.getElementById('opt-pay-1m').textContent = t.optPay1m;
+      document.getElementById('opt-pay-2m').textContent = t.optPay2m;
+      document.getElementById('opt-pay-neg').textContent = t.optPayNeg;
+
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
+      document.getElementById('opt-dep-select').textContent = t.optSelect;
+      document.getElementById('opt-dep-1m').textContent = t.optDep1m;
+      document.getElementById('opt-dep-2m').textContent = t.optDep2m;
+      document.getElementById('opt-dep-neg').textContent = t.optDepNeg;
+
       document.getElementById('lbl-contract').textContent = t.lblContract;
+      document.getElementById('opt-con-select').textContent = t.optSelect;
+      document.getElementById('opt-con-6m').textContent = t.optCon6m;
+      document.getElementById('opt-con-1y').textContent = t.optCon1y;
+      document.getElementById('opt-con-2y').textContent = t.optCon2y;
+      document.getElementById('opt-con-more').textContent = t.optConMore;
+
       document.getElementById('lbl-remark').textContent = t.lblRemark;
       document.getElementById('sec-photos').textContent = t.secPhotos;
       document.getElementById('file-label-text').textContent = t.fileLabel;
@@ -496,7 +617,7 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      tg.setBackgroundColor('#ffffff');
+      tg.setBackgroundColor('#f8fafc');
 
       if (tg.BackButton) {
         tg.BackButton.show();
