@@ -196,6 +196,16 @@
       border: 0;
     }
 
+    /* Dynamic Rent Options Block */
+    #rent-terms-section {
+      display: none;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
     /* Image Upload Box & Grid */
     .upload-box {
       border: 2px dashed #cbd5e1;
@@ -300,7 +310,7 @@
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-listingType">គោលបំណង *</label>
-          <select id="listingType" required>
+          <select id="listingType" required onchange="toggleRentTerms()">
             <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
             <option value="លក់" id="opt-list-sale">លក់</option>
             <option value="ជួល" id="opt-list-rent">ជួល</option>
@@ -412,6 +422,42 @@
         </select>
       </div>
 
+      <!-- Conditional Rent Terms & Conditions Section -->
+      <div id="rent-terms-section">
+        <div class="form-group">
+          <label id="lbl-deposit">1. ប្រាក់កក់ (Deposit) *</label>
+          <select id="deposit" onchange="toggleDepositOther()">
+            <option value="1ខែ" id="opt-dep-1">1 ខែ (1 month)</option>
+            <option value="2ខែ" id="opt-dep-2">2 ខែ (2 months)</option>
+            <option value="3ខែ" id="opt-dep-3">3 ខែ (3 months)</option>
+            <option value="ផ្សេងៗ" id="opt-dep-other">ផ្សេងៗ (Other)</option>
+          </select>
+          <input type="text" id="depositOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រាក់កក់..." data-ph-en="Specify deposit terms...">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-rentFee">2. បង់ថ្លៃឈ្នួល (Rent Fee) *</label>
+            <select id="rentFee">
+              <option value="ដើមខែ" id="opt-fee-start">ដើមខែ (Beginning of Month)</option>
+              <option value="ចុងខែ" id="opt-fee-end">ចុងខែ (End of Month)</option>
+              <option value="ចរចា" id="opt-fee-neg">ចរចា (Negotiate)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label id="lbl-contract">3. កុងត្រា (Contract) *</label>
+            <select id="contract">
+              <option value="3ខែ" id="opt-con-3m">3 ខែ (3 months)</option>
+              <option value="6ខែ" id="opt-con-6m">6 ខែ (6 months)</option>
+              <option value="1ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ (1 year)</option>
+              <option value="2ឆ្នាំ" id="opt-con-2y">2 ឆ្នាំ (2 years)</option>
+              <option value="3ឆ្នាំ" id="opt-con-3y">3 ឆ្នាំ (3 years)</option>
+              <option value="ចរចា" id="opt-con-neg">ចរចា (Negotiate)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label id="lbl-description">សម្គាល់បន្ថែម</label>
         <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
@@ -480,6 +526,22 @@
         optNE: "កើតជើង",
         optSW: "លិចត្បូង",
         optNW: "លិចជើង",
+        lblDeposit: "1. ប្រាក់កក់ (Deposit) *",
+        optDep1: "1 ខែ (1 month)",
+        optDep2: "2 ខែ (2 months)",
+        optDep3: "3 ខែ (3 months)",
+        optDepOther: "ផ្សេងៗ (Other)",
+        lblRentFee: "2. បង់ថ្លៃឈ្នួល (Rent Fee) *",
+        optFeeStart: "ដើមខែ (Beginning of Month)",
+        optFeeEnd: "ចុងខែ (End of Month)",
+        optFeeNeg: "ចរចា (Negotiate)",
+        lblContract: "3. កុងត្រា (Contract) *",
+        optCon3m: "3 ខែ (3 months)",
+        optCon6m: "6 ខែ (6 months)",
+        optCon1y: "1 ឆ្នាំ (1 year)",
+        optCon2y: "2 ឆ្នាំ (2 years)",
+        optCon3y: "3 ឆ្នាំ (3 years)",
+        optConNeg: "ចរចា (Negotiate)",
         lblDescription: "សម្គាល់បន្ថែម",
         lblImages: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *",
         uploadText: "ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
@@ -530,6 +592,22 @@
         optNE: "North East",
         optSW: "South West",
         optNW: "North West",
+        lblDeposit: "1. Deposit *",
+        optDep1: "1 month",
+        optDep2: "2 months",
+        optDep3: "3 months",
+        optDepOther: "Other",
+        lblRentFee: "2. Rent Fee *",
+        optFeeStart: "Settle beginning of the month",
+        optFeeEnd: "Settle End of the Month",
+        optFeeNeg: "Negotiate",
+        lblContract: "3. Contract *",
+        optCon3m: "3 months",
+        optCon6m: "6 months",
+        optCon1y: "1 year",
+        optCon2y: "2 years",
+        optCon3y: "3 years",
+        optConNeg: "Negotiate",
         lblDescription: "Additional Notes",
         lblImages: "🖼️ Property Images (Max 10) *",
         uploadText: "Click here to select images *",
@@ -541,6 +619,29 @@
         minImgAlert: "Please upload at least 1 image."
       }
     };
+
+    function toggleRentTerms() {
+      const listingType = document.getElementById('listingType').value;
+      const rentSection = document.getElementById('rent-terms-section');
+      if (listingType === 'ជួល' || listingType === 'For Rent') {
+        rentSection.style.display = 'block';
+      } else {
+        rentSection.style.display = 'none';
+      }
+    }
+
+    function toggleDepositOther() {
+      const depositVal = document.getElementById('deposit').value;
+      const otherInput = document.getElementById('depositOther');
+      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
 
     function switchLanguage(lang) {
       currentLang = lang;
@@ -601,6 +702,26 @@
       document.getElementById('opt-dir-ne').textContent = t.optNE;
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
+
+      /* Rent Terms Labels */
+      document.getElementById('lbl-deposit').textContent = t.lblDeposit;
+      document.getElementById('opt-dep-1').textContent = t.optDep1;
+      document.getElementById('opt-dep-2').textContent = t.optDep2;
+      document.getElementById('opt-dep-3').textContent = t.optDep3;
+      document.getElementById('opt-dep-other').textContent = t.optDepOther;
+
+      document.getElementById('lbl-rentFee').textContent = t.lblRentFee;
+      document.getElementById('opt-fee-start').textContent = t.optFeeStart;
+      document.getElementById('opt-fee-end').textContent = t.optFeeEnd;
+      document.getElementById('opt-fee-neg').textContent = t.optFeeNeg;
+
+      document.getElementById('lbl-contract').textContent = t.lblContract;
+      document.getElementById('opt-con-3m').textContent = t.optCon3m;
+      document.getElementById('opt-con-6m').textContent = t.optCon6m;
+      document.getElementById('opt-con-1y').textContent = t.optCon1y;
+      document.getElementById('opt-con-2y').textContent = t.optCon2y;
+      document.getElementById('opt-con-3y').textContent = t.optCon3y;
+      document.getElementById('opt-con-neg').textContent = t.optConNeg;
 
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
@@ -730,6 +851,20 @@
       formData.append('bedrooms', document.getElementById('bedrooms').value);
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
+
+      /* Append Rent Terms if Renting */
+      const isRent = document.getElementById('listingType').value === 'ជួល' || document.getElementById('listingType').value === 'For Rent';
+      if (isRent) {
+        const depVal = document.getElementById('deposit').value;
+        const finalDeposit = (depVal === 'ផ្សេងៗ' || depVal === 'Other') 
+          ? document.getElementById('depositOther').value 
+          : depVal;
+          
+        formData.append('deposit', finalDeposit);
+        formData.append('rentFee', document.getElementById('rentFee').value);
+        formData.append('contract', document.getElementById('contract').value);
+      }
+
       formData.append('description', document.getElementById('description').value);
       formData.append('submittedBy', submittedBy);
       formData.append('initData', tg?.initData || '');
