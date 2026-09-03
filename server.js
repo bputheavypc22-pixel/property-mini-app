@@ -1,262 +1,48 @@
-require('dotenv').config();
-const express = require('express');
-const TelegramBot = require('node-telegram-bot-api');
-const multer = require('multer');
-const path = require('path');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Setup Multer for handling up to 10 image uploads in memory
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
-});
-
-// Environment Variables
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
-const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.GROUP_CHAT_ID;
-const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID || process.env.TELEGRAM_TOPIC_ID;
-const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
-
-// Initialize Telegram Bot
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Helper function to format Cambodia local time
-function getFormattedDate() {
-  return new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Phnom_Penh',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-}
-
-// ==========================================
-// /start COMMAND HANDLER
-// ==========================================
-bot.onText(/\/start(@\w+)?/, async (msg) => {
-  const chatId = msg.chat.id;
-  const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
-
-  let botUsername = 'Twenty5RealtyBot';
+// Express route for Client Inquiry
+app.post('/api/client-inquiry', async (req, res) => {
   try {
-    const botInfo = await bot.getMe();
-    botUsername = botInfo.username;
-  } catch (err) {
-    console.error('Error fetching bot username:', err.message);
-  }
-
-  // 1. IF IN GROUP: Reply with 1 inline redirect button
-  if (isGroup) {
-    const groupMessage = "ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏\nសូមចុចប៊ូតុងខាងក្រោមដើម្បីចូលទៅបំពេញទម្រង់បែបបទ៖";
+    const data = req.body;
     
-    const groupOptions = {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "👉 ចុចដើម្បីចូលទៅបំពេញពាក្យ / Click to direct to the form",
-              url: `https://t.me/${botUsername}?start=welcome`
-            }
-          ]
-        ]
-      }
-    };
+    // Construct Telegram message text
+    const message = `
+<b>🔍 NEW CLIENT INQUIRY</b>
+--------------------------------
+<b>👤 Name:</b> ${data.name || 'N/A'}
+<b>📞 Phone 1:</b> ${data.tel1}
+<b>📞 Phone 2:</b> ${data.tel2 || 'N/A'}
+<b>💬 Telegram:</b> ${data.clientTelegram || 'N/A'}
 
-    if (msg.message_thread_id) {
-      groupOptions.message_thread_id = msg.message_thread_id;
-    }
+<b>🎯 Looking For:</b> ${data.target}
+<b>🏠 Property Type:</b> ${data.propertyType}
+<b>💰 Budget:</b> ${data.budget}
+<b>📍 Preferred Location:</b> ${data.preferredLocation}
+<b>🏢 Building Size:</b> ${data.buildingSize || 'N/A'}
+<b>📐 Land Size:</b> ${data.landSize || 'N/A'}
+<b>🛏 Bedrooms:</b> ${data.bedrooms}
+<b>🚿 Bathrooms:</b> ${data.bathrooms}
+<b>🧭 Direction:</b> ${data.direction}
+<b>⚡ Urgency Level:</b> ${data.urgentLevel}
+<b>📝 Remark:</b> ${data.remark || 'N/A'}
 
-    return bot.sendMessage(chatId, groupMessage, groupOptions);
-  }
+<b>👤 Submitted By:</b> ${data.submittedBy}
+    `.trim();
 
-  // 2. IF IN PRIVATE CHAT: Send ONLY welcome message + instructions
-  const welcomePrivateMessage = 
-`ស្វាគមន៍មកកាន់ Twenty5 Realty 🙏
-
-សូមចុចប៊ូតុង **Menu** (នៅជ្រុងខាងឆ្វេងផ្នែកខាងក្រោម) ដើម្បីជ្រើសរើស និងបើកទម្រង់បែបបទ៖
-• 🏠 ចុះឈ្មោះភ្ញៀវ / Client Inquiry
-• 🏰 ដាក់លក់/ជួល អចលនទ្រព្យ / Property Listing`;
-
-  bot.sendMessage(chatId, welcomePrivateMessage, { parse_mode: 'Markdown' });
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => res.status(200).send('OK'));
-
-// ==========================================
-// 1. CLIENT INQUIRY ENDPOINT
-// ==========================================
-app.post('/api/register-client', async (req, res) => {
-  try {
-    const {
-      name, tel1, tel2, clientTelegram, target, propertyType,
-      priceRank, area, buildingSize, landSize, bedrooms, bathrooms,
-      direction, parking, remark, submittedBy
-    } = req.body;
-
-    const formattedDate = getFormattedDate();
-
-    // Format Telegram Message
-    const message = 
-`👥 <b>ព័ត៌មានភ្ញៀវថ្មី / NEW CLIENT INQUIRY</b>
-━━━━━━━━━━━━━━━━━━━━━
-👤 <b>ព័ត៌មានភ្ញៀវ/ Client Profile</b>
-📇 ឈ្មោះ/ Name: ${name}
-📞 Tel1: ${tel1 || 'N/A'}
-📞 Tel2: ${tel2 || 'N/A'}
-💬 Telegram: ${clientTelegram || 'N/A'}
-━━━━━━━━━━━━━━━━━━━━━
-🎯 គោលបំណង/ Target: ${target}
-━━━━━━━━━━━━━━━━━━━━━
-🏗️ ប្រភេទ/ Type: ${propertyType}
-💰 តម្លៃ/ Price Rank: ${priceRank}
-📍 តំបន់/ Area:
-${area}
-🧱 ទំហំអគារ/ Building Size: ${buildingSize}
-📐 ទំហំដី/ Land Size: ${landSize}
-🛏 បន្ទប់គេង/ Bedrooms: ${bedrooms}
-🛁 បន្ទប់ទឹក/ Bathrooms: ${bathrooms}
-🧭 ទិស/ Direction: ${direction}
-🅿️ ចំណត/ Parking: ${parking}
-✏️ សម្គាល់/ Remark: ${remark}
-━━━━━━━━━━━━━━━━━━━━━
-<i>Submitted by: ${submittedBy}</i>
-<i>Date: ${formattedDate}</i>`;
-
-    const telegramPayload = {
-      chat_id: GROUP_CHAT_ID,
-      text: message,
-      parse_mode: 'HTML'
-    };
-
-    if (CLIENT_TOPIC_ID) {
-      telegramPayload.message_thread_id = parseInt(CLIENT_TOPIC_ID, 10);
-    }
-
-    // Send to Telegram Group Topic
-    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    // Send notification to your Telegram Chat/Channel
+    await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(telegramPayload)
-    });
-
-    const data = await response.json();
-    if (!data.ok) throw new Error(data.description);
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error('Error Client Form:', error.message);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// ==========================================
-// 2. PROPERTY LISTING ENDPOINT
-// ==========================================
-app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
-  try {
-    const {
-      name, tel1, tel2, clientTelegram, target, propertyType,
-      price, location, buildingSize, landSize, bedrooms, bathrooms,
-      direction, parking, paymentTerm, deposit, contract, remark, submittedBy
-    } = req.body;
-
-    const formattedDate = getFormattedDate();
-    const photoCount = req.files ? req.files.length : 0;
-
-    // Format Telegram Message
-    const message = 
-`🏠 <b>អចលនទ្រព្យថ្មី / NEW PROPERTY</b>
-━━━━━━━━━━━━━━━━━━━━━
-👤 <b>ម្ចាស់អចលនទ្រព្យ / Property Owner</b>
-📇 ឈ្មោះ/ Name: ${name || 'N/A'}
-📞 Tel1: ${tel1}
-📞 Tel2: ${tel2 || 'N/A'}
-💬 Telegram: ${clientTelegram || 'N/A'}
-━━━━━━━━━━━━━━━━━━━━━
-🎯 គោលបំណង/ Target: ${target}
-━━━━━━━━━━━━━━━━━━━━━
-🏗️ ប្រភេទ/ Type: ${propertyType}
-💰 តម្លៃ/ Price: ${price}
-📍 ទីតាំង/ Location: ${location}
-🧱 ទំហំអគារ/ Building Size: ${buildingSize || 'N/A'}
-📐 ទំហំដី/ Land Size: ${landSize || 'N/A'}
-🛏 បន្ទប់គេង/ Bedrooms: ${bedrooms || 'N/A'}
-🛁 បន្ទប់ទឹក/ Bathrooms: ${bathrooms || 'N/A'}
-🧭 ទិស/ Direction: ${direction || 'N/A'}
-🅿️ ទីធ្លាចំណត/ Parking Space: ${parking || 'N/A'}
-━━━━━━━━━━━━━━━━━━━━━
-💳 ការបង់ប្រាក់/ Payment Term: ${paymentTerm || 'N/A'}
-💵 ប្រាក់កក់/ Deposit: ${deposit || 'N/A'}
-📝 កុងត្រា/ Contract: ${contract || 'N/A'}
-✏️ សម្គាល់/ Remark: ${remark || 'N/A'}
-🖼️ រូបភាពអចលនទ្រព្យ/ Pictures Attached: ${photoCount}
-━━━━━━━━━━━━━━━━━━━━━
-<i>Submitted by: ${submittedBy || 'N/A'}</i>
-<i>Date: ${formattedDate}</i>`;
-
-    const topicThreadId = PROPERTY_TOPIC_ID ? parseInt(PROPERTY_TOPIC_ID, 10) : undefined;
-
-    // Send Media / Message to Telegram Group
-    if (req.files && req.files.length > 0) {
-      const formData = new FormData();
-      formData.append('chat_id', GROUP_CHAT_ID);
-      if (topicThreadId) formData.append('message_thread_id', topicThreadId);
-
-      const mediaGroup = req.files.map((file, idx) => {
-        const attachName = `photo_${idx}`;
-        const blob = new Blob([file.buffer], { type: file.mimetype });
-        formData.append(attachName, blob, file.originalname);
-
-        const item = { type: 'photo', media: `attach://${attachName}` };
-        if (idx === 0) {
-          item.caption = message;
-          item.parse_mode = 'HTML';
-        }
-        return item;
-      });
-
-      formData.append('media', JSON.stringify(mediaGroup));
-
-      const mediaRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
-        method: 'POST',
-        body: formData
-      });
-      const mediaData = await mediaRes.json();
-      if (!mediaData.ok) throw new Error(mediaData.description);
-
-    } else {
-      const msgPayload = {
-        chat_id: GROUP_CHAT_ID,
+      body: JSON.stringify({
+        chat_id: process.env.CHAT_ID, // Your Telegram Group / Channel ID
         text: message,
         parse_mode: 'HTML'
-      };
-      if (topicThreadId) msgPayload.message_thread_id = topicThreadId;
+      })
+    });
 
-      const summaryRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(msgPayload)
-      });
-      const summaryData = await summaryRes.json();
-      if (!summaryData.ok) throw new Error(summaryData.description);
-    }
+    // CRITICAL: Always return JSON response
+    return res.status(200).json({ success: true, message: 'Inquiry submitted successfully!' });
 
-    res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Error Property Form:', error.message);
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Error submitting inquiry:', error);
+    return res.status(500).json({ success: false, error: error.message });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
 });
