@@ -94,8 +94,8 @@
       color: #334155;
     }
     input[type="text"],
+    input[type="number"],
     input[type="tel"],
-    input[type="url"],
     select,
     textarea {
       width: 100%;
@@ -125,49 +125,62 @@
       resize: vertical;
       min-height: 70px;
     }
-    .map-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 6px;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #0284c7;
-      background-color: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 6px;
-      text-decoration: none;
-      width: 100%;
-    }
-    .file-input-wrapper {
-      position: relative;
-      background: #f8fafc;
+
+    /* Image Upload Box & Grid */
+    .upload-box {
       border: 2px dashed #cbd5e1;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 16px;
       text-align: center;
+      background: #f8fafc;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .file-input-wrapper input[type="file"] {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .upload-box:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+    .upload-icon { font-size: 24px; margin-bottom: 4px; }
+    .upload-text { font-size: 13px; font-weight: 600; color: #0284c7; }
+    .upload-count { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .preview-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .preview-item img {
       width: 100%;
       height: 100%;
-      opacity: 0;
-      cursor: pointer;
+      object-fit: cover;
     }
-    .file-label {
-      font-size: 12px;
-      color: #0f172a;
-      font-weight: 600;
-    }
-    .file-count {
+    .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
       font-size: 11px;
-      color: #64748b;
-      margin-top: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
   </style>
 </head>
@@ -180,17 +193,16 @@
         <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
       </div>
       <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-      <h2 id="header-title">🏠 ដាក់លក់/ជួល អចលនទ្រព្យ</h2>
+      <h2 id="header-title">🏠 ចុះបញ្ជីអចលនទ្រព្យ</h2>
       <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <form id="propertyForm">
-      <!-- Owner Info -->
+    <form id="listingForm">
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
-        <label id="lbl-name">ឈ្មោះម្ចាស់</label>
-        <input type="text" id="name" data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
+        <label id="lbl-ownerName">ឈ្មោះម្ចាស់ *</label>
+        <input type="text" id="ownerName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
       </div>
 
       <div class="form-group">
@@ -204,20 +216,18 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl-clientTelegram">Telegram ម្ចាស់</label>
-        <input type="text" id="clientTelegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
+        <label id="lbl-telegram">Telegram ម្ចាស់</label>
+        <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
       </div>
 
-      <!-- Property Info -->
-      <div class="section-title" id="sec-property">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
+      <div class="section-title" id="sec-details">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
 
       <div class="form-group">
-        <label id="lbl-target">គោលបំណង *</label>
-        <select id="target" required>
-          <option value="" id="opt-target-select">-- ជ្រើសរើស --</option>
-          <option value="លក់" id="opt-target-sale">លក់</option>
-          <option value="ជួល" id="opt-target-rent">ជួល</option>
-          <option value="លក់ និង ជួល" id="opt-target-salerent">លក់ និង ជួល</option>
+        <label id="lbl-listingType">ប្រភេទការដាក់លក់/ជួល *</label>
+        <select id="listingType" required>
+          <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
+          <option value="លក់" id="opt-list-sale">លក់</option>
+          <option value="ជួល" id="opt-list-rent">ជួល</option>
         </select>
       </div>
 
@@ -235,31 +245,13 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl-price">តម្លៃ *</label>
-        <input type="text" id="price" required data-ph-km="ឧ. $150,000 ឬ $500/ខែ" data-ph-en="e.g. $150,000 or $500/month">
+        <label id="lbl-price">តម្លៃ ($) *</label>
+        <input type="number" id="price" step="any" required placeholder="e.g. 150000">
       </div>
 
       <div class="form-group">
-        <label id="lbl-location">ទីតាំង (Google Maps Link) *</label>
-        <input type="url" id="location" required placeholder="https://maps.google.com/...">
-        <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="map-btn" id="map-btn-text">
-          📍 បើក Google Maps ដើម្បីចម្លង Link
-        </a>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-buildingSize">ទំហំអគារ</label>
-        <input type="text" id="buildingSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-frontSpace">ដីសល់ខាងមុខ</label>
-        <input type="text" id="frontSpace" data-ph-km="ឧ. 5m" data-ph-en="e.g. 5m">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-backSpace">ដីសល់ខាងក្រោយ</label>
-        <input type="text" id="backSpace" data-ph-km="ឧ. 2m" data-ph-en="e.g. 2m">
+        <label id="lbl-location">ទីតាំង / អាសយដ្ឋាន *</label>
+        <input type="text" id="location" required data-ph-km="ឧ. សង្កាត់ទួលសង្កែ, ខណ្ឌឫស្សីកែវ" data-ph-en="e.g. Toul Sangke, Russey Keo">
       </div>
 
       <div class="form-group">
@@ -268,9 +260,14 @@
       </div>
 
       <div class="form-group">
+        <label id="lbl-houseSize">ទំហំផ្ទះ</label>
+        <input type="text" id="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
+      </div>
+
+      <div class="form-group">
         <label id="lbl-bedrooms">បន្ទប់គេង</label>
         <select id="bedrooms">
-          <option value="មិនច្បាស់" id="opt-bed-select">-- ជ្រើសរើស --</option>
+          <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -282,7 +279,7 @@
       <div class="form-group">
         <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
         <select id="bathrooms">
-          <option value="មិនច្បាស់" id="opt-bath-select">-- ជ្រើសរើស --</option>
+          <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -294,7 +291,7 @@
       <div class="form-group">
         <label id="lbl-direction">ទិស</label>
         <select id="direction">
-          <option value="មិនច្បាស់" id="opt-dir-select">-- ជ្រើសរើស --</option>
+          <option value="មិនកំណត់" id="opt-dir-select">-- ជ្រើសរើស --</option>
           <option value="កើត" id="opt-dir-east">កើត</option>
           <option value="លិច" id="opt-dir-west">លិច</option>
           <option value="ត្បូង" id="opt-dir-south">ត្បូង</option>
@@ -307,63 +304,22 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl-parking">ទីធ្លាចំណត</label>
-        <select id="parking">
-          <option value="មិនច្បាស់" id="opt-park-select">-- ជ្រើសរើស --</option>
-          <option value="គ្មានចំណត" id="opt-park-none">គ្មានចំណត</option>
-          <option value="ចំណតឡាន" id="opt-park-car">ចំណតឡាន</option>
-          <option value="ចំណតម៉ូតូ" id="opt-park-moto">ចំណតម៉ូតូ</option>
-        </select>
-      </div>
-
-      <!-- Payment Condition Section -->
-      <div class="section-title" id="sec-payment">💳 លក្ខខណ្ឌទូទាត់</div>
-
-      <div class="form-group">
-        <label id="lbl-paymentTerm">ការបង់ប្រាក់</label>
-        <select id="paymentTerm">
-          <option value="" id="opt-pay-select">-- ជ្រើសរើស --</option>
-          <option value="បង់មុន 1 ខែ" id="opt-pay-1m">បង់មុន 1 ខែ</option>
-          <option value="បង់មុន 2 ខែ" id="opt-pay-2m">បង់មុន 2 ខែ</option>
-          <option value="អាចចចារបាន" id="opt-pay-neg">អាចចចារបាន</option>
-        </select>
+        <label id="lbl-description">សម្គាល់បន្ថែម</label>
+        <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
       </div>
 
       <div class="form-group">
-        <label id="lbl-deposit">ប្រាក់កក់</label>
-        <select id="deposit">
-          <option value="" id="opt-dep-select">-- ជ្រើសរើស --</option>
-          <option value="កក់ 1 ខែ" id="opt-dep-1m">កក់ 1 ខែ</option>
-          <option value="កក់ 2 ខែ" id="opt-dep-2m">កក់ 2 ខែ</option>
-          <option value="អាចចចារបាន" id="opt-dep-neg">អាចចចារបាន</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-contract">កុងត្រា</label>
-        <select id="contract">
-          <option value="" id="opt-con-select">-- ជ្រើសរើស --</option>
-          <option value="6 ខែ" id="opt-con-6m">6 ខែ</option>
-          <option value="1 ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ</option>
-          <option value="2 ឆ្នាំ" id="opt-con-2y">2 ឆ្នាំ</option>
-          <option value="បន្ថែម" id="opt-con-more">បន្ថែម</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-remark">សម្គាល់បន្ថែម</label>
-        <textarea id="remark" data-ph-km="ព័ត៌មានបន្ថែមផ្សេងៗ..." data-ph-en="Additional details..."></textarea>
-      </div>
-
-      <!-- Image Upload -->
-      <div class="section-title" id="sec-photos">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា ១០) *</div>
-      
-      <div class="form-group">
-        <div class="file-input-wrapper">
-          <div class="file-label" id="file-label-text">📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *</div>
-          <div class="file-count" id="fileCount">មិនទាន់ជ្រើសរើសរូបភាព</div>
-          <input type="file" id="photos" multiple accept="image/*" required>
+        <label id="lbl-images">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *</label>
+        
+        <div class="upload-box" onclick="document.getElementById('photos').click()">
+          <div class="upload-icon">📷</div>
+          <div id="upload-text" class="upload-text">ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *</div>
+          <div id="upload-count" class="upload-count">គ្មានរូបភាពត្រូវបានជ្រើសរើស</div>
         </div>
+        
+        <input type="file" id="photos" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
+        
+        <div id="preview-grid" class="preview-grid"></div>
       </div>
     </form>
   </div>
@@ -371,22 +327,22 @@
   <script>
     const tg = window.Telegram?.WebApp;
     let currentLang = localStorage.getItem('appLang') || 'km';
+    let selectedFiles = [];
 
     const translations = {
       km: {
-        headerTitle: "🏠 ដាក់លក់/ជួល អចលនទ្រព្យ",
-        headerSubtitle: "ទម្រង់បែបបទចុះបញ្ជីអចលនទ្រព្យ",
+        headerTitle: "🏠 ចុះបញ្ជីអចលនទ្រព្យ",
+        headerSubtitle: "ទម្រង់បែបបទដាក់អចលនទ្រព្យលក់/ជួល",
         secOwner: "👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ",
-        lblName: "ឈ្មោះម្ចាស់",
+        lblOwnerName: "ឈ្មោះម្ចាស់ *",
         lblTel1: "លេខទូរស័ព្ទទី១ *",
         lblTel2: "លេខទូរស័ព្ទទី២",
-        lblClientTelegram: "Telegram ម្ចាស់",
-        secProperty: "🏠 ព័ត៌មានអចលនទ្រព្យ",
-        lblTarget: "គោលបំណង *",
+        lblTelegram: "Telegram ម្ចាស់",
+        secDetails: "🏠 ព័ត៌មានអចលនទ្រព្យ",
+        lblListingType: "ប្រភេទការដាក់លក់/ជួល *",
         optSelect: "-- ជ្រើសរើស --",
         optSale: "លក់",
         optRent: "ជួល",
-        optSaleRent: "លក់ និង ជួល",
         lblPropertyType: "ប្រភេទអចលនទ្រព្យ *",
         optFlat: "ផ្ទះល្វែង",
         optVilla: "វីឡា",
@@ -394,13 +350,10 @@
         optLand: "ដី",
         optWarehouse: "ឃ្លាំង",
         optBusiness: "អាជីវកម្ម",
-        lblPrice: "តម្លៃ *",
-        lblLocation: "ទីតាំង (Google Maps Link) *",
-        mapBtn: "📍 បើក Google Maps ដើម្បីចម្លង Link",
-        lblBuildingSize: "ទំហំអគារ",
-        lblFrontSpace: "ដីសល់ខាងមុខ",
-        lblBackSpace: "ដីសល់ខាងក្រោយ",
+        lblPrice: "តម្លៃ ($) *",
+        lblLocation: "ទីតាំង / អាសយដ្ឋាន *",
         lblLandSize: "ទំហំដី",
+        lblHouseSize: "ទំហំផ្ទះ",
         lblBedrooms: "បន្ទប់គេង",
         lblBathrooms: "បន្ទប់ទឹក",
         lblDirection: "ទិស",
@@ -412,48 +365,29 @@
         optNE: "កើតជើង",
         optSW: "លិចត្បូង",
         optNW: "លិចជើង",
-        lblParking: "ទីធ្លាចំណត",
-        optParkNone: "គ្មានចំណត",
-        optParkCar: "ចំណតឡាន",
-        optParkMoto: "ចំណតម៉ូតូ",
-        secPayment: "💳 លក្ខខណ្ឌទូទាត់",
-        lblPaymentTerm: "ការបង់ប្រាក់",
-        optPay1m: "បង់មុន 1 ខែ",
-        optPay2m: "បង់មុន 2 ខែ",
-        optPayNeg: "អាចចចារបាន",
-        lblDeposit: "ប្រាក់កក់",
-        optDep1m: "កក់ 1 ខែ",
-        optDep2m: "កក់ 2 ខែ",
-        optDepNeg: "អាចចចារបាន",
-        lblContract: "កុងត្រា",
-        optCon6m: "6 ខែ",
-        optCon1y: "1 ឆ្នាំ",
-        optCon2y: "2 ឆ្នាំ",
-        optConMore: "បន្ថែម",
-        lblRemark: "សម្គាល់បន្ថែម",
-        secPhotos: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា ១០) *",
-        fileLabel: "📷 ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
-        noPhotoText: "មិនទាន់ជ្រើសរើសរូបភាព",
-        photoSelected: (n) => `បានជ្រើសរើស ${n} រូប`,
+        lblDescription: "សម្គាល់បន្ថែម",
+        lblImages: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *",
+        uploadText: "ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
+        noImages: "គ្មានរូបភាពត្រូវបានជ្រើសរើស",
+        imgCountText: "បានជ្រើសរើស",
         submitBtn: "បញ្ជូនទិន្នន័យ",
-        max10Alert: "សូមជ្រើសរើសយ៉ាងច្រើនត្រឹម ១០ រូបប៉ុណ្ណោះ!",
-        atLeast1Alert: "សូមបញ្ជូនរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក!",
-        successAlert: "លោកអ្នកបានផ្ញើព័ត៌មានអចលនទ្រព្យជោគជ័យ! 🎉"
+        successAlert: "បានចុះបញ្ជីអចលនទ្រព្យជោគជ័យ! 🎉",
+        limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្ណោះ",
+        minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក"
       },
       en: {
         headerTitle: "🏠 Property Listing",
         headerSubtitle: "Property Registration Form",
-        secOwner: "👤 Property Owner Info",
-        lblName: "Owner Name",
+        secOwner: "👤 Owner Information",
+        lblOwnerName: "Owner Name *",
         lblTel1: "Phone Number 1 *",
         lblTel2: "Phone Number 2",
-        lblClientTelegram: "Owner Telegram",
-        secProperty: "🏠 Property Details",
-        lblTarget: "Target *",
+        lblTelegram: "Owner Telegram",
+        secDetails: "🏠 Property Details",
+        lblListingType: "Listing Type *",
         optSelect: "-- Select --",
-        optSale: "Sale",
-        optRent: "Rent",
-        optSaleRent: "Sale & Rent",
+        optSale: "For Sale",
+        optRent: "For Rent",
         lblPropertyType: "Property Type *",
         optFlat: "Flat House",
         optVilla: "Villa",
@@ -461,13 +395,10 @@
         optLand: "Land",
         optWarehouse: "Warehouse",
         optBusiness: "Business",
-        lblPrice: "Price *",
-        lblLocation: "Location (Google Maps Link) *",
-        mapBtn: "📍 Open Google Maps to Copy Link",
-        lblBuildingSize: "Building Size",
-        lblFrontSpace: "Front Space",
-        lblBackSpace: "Back Space",
+        lblPrice: "Price ($) *",
+        lblLocation: "Location / Address *",
         lblLandSize: "Land Size",
+        lblHouseSize: "House Size",
         lblBedrooms: "Bedrooms",
         lblBathrooms: "Bathrooms",
         lblDirection: "Direction",
@@ -479,33 +410,15 @@
         optNE: "North East",
         optSW: "South West",
         optNW: "North West",
-        lblParking: "Parking Space",
-        optParkNone: "Not Available",
-        optParkCar: "Car Parking",
-        optParkMoto: "Motorcycle Only",
-        secPayment: "💳 Payment Condition",
-        lblPaymentTerm: "Payment Term",
-        optPay1m: "1 Month Advance",
-        optPay2m: "2 Months Advance",
-        optPayNeg: "Negotiable",
-        lblDeposit: "Deposit",
-        optDep1m: "1 Month Deposit",
-        optDep2m: "2 Months Deposit",
-        optDepNeg: "Negotiable",
-        lblContract: "Contract",
-        optCon6m: "6 Months",
-        optCon1y: "1 Year",
-        optCon2y: "2 Years",
-        optConMore: "More",
-        lblRemark: "Remark",
-        secPhotos: "🖼️ Property Photos (Max 10) *",
-        fileLabel: "📷 Click here to select photos *",
-        noPhotoText: "No photos selected",
-        photoSelected: (n) => `${n} photo(s) selected`,
-        submitBtn: "SUBMIT PROPERTY",
-        max10Alert: "Maximum 10 photos allowed!",
-        atLeast1Alert: "Please upload at least 1 photo!",
-        successAlert: "Property submitted successfully! 🎉"
+        lblDescription: "Additional Notes",
+        lblImages: "🖼️ Property Images (Max 10) *",
+        uploadText: "Click here to select images *",
+        noImages: "No images selected",
+        imgCountText: "selected",
+        submitBtn: "SUBMIT LISTING",
+        successAlert: "Property registered successfully! 🎉",
+        limitAlert: "You can only upload up to 10 images.",
+        minImgAlert: "Please upload at least 1 image."
       }
     };
 
@@ -521,21 +434,18 @@
       document.getElementById('header-title').textContent = t.headerTitle;
       document.getElementById('header-subtitle').textContent = t.headerSubtitle;
       document.getElementById('sec-owner').textContent = t.secOwner;
-      document.getElementById('lbl-name').textContent = t.lblName;
+      document.getElementById('lbl-ownerName').textContent = t.lblOwnerName;
       document.getElementById('lbl-tel1').textContent = t.lblTel1;
       document.getElementById('lbl-tel2').textContent = t.lblTel2;
-      document.getElementById('lbl-clientTelegram').textContent = t.lblClientTelegram;
-      document.getElementById('sec-property').textContent = t.secProperty;
-      document.getElementById('lbl-target').textContent = t.lblTarget;
+      document.getElementById('lbl-telegram').textContent = t.lblTelegram;
       
-      // Target Select Options
-      document.getElementById('opt-target-select').textContent = t.optSelect;
-      document.getElementById('opt-target-sale').textContent = t.optSale;
-      document.getElementById('opt-target-rent').textContent = t.optRent;
-      document.getElementById('opt-target-salerent').textContent = t.optSaleRent;
+      document.getElementById('sec-details').textContent = t.secDetails;
+      document.getElementById('lbl-listingType').textContent = t.lblListingType;
+      document.getElementById('opt-list-select').textContent = t.optSelect;
+      document.getElementById('opt-list-sale').textContent = t.optSale;
+      document.getElementById('opt-list-rent').textContent = t.optRent;
 
       document.getElementById('lbl-propertyType').textContent = t.lblPropertyType;
-      // Property Type Options
       document.getElementById('opt-type-select').textContent = t.optSelect;
       document.getElementById('opt-type-flat').textContent = t.optFlat;
       document.getElementById('opt-type-villa').textContent = t.optVilla;
@@ -546,16 +456,15 @@
 
       document.getElementById('lbl-price').textContent = t.lblPrice;
       document.getElementById('lbl-location').textContent = t.lblLocation;
-      document.getElementById('map-btn-text').textContent = t.mapBtn;
-      document.getElementById('lbl-buildingSize').textContent = t.lblBuildingSize;
-      document.getElementById('lbl-frontSpace').textContent = t.lblFrontSpace;
-      document.getElementById('lbl-backSpace').textContent = t.lblBackSpace;
       document.getElementById('lbl-landSize').textContent = t.lblLandSize;
+      document.getElementById('lbl-houseSize').textContent = t.lblHouseSize;
+      
       document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
       document.getElementById('opt-bed-select').textContent = t.optSelect;
+      
       document.getElementById('lbl-bathrooms').textContent = t.lblBathrooms;
       document.getElementById('opt-bath-select').textContent = t.optSelect;
-      
+
       document.getElementById('lbl-direction').textContent = t.lblDirection;
       document.getElementById('opt-dir-select').textContent = t.optSelect;
       document.getElementById('opt-dir-east').textContent = t.optEast;
@@ -567,96 +476,93 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      document.getElementById('lbl-parking').textContent = t.lblParking;
-      document.getElementById('opt-park-select').textContent = t.optSelect;
-      document.getElementById('opt-park-none').textContent = t.optParkNone;
-      document.getElementById('opt-park-car').textContent = t.optParkCar;
-      document.getElementById('opt-park-moto').textContent = t.optParkMoto;
-
-      document.getElementById('sec-payment').textContent = t.secPayment;
-      document.getElementById('lbl-paymentTerm').textContent = t.lblPaymentTerm;
-      document.getElementById('opt-pay-select').textContent = t.optSelect;
-      document.getElementById('opt-pay-1m').textContent = t.optPay1m;
-      document.getElementById('opt-pay-2m').textContent = t.optPay2m;
-      document.getElementById('opt-pay-neg').textContent = t.optPayNeg;
-
-      document.getElementById('lbl-deposit').textContent = t.lblDeposit;
-      document.getElementById('opt-dep-select').textContent = t.optSelect;
-      document.getElementById('opt-dep-1m').textContent = t.optDep1m;
-      document.getElementById('opt-dep-2m').textContent = t.optDep2m;
-      document.getElementById('opt-dep-neg').textContent = t.optDepNeg;
-
-      document.getElementById('lbl-contract').textContent = t.lblContract;
-      document.getElementById('opt-con-select').textContent = t.optSelect;
-      document.getElementById('opt-con-6m').textContent = t.optCon6m;
-      document.getElementById('opt-con-1y').textContent = t.optCon1y;
-      document.getElementById('opt-con-2y').textContent = t.optCon2y;
-      document.getElementById('opt-con-more').textContent = t.optConMore;
-
-      document.getElementById('lbl-remark').textContent = t.lblRemark;
-      document.getElementById('sec-photos').textContent = t.secPhotos;
-      document.getElementById('file-label-text').textContent = t.fileLabel;
+      document.getElementById('lbl-description').textContent = t.lblDescription;
+      document.getElementById('lbl-images').textContent = t.lblImages;
+      document.getElementById('upload-text').textContent = t.uploadText;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
       });
 
-      const photosInput = document.getElementById('photos');
-      const fileCount = document.getElementById('fileCount');
-      if (photosInput.files.length > 0) {
-        fileCount.textContent = t.photoSelected(photosInput.files.length);
-      } else {
-        fileCount.textContent = t.noPhotoText;
-      }
+      renderPreviews();
 
       if (tg && tg.MainButton) {
         tg.MainButton.setText(t.submitBtn);
       }
     }
 
+    function handleFileSelect(event) {
+      const newFiles = Array.from(event.target.files);
+      const t = translations[currentLang];
+
+      if (selectedFiles.length + newFiles.length > 10) {
+        tg?.showAlert ? tg.showAlert(t.limitAlert) : alert(t.limitAlert);
+        return;
+      }
+
+      selectedFiles = selectedFiles.concat(newFiles);
+      event.target.value = '';
+      renderPreviews();
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      const grid = document.getElementById('preview-grid');
+      const countLabel = document.getElementById('upload-count');
+      const t = translations[currentLang];
+      grid.innerHTML = '';
+
+      if (selectedFiles.length === 0) {
+        countLabel.textContent = t.noImages;
+      } else {
+        countLabel.textContent = `${t.imgCountText} ${selectedFiles.length} ${currentLang === 'km' ? 'រូប' : 'image(s)'}`;
+      }
+
+      selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.onload = () => URL.revokeObjectURL(img.src);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '✕';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeFile(index);
+        };
+
+        item.appendChild(img);
+        item.appendChild(removeBtn);
+        grid.appendChild(item);
+      });
+    }
+
     if (tg) {
       tg.ready();
       tg.expand();
       tg.setBackgroundColor('#f8fafc');
-
-      if (tg.BackButton) {
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-          window.location.href = 'index.html';
-        });
-      }
-
       tg.MainButton.show();
     }
 
-    const photosInput = document.getElementById('photos');
-    const fileCount = document.getElementById('fileCount');
-
-    photosInput.addEventListener('change', () => {
-      const files = photosInput.files;
-      const t = translations[currentLang];
-      if (files.length > 10) {
-        tg?.showAlert ? tg.showAlert(t.max10Alert) : alert(t.max10Alert);
-        photosInput.value = '';
-        fileCount.textContent = t.noPhotoText;
-      } else if (files.length > 0) {
-        fileCount.textContent = t.photoSelected(files.length);
-      } else {
-        fileCount.textContent = t.noPhotoText;
-      }
-    });
-
     const submitForm = async () => {
       const t = translations[currentLang];
-      const form = document.getElementById('propertyForm');
+      const form = document.getElementById('listingForm');
       
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
       }
 
-      if (!photosInput.files || photosInput.files.length === 0) {
-        tg?.showAlert ? tg.showAlert(t.atLeast1Alert) : alert(t.atLeast1Alert);
+      if (selectedFiles.length === 0) {
+        tg?.showAlert ? tg.showAlert(t.minImgAlert) : alert(t.minImgAlert);
         return;
       }
 
@@ -666,34 +572,26 @@
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
       const formData = new FormData();
-      formData.append('name', document.getElementById('name').value);
+      formData.append('ownerName', document.getElementById('ownerName').value);
       formData.append('tel1', document.getElementById('tel1').value);
       formData.append('tel2', document.getElementById('tel2').value);
-      formData.append('clientTelegram', document.getElementById('clientTelegram').value);
-      formData.append('target', document.getElementById('target').value);
+      formData.append('telegram', document.getElementById('telegram').value);
+      formData.append('listingType', document.getElementById('listingType').value);
       formData.append('propertyType', document.getElementById('propertyType').value);
       formData.append('price', document.getElementById('price').value);
       formData.append('location', document.getElementById('location').value);
-      formData.append('buildingSize', document.getElementById('buildingSize').value);
-      formData.append('frontSpace', document.getElementById('frontSpace').value);
-      formData.append('backSpace', document.getElementById('backSpace').value);
       formData.append('landSize', document.getElementById('landSize').value);
+      formData.append('houseSize', document.getElementById('houseSize').value);
       formData.append('bedrooms', document.getElementById('bedrooms').value);
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
-      formData.append('parking', document.getElementById('parking').value);
-      formData.append('paymentTerm', document.getElementById('paymentTerm').value);
-      formData.append('deposit', document.getElementById('deposit').value);
-      formData.append('contract', document.getElementById('contract').value);
-      formData.append('remark', document.getElementById('remark').value);
+      formData.append('description', document.getElementById('description').value);
       formData.append('submittedBy', submittedBy);
-      
-      if (tg?.initData) formData.append('initData', tg.initData);
+      formData.append('initData', tg?.initData || '');
 
-      const files = photosInput.files;
-      for (let i = 0; i < files.length; i++) {
-        formData.append('photos', files[i]);
-      }
+      selectedFiles.forEach((file) => {
+        formData.append('photos', file);
+      });
 
       try {
         const response = await fetch('/api/register-property', {
@@ -707,9 +605,7 @@
 
         if (result.success) {
           if (tg) {
-            tg.showAlert(t.successAlert, () => {
-              tg.close();
-            });
+            tg.showAlert(t.successAlert, () => tg.close());
           } else {
             alert(t.successAlert);
             location.reload();
@@ -726,7 +622,7 @@
     if (tg) {
       tg.MainButton.onClick(submitForm);
     } else {
-      document.getElementById('propertyForm').addEventListener('submit', (e) => {
+      document.getElementById('listingForm').addEventListener('submit', (e) => {
         e.preventDefault();
         submitForm();
       });
