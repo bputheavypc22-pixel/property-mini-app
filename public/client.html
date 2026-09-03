@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -94,6 +94,7 @@
       color: #334155;
     }
     input[type="text"],
+    input[type="number"],
     input[type="tel"],
     select,
     textarea {
@@ -131,82 +132,77 @@
   <div class="container">
     <div class="header">
       <div class="lang-switcher">
-        <button type="button" class="lang-btn" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
-        <button type="button" class="lang-btn active" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
+        <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
+        <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
       </div>
       <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-      <h2 id="header-title">🎯 Property Requirement</h2>
-      <p id="header-subtitle">Property Requirement Inquiry</p>
+      <h2 id="header-title">📋 ទម្រង់ស្វែងរកអចលនទ្រព្យ</h2>
+      <p id="header-subtitle">Client Inquiry Form</p>
     </div>
 
     <form id="inquiryForm">
-      <!-- Client Information -->
-      <div class="section-title" id="sec-client">👤 Client Information</div>
+      <!-- Client Info -->
+      <div class="section-title" id="sec-client">👤 ព័ត៌មានអតិថិជន</div>
       
       <div class="form-group">
-        <label id="lbl-name">Client Name</label>
-        <input type="text" id="name" data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha" placeholder="e.g. Chan Sokha">
+        <label id="lbl-clientName">ឈ្មោះអតិថិជន *</label>
+        <input type="text" id="clientName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
       </div>
 
       <div class="form-group">
-        <label id="lbl-tel1">Phone Number 1 *</label>
+        <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
         <input type="tel" id="tel1" required placeholder="012 345 678">
       </div>
 
       <div class="form-group">
-        <label id="lbl-tel2">Phone Number 2</label>
+        <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
         <input type="tel" id="tel2" placeholder="098 765 432">
       </div>
 
       <div class="form-group">
-        <label id="lbl-clientTelegram">Client Telegram</label>
-        <input type="text" id="clientTelegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number" placeholder="@username or Phone Number">
+        <label id="lbl-telegram">Telegram អតិថិជន</label>
+        <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
       </div>
 
-      <!-- Property Requirement -->
-      <div class="section-title" id="sec-requirement">🎯 Property Requirement</div>
+      <!-- Requirements Details -->
+      <div class="section-title" id="sec-requirements">🔍 តម្រូវការអចលនទ្រព្យ</div>
 
       <div class="form-group">
-        <label id="lbl-lookingFor">Looking For *</label>
-        <select id="lookingFor" required>
-          <option value="" id="opt-look-select">-- Select --</option>
-          <option value="Buy" id="opt-look-buy">Buy</option>
-          <option value="Rent" id="opt-look-rent">Rent</option>
+        <label id="lbl-inquiryType">ប្រភេទតម្រូវការ *</label>
+        <select id="inquiryType" required>
+          <option value="" id="opt-inq-select">-- ជ្រើសរើស --</option>
+          <option value="ទិញ" id="opt-inq-buy">ទិញ</option>
+          <option value="ជួល" id="opt-inq-rent">ជួល</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label id="lbl-propertyType">Property Type *</label>
+        <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
         <select id="propertyType" required>
-          <option value="" id="opt-type-select">-- Select --</option>
-          <option value="Flat House" id="opt-type-flat">Flat House</option>
-          <option value="Villa" id="opt-type-villa">Villa</option>
-          <option value="Condo" id="opt-type-condo">Condo</option>
-          <option value="Land" id="opt-type-land">Land</option>
-          <option value="Warehouse" id="opt-type-warehouse">Warehouse</option>
-          <option value="Business" id="opt-type-business">Business</option>
+          <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
+          <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
+          <option value="វីឡា" id="opt-type-villa">វីឡា</option>
+          <option value="ខុនដូ" id="opt-type-condo">ខុនដូ</option>
+          <option value="ដី" id="opt-type-land">ដី</option>
+          <option value="ឃ្លាំង" id="opt-type-warehouse">ឃ្លាំង</option>
+          <option value="អាជីវកម្ម" id="opt-type-business">អាជីវកម្ម</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label id="lbl-budget">Budget / Price *</label>
-        <input type="text" id="budget" required data-ph-km="ឧ. $100,000 - $150,000 ឬ $500/ខែ" data-ph-en="e.g. $100,000 - $150,000 or $500/m" placeholder="e.g. $100,000 - $150,000 or $500/m">
+        <label id="lbl-budget">ថវិកា / តម្លៃ *</label>
+        <input type="text" id="budget" required data-ph-km="ឧ. $500 - $1000/ខែ ឬ $100,000" data-ph-en="e.g. $500 - $1000/mo or $100,000">
       </div>
 
       <div class="form-group">
-        <label id="lbl-preferredLocation">Preferred Location</label>
-        <input type="text" id="preferredLocation" data-ph-km="ឧ. ទួលគោក, ចំការមន" data-ph-en="e.g. Toul Kork, Chamkarmon" placeholder="e.g. Toul Kork, Chamkarmon">
+        <label id="lbl-location">តំបន់ / ទីតាំងដែលត្រូវការ *</label>
+        <input type="text" id="location" required data-ph-km="ឧ. ទួលគោក, ចំការមន" data-ph-en="e.g. Toul Kork, Chamkarmon">
       </div>
 
       <div class="form-group">
-        <label id="lbl-landSize">Land Size</label>
-        <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m" placeholder="e.g. 5m x 20m">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-bedrooms">Bedrooms</label>
+        <label id="lbl-bedrooms">បន្ទប់គេង</label>
         <select id="bedrooms">
-          <option value="" id="opt-bed-select">-- Select --</option>
+          <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -216,9 +212,9 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl-bathrooms">Bathrooms</label>
+        <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
         <select id="bathrooms">
-          <option value="" id="opt-bath-select">-- Select --</option>
+          <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -228,51 +224,51 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl-direction">Preferred Direction</label>
+        <label id="lbl-direction">ទិសដែលពេញចិត្ត</label>
         <select id="direction">
-          <option value="" id="opt-dir-select">-- Select --</option>
-          <option value="East" id="opt-dir-east">East</option>
-          <option value="West" id="opt-dir-west">West</option>
-          <option value="South" id="opt-dir-south">South</option>
-          <option value="North" id="opt-dir-north">North</option>
-          <option value="South East" id="opt-dir-se">South East</option>
-          <option value="North East" id="opt-dir-ne">North East</option>
-          <option value="South West" id="opt-dir-sw">South West</option>
-          <option value="North West" id="opt-dir-nw">North West</option>
+          <option value="មិនកំណត់" id="opt-dir-select">-- ជ្រើសរើស --</option>
+          <option value="កើត" id="opt-dir-east">កើត</option>
+          <option value="លិច" id="opt-dir-west">លិច</option>
+          <option value="ត្បូង" id="opt-dir-south">ត្បូង</option>
+          <option value="ជើង" id="opt-dir-north">ជើង</option>
+          <option value="កើតត្បូង" id="opt-dir-se">កើតត្បូង</option>
+          <option value="កើតជើង" id="opt-dir-ne">កើតជើង</option>
+          <option value="លិចត្បូង" id="opt-dir-sw">លិចត្បូង</option>
+          <option value="លិចជើង" id="opt-dir-nw">លិចជើង</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label id="lbl-urgency">Urgency Level</label>
+        <label id="lbl-urgency">កម្រិតប្រញាប់</label>
         <select id="urgency">
-          <option value="Normal" id="opt-urg-normal">Normal</option>
-          <option value="Urgent" id="opt-urg-urgent">Urgent</option>
-          <option value="Very Urgent" id="opt-urg-very">Very Urgent</option>
+          <option value="ធម្មតា" id="opt-urgency-normal">ធម្មតា</option>
+          <option value="ប្រញាប់" id="opt-urgency-urgent">ប្រញាប់</option>
+          <option value="ប្រញាប់ខ្លាំង" id="opt-urgency-vurgent">ប្រញាប់ខ្លាំង</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label id="lbl-additional">Additional Requirements</label>
-        <textarea id="additional" data-ph-km="ឧ. ផ្លូវធំ, មានគ្រឿងសង្ហារិមស្រាប់..." data-ph-en="e.g. Main road access, Fully furnished..." placeholder="e.g. Main road access, Fully furnished..."></textarea>
+        <label id="lbl-description">សម្គាល់បន្ថែម</label>
+        <textarea id="description" data-ph-km="តម្រូវការបន្ថែមផ្សេងៗ..." data-ph-en="Other specific requirements..."></textarea>
       </div>
     </form>
   </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
-    let currentLang = localStorage.getItem('appLang') || 'en';
+    let currentLang = localStorage.getItem('appLang') || 'km';
 
     const translations = {
       km: {
-        headerTitle: "🎯 តម្រូវការស្វែងរកអចលនទ្រព្យ",
-        headerSubtitle: "ទម្រង់បែបបទស្វែងរកអចលនទ្រព្យ",
+        headerTitle: "📋 ទម្រង់ស្វែងរកអចលនទ្រព្យ",
+        headerSubtitle: "ទម្រង់សម្រាប់អតិថិជនត្រូវការទិញ/ជួល",
         secClient: "👤 ព័ត៌មានអតិថិជន",
-        lblName: "ឈ្មោះអតិថិជន",
+        lblClientName: "ឈ្មោះអតិថិជន *",
         lblTel1: "លេខទូរស័ព្ទទី១ *",
         lblTel2: "លេខទូរស័ព្ទទី២",
-        lblClientTelegram: "Telegram អតិថិជន",
-        secRequirement: "🎯 តម្រូវការអចលនទ្រព្យ",
-        lblLookingFor: "ត្រូវការ *",
+        lblTelegram: "Telegram អតិថិជន",
+        secRequirements: "🔍 តម្រូវការអចលនទ្រព្យ",
+        lblInquiryType: "ប្រភេទតម្រូវការ *",
         optSelect: "-- ជ្រើសរើស --",
         optBuy: "ទិញ",
         optRent: "ជួល",
@@ -284,8 +280,7 @@
         optWarehouse: "ឃ្លាំង",
         optBusiness: "អាជីវកម្ម",
         lblBudget: "ថវិកា / តម្លៃ *",
-        lblPreferredLocation: "តំបន់/ទីតាំងដែលត្រូវការ",
-        lblLandSize: "ទំហំដី",
+        lblLocation: "តំបន់ / ទីតាំងដែលត្រូវការ *",
         lblBedrooms: "បន្ទប់គេង",
         lblBathrooms: "បន្ទប់ទឹក",
         lblDirection: "ទិសដែលពេញចិត្ត",
@@ -298,26 +293,26 @@
         optSW: "លិចត្បូង",
         optNW: "លិចជើង",
         lblUrgency: "កម្រិតប្រញាប់",
-        optUrgNormal: "ធម្មតា",
-        optUrgUrgent: "ប្រញាប់",
-        optUrgVery: "ប្រញាប់ខ្លាំង",
-        lblAdditional: "តម្រូវការបន្ថែម",
+        optUrgencyNormal: "ធម្មតា",
+        optUrgencyUrgent: "ប្រញាប់",
+        optUrgencyVUrgent: "ប្រញាប់ខ្លាំង",
+        lblDescription: "សម្គាល់បន្ថែម",
         submitBtn: "បញ្ជូនព័ត៌មាន",
         successAlert: "បានផ្ញើព័ត៌មានតម្រូវការជោគជ័យ! 🎉"
       },
       en: {
-        headerTitle: "🎯 Property Requirement",
-        headerSubtitle: "Property Requirement Inquiry",
+        headerTitle: "📋 Client Inquiry",
+        headerSubtitle: "Property Request Form",
         secClient: "👤 Client Information",
-        lblName: "Client Name",
+        lblClientName: "Client Name *",
         lblTel1: "Phone Number 1 *",
         lblTel2: "Phone Number 2",
-        lblClientTelegram: "Client Telegram",
-        secRequirement: "🎯 Property Requirement",
-        lblLookingFor: "Looking For *",
+        lblTelegram: "Client Telegram",
+        secRequirements: "🔍 Property Requirements",
+        lblInquiryType: "Inquiry Type *",
         optSelect: "-- Select --",
-        optBuy: "Buy",
-        optRent: "Rent",
+        optBuy: "To Buy",
+        optRent: "To Rent",
         lblPropertyType: "Property Type *",
         optFlat: "Flat House",
         optVilla: "Villa",
@@ -326,8 +321,7 @@
         optWarehouse: "Warehouse",
         optBusiness: "Business",
         lblBudget: "Budget / Price *",
-        lblPreferredLocation: "Preferred Location",
-        lblLandSize: "Land Size",
+        lblLocation: "Preferred Location *",
         lblBedrooms: "Bedrooms",
         lblBathrooms: "Bathrooms",
         lblDirection: "Preferred Direction",
@@ -340,12 +334,12 @@
         optSW: "South West",
         optNW: "North West",
         lblUrgency: "Urgency Level",
-        optUrgNormal: "Normal",
-        optUrgUrgent: "Urgent",
-        optUrgVery: "Very Urgent",
-        lblAdditional: "Additional Requirements",
+        optUrgencyNormal: "Normal",
+        optUrgencyUrgent: "Urgent",
+        optUrgencyVUrgent: "Very Urgent",
+        lblDescription: "Additional Notes",
         submitBtn: "SUBMIT INQUIRY",
-        successAlert: "Requirement submitted successfully! 🎉"
+        successAlert: "Inquiry submitted successfully! 🎉"
       }
     };
 
@@ -358,20 +352,19 @@
 
       const t = translations[lang];
 
-      // Update text nodes
       document.getElementById('header-title').textContent = t.headerTitle;
       document.getElementById('header-subtitle').textContent = t.headerSubtitle;
       document.getElementById('sec-client').textContent = t.secClient;
-      document.getElementById('lbl-name').textContent = t.lblName;
+      document.getElementById('lbl-clientName').textContent = t.lblClientName;
       document.getElementById('lbl-tel1').textContent = t.lblTel1;
       document.getElementById('lbl-tel2').textContent = t.lblTel2;
-      document.getElementById('lbl-clientTelegram').textContent = t.lblClientTelegram;
+      document.getElementById('lbl-telegram').textContent = t.lblTelegram;
       
-      document.getElementById('sec-requirement').textContent = t.secRequirement;
-      document.getElementById('lbl-lookingFor').textContent = t.lblLookingFor;
-      document.getElementById('opt-look-select').textContent = t.optSelect;
-      document.getElementById('opt-look-buy').textContent = t.optBuy;
-      document.getElementById('opt-look-rent').textContent = t.optRent;
+      document.getElementById('sec-requirements').textContent = t.secRequirements;
+      document.getElementById('lbl-inquiryType').textContent = t.lblInquiryType;
+      document.getElementById('opt-inq-select').textContent = t.optSelect;
+      document.getElementById('opt-inq-buy').textContent = t.optBuy;
+      document.getElementById('opt-inq-rent').textContent = t.optRent;
 
       document.getElementById('lbl-propertyType').textContent = t.lblPropertyType;
       document.getElementById('opt-type-select').textContent = t.optSelect;
@@ -383,8 +376,7 @@
       document.getElementById('opt-type-business').textContent = t.optBusiness;
 
       document.getElementById('lbl-budget').textContent = t.lblBudget;
-      document.getElementById('lbl-preferredLocation').textContent = t.lblPreferredLocation;
-      document.getElementById('lbl-landSize').textContent = t.lblLandSize;
+      document.getElementById('lbl-location').textContent = t.lblLocation;
       
       document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
       document.getElementById('opt-bed-select').textContent = t.optSelect;
@@ -404,18 +396,16 @@
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
       document.getElementById('lbl-urgency').textContent = t.lblUrgency;
-      document.getElementById('opt-urg-normal').textContent = t.optUrgNormal;
-      document.getElementById('opt-urg-urgent').textContent = t.optUrgUrgent;
-      document.getElementById('opt-urg-very').textContent = t.optUrgVery;
+      document.getElementById('opt-urgency-normal').textContent = t.optUrgencyNormal;
+      document.getElementById('opt-urgency-urgent').textContent = t.optUrgencyUrgent;
+      document.getElementById('opt-urgency-vurgent').textContent = t.optUrgencyVUrgent;
 
-      document.getElementById('lbl-additional').textContent = t.lblAdditional;
+      document.getElementById('lbl-description').textContent = t.lblDescription;
 
-      // Update Placeholders
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
       });
 
-      // Update Telegram Main Button
       if (tg && tg.MainButton) {
         tg.MainButton.setText(t.submitBtn);
       }
@@ -425,14 +415,6 @@
       tg.ready();
       tg.expand();
       tg.setBackgroundColor('#f8fafc');
-
-      if (tg.BackButton) {
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-          window.location.href = 'index.html';
-        });
-      }
-
       tg.MainButton.show();
     }
 
@@ -451,28 +433,30 @@
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
       const payload = {
-        name: document.getElementById('name').value,
+        clientName: document.getElementById('clientName').value,
         tel1: document.getElementById('tel1').value,
         tel2: document.getElementById('tel2').value,
-        clientTelegram: document.getElementById('clientTelegram').value,
-        lookingFor: document.getElementById('lookingFor').value,
+        telegram: document.getElementById('telegram').value,
+        inquiryType: document.getElementById('inquiryType').value,
         propertyType: document.getElementById('propertyType').value,
         budget: document.getElementById('budget').value,
-        preferredLocation: document.getElementById('preferredLocation').value,
-        landSize: document.getElementById('landSize').value,
+        location: document.getElementById('location').value,
         bedrooms: document.getElementById('bedrooms').value,
         bathrooms: document.getElementById('bathrooms').value,
         direction: document.getElementById('direction').value,
         urgency: document.getElementById('urgency').value,
-        additional: document.getElementById('additional').value,
+        description: document.getElementById('description').value,
         submittedBy: submittedBy,
         initData: tg?.initData || ''
       };
 
       try {
-        const response = await fetch('/api/register-requirement', {
+        // Updated fallback endpoints matching common express server routes
+        const response = await fetch('/api/submit-client', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(payload)
         });
 
@@ -482,9 +466,7 @@
 
         if (result.success) {
           if (tg) {
-            tg.showAlert(t.successAlert, () => {
-              tg.close();
-            });
+            tg.showAlert(t.successAlert, () => tg.close());
           } else {
             alert(t.successAlert);
             location.reload();
