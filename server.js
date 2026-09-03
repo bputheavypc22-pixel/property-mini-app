@@ -51,7 +51,44 @@ if (botToken) {
   console.warn('⚠️ TELEGRAM_BOT_TOKEN environment variable is missing!');
 }
 
-// Helper function to send text messages
+
+// ==========================================
+// 3. HELPER FUNCTIONS
+// ==========================================
+
+// Format property message caption (Bilingual Khmer/English matching sample design)
+function formatPropertyCaption(data) {
+  return `
+<b>🏘️ អចលនទ្រព្យថ្មី / NEW PROPERTY</b>
+<b>━━━━━━━━━━━━━━━━━━━━━</b>
+<b>👤 ម្ចាស់អចលនទ្រព្យ / Property Owner</b>
+  <b>ឈ្មោះ / Name:</b> ${data.name || 'N/A'}
+  <b>Tel1:</b> ${data.tel1 || 'N/A'}
+  <b>Tel2:</b> ${data.tel2 || 'N/A'}
+💬 <b>Telegram:</b> ${data.clientTelegram || 'N/A'}
+<b>━━━━━━━━━━━━━━━━━━━━━</b>
+🎯 <b>គោលបំណង / Target:</b> ${data.target || 'N/A'}
+<b>━━━━━━━━━━━━━━━━━━━━━</b>
+🏢 <b>ប្រភេទ / Type:</b> ${data.propertyType || 'N/A'}
+💰 <b>តម្លៃ / Price:</b> ${data.price || 'N/A'}
+📍 <b>ទីតាំង / Location:</b> ${data.location || 'N/A'}
+🏢 <b>ទំហំអគារ / Building Size:</b> ${data.buildingSize || 'N/A'}
+📐 <b>ទំហំដី / Land Size:</b> ${data.landSize || 'N/A'}
+🛏️ <b>បន្ទប់គេង / Bedrooms:</b> ${data.bedrooms || 'N/A'}
+🚿 <b>បន្ទប់ទឹក / Bathrooms:</b> ${data.bathrooms || 'N/A'}
+🧭 <b>ទិស / Direction:</b> ${data.direction || 'N/A'}
+🅿️ <b>ទីធ្លាចំណត / Parking Space:</b> ${data.parking || 'N/A'}
+<b>━━━━━━━━━━━━━━━━━━━━━</b>
+💳 <b>ការបង់ប្រាក់ / Payment Term:</b> ${data.paymentTerm || 'N/A'}
+💵 <b>ប្រាក់កក់ / Deposit:</b> ${data.deposit || 'N/A'}
+📜 <b>កុងត្រា / Contract:</b> ${data.contract || 'N/A'}
+📝 <b>សម្គាល់ / Remark:</b> ${data.remark || 'N/A'}
+<b>━━━━━━━━━━━━━━━━━━━━━</b>
+👤 <b>Submitted By:</b> ${data.submittedBy || 'N/A'}
+  `.trim();
+}
+
+// Helper function to send simple text messages
 async function sendTelegramMessage(text, topicId) {
   if (!bot || !groupId) return;
   const options = { parse_mode: 'HTML' };
@@ -60,68 +97,57 @@ async function sendTelegramMessage(text, topicId) {
   await bot.sendMessage(groupId, text, options);
 }
 
-// Helper function to send photos
-async function sendTelegramPhotos(files, topicId) {
+// Helper function to send photos grid with formatted caption underneath
+async function sendTelegramPhotosWithCaption(files, messageText, topicId) {
   if (!bot || !groupId || !files || files.length === 0) return;
 
   const options = {};
   if (topicId) options.message_thread_id = parseInt(topicId, 10);
 
   if (files.length === 1) {
-    await bot.sendPhoto(groupId, files[0].buffer, options);
+    // Single Photo + Caption
+    await bot.sendPhoto(groupId, files[0].buffer, {
+      ...options,
+      caption: messageText,
+      parse_mode: 'HTML'
+    });
   } else {
-    const mediaGroup = files.slice(0, 10).map((file) => ({
-      type: 'photo',
-      media: file.buffer
-    }));
+    // Media Album + Caption attached to the first image
+    const mediaGroup = files.slice(0, 10).map((file, index) => {
+      const mediaItem = {
+        type: 'photo',
+        media: file.buffer
+      };
+
+      if (index === 0) {
+        mediaItem.caption = messageText;
+        mediaItem.parse_mode = 'HTML';
+      }
+
+      return mediaItem;
+    });
+
     await bot.sendMediaGroup(groupId, mediaGroup, options);
   }
 }
 
 
 // ==========================================
-// 3. API ENDPOINTS
+// 4. API ENDPOINTS
 // ==========================================
 
-// --- Property Registration Endpoint (Handles FormData + Multiple Photos) ---
+// --- Property Registration Endpoint ---
 app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
     const files = req.files;
 
-    const message = `
-<b>🏰 NEW PROPERTY LISTING</b>
---------------------------------
-<b>👤 Owner Name:</b> ${data.name || 'N/A'}
-<b>📞 Phone 1:</b> ${data.tel1 || 'N/A'}
-<b>📞 Phone 2:</b> ${data.tel2 || 'N/A'}
-<b>💬 Owner Telegram:</b> ${data.clientTelegram || 'N/A'}
+    const messageText = formatPropertyCaption(data);
 
-<b>🎯 Target:</b> ${data.target || 'N/A'}
-<b>🏠 Property Type:</b> ${data.propertyType || 'N/A'}
-<b>💰 Price:</b> ${data.price || 'N/A'}
-<b>📍 Location Link:</b> ${data.location || 'N/A'}
-<b>🏢 Building Size:</b> ${data.buildingSize || 'N/A'}
-<b>📐 Land Size:</b> ${data.landSize || 'N/A'}
-<b>🛏 Bedrooms:</b> ${data.bedrooms || 'N/A'}
-<b>🚿 Bathrooms:</b> ${data.bathrooms || 'N/A'}
-<b>🧭 Direction:</b> ${data.direction || 'N/A'}
-<b>🚗 Parking:</b> ${data.parking || 'N/A'}
-
-<b>💳 Payment Term:</b> ${data.paymentTerm || 'N/A'}
-<b>💵 Deposit:</b> ${data.deposit || 'N/A'}
-<b>📜 Contract:</b> ${data.contract || 'N/A'}
-<b>📝 Remark:</b> ${data.remark || 'N/A'}
-
-<b>👤 Submitted By:</b> ${data.submittedBy || 'N/A'}
-    `.trim();
-
-    // 1. Send text details to Telegram topic
-    await sendTelegramMessage(message, propertyTopicId);
-
-    // 2. Send property photo attachments to Telegram topic
     if (files && files.length > 0) {
-      await sendTelegramPhotos(files, propertyTopicId);
+      await sendTelegramPhotosWithCaption(files, messageText, propertyTopicId);
+    } else {
+      await sendTelegramMessage(messageText, propertyTopicId);
     }
 
     return res.status(200).json({ success: true, message: 'Property registered successfully!' });
@@ -171,7 +197,7 @@ app.post('/api/client-inquiry', async (req, res) => {
 
 
 // ==========================================
-// 4. FALLBACK & ROUTING
+// 5. FALLBACK & ROUTING
 // ==========================================
 app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, error: 'API route not found.' });
@@ -183,7 +209,7 @@ app.get('/', (req, res) => {
 
 
 // ==========================================
-// 5. SERVER INITIALIZATION
+// 6. SERVER INITIALIZATION
 // ==========================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
