@@ -58,7 +58,7 @@ function generatePropertyTelegramCard(data) {
     const dep = data.deposit || 'មិនមាន';
     const rent = data.rentFee || 'មិនមាន';
     const con = data.contract || 'មិនមាន';
-    card += `• <b>លក្ខខណ្ឌ៖</b>\n${dep} (Deposit)  | ${rent} (Rent Fee Settle) | ${con} (Contract)\n`;
+    card += `• <b>លក្ខខណ្ឌ៖</b>\nកក់ ${dep}  | បង់ ${rent} | កុងត្រា ${con}\n`;
   } else if (isSale && data.certificate) {
     card += `• <b>លក្ខខណ្ឌ៖</b>\n${data.certificate} (Title/Certificate)\n`;
   } else {
