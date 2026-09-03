@@ -243,6 +243,17 @@
       <input type="text" id="buildingSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
     </div>
 
+    <!-- Added Front Space & Back Space Fields -->
+    <div class="form-group">
+      <label id="lbl-frontSpace">ដីសល់ខាងមុខ / Front Space</label>
+      <input type="text" id="frontSpace" data-ph-km="ឧ. 5m" data-ph-en="e.g. 5m">
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-backSpace">ដីសល់ខាងក្រោយ / Back Space</label>
+      <input type="text" id="backSpace" data-ph-km="ឧ. 2m" data-ph-en="e.g. 2m">
+    </div>
+
     <div class="form-group">
       <label id="lbl-landSize">ទំហំដី / Land Size</label>
       <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
@@ -368,6 +379,8 @@
         lblLocation: "ទីតាំង (Google Maps Link) *",
         mapBtn: "📍 បើក Google Maps ដើម្បីចម្លង Link",
         lblBuildingSize: "ទំហំអគារ",
+        lblFrontSpace: "ដីសល់ខាងមុខ",
+        lblBackSpace: "ដីសល់ខាងក្រោយ",
         lblLandSize: "ទំហំដី",
         lblBedrooms: "បន្ទប់គេង",
         lblBathrooms: "បន្ទប់ទឹក",
@@ -402,6 +415,8 @@
         lblLocation: "Location (Google Maps Link) *",
         mapBtn: "📍 Open Google Maps to Copy Link",
         lblBuildingSize: "Building Size",
+        lblFrontSpace: "Front Space",
+        lblBackSpace: "Back Space",
         lblLandSize: "Land Size",
         lblBedrooms: "Bedrooms",
         lblBathrooms: "Bathrooms",
@@ -446,6 +461,8 @@
       document.getElementById('lbl-location').textContent = t.lblLocation;
       document.getElementById('map-btn-text').textContent = t.mapBtn;
       document.getElementById('lbl-buildingSize').textContent = t.lblBuildingSize;
+      document.getElementById('lbl-frontSpace').textContent = t.lblFrontSpace;
+      document.getElementById('lbl-backSpace').textContent = t.lblBackSpace;
       document.getElementById('lbl-landSize').textContent = t.lblLandSize;
       document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
       document.getElementById('lbl-bathrooms').textContent = t.lblBathrooms;
@@ -537,6 +554,8 @@
       formData.append('price', document.getElementById('price').value);
       formData.append('location', document.getElementById('location').value);
       formData.append('buildingSize', document.getElementById('buildingSize').value);
+      formData.append('frontSpace', document.getElementById('frontSpace').value);
+      formData.append('backSpace', document.getElementById('backSpace').value);
       formData.append('landSize', document.getElementById('landSize').value);
       formData.append('bedrooms', document.getElementById('bedrooms').value);
       formData.append('bathrooms', document.getElementById('bathrooms').value);
