@@ -83,15 +83,31 @@
       padding-bottom: 4px;
       border-bottom: 2px solid #f1f5f9;
     }
+    
+    /* Layout Scaffolding for Form Fields */
     .form-group {
       margin-bottom: 12px;
     }
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+      min-width: 0; /* Prevents input overflow in flexbox */
+    }
+
     label {
       display: block;
       font-size: 12px;
       font-weight: 600;
       margin-bottom: 4px;
       color: #334155;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     input[type="text"],
     input[type="number"],
@@ -260,14 +276,16 @@
         <input type="text" id="ownerName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
       </div>
 
-      <div class="form-group">
-        <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
-        <input type="tel" id="tel1" required placeholder="012 345 678">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
-        <input type="tel" id="tel2" placeholder="098 765 432">
+      <!-- Phone Numbers 1 & 2 Side-by-Side -->
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
+          <input type="tel" id="tel1" required placeholder="012 345 678">
+        </div>
+        <div class="form-group">
+          <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
+          <input type="tel" id="tel2" placeholder="098 765 432">
+        </div>
       </div>
 
       <div class="form-group">
@@ -278,26 +296,28 @@
       <!-- Property Details -->
       <div class="section-title" id="sec-details">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
 
-      <div class="form-group">
-        <label id="lbl-listingType">ប្រភេទការដាក់លក់/ជួល *</label>
-        <select id="listingType" required>
-          <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
-          <option value="លក់" id="opt-list-sale">លក់</option>
-          <option value="ជួល" id="opt-list-rent">ជួល</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
-        <select id="propertyType" required>
-          <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
-          <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
-          <option value="វីឡា" id="opt-type-villa">វីឡា</option>
-          <option value="ខុនដូ" id="opt-type-condo">ខុនដូ</option>
-          <option value="ដី" id="opt-type-land">ដី</option>
-          <option value="ឃ្លាំង" id="opt-type-warehouse">ឃ្លាំង</option>
-          <option value="អាជីវកម្ម" id="opt-type-business">អាជីវកម្ម</option>
-        </select>
+      <!-- Listing Type & Property Type Side-by-Side -->
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-listingType">ប្រភេទការដាក់លក់/ជួល *</label>
+          <select id="listingType" required>
+            <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
+            <option value="លក់" id="opt-list-sale">លក់</option>
+            <option value="ជួល" id="opt-list-rent">ជួល</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
+          <select id="propertyType" required>
+            <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
+            <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
+            <option value="វីឡា" id="opt-type-villa">វីឡា</option>
+            <option value="ខុនដូ" id="opt-type-condo">ខុនដូ</option>
+            <option value="ដី" id="opt-type-land">ដី</option>
+            <option value="ឃ្លាំង" id="opt-type-warehouse">ឃ្លាំង</option>
+            <option value="អាជីវកម្ម" id="opt-type-business">អាជីវកម្ម</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
@@ -327,50 +347,54 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label id="lbl-landSize">ទំហំដី</label>
-        <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
+      <!-- Land Size & House Size Side-by-Side -->
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-landSize">ទំហំដី</label>
+          <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
+        </div>
+        <div class="form-group">
+          <label id="lbl-houseSize">ទំហំផ្ទះ</label>
+          <input type="text" id="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label id="lbl-houseSize">ទំហំផ្ទះ</label>
-        <input type="text" id="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
+      <!-- Front Space & Back Space Side-by-Side -->
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-frontSpace">សល់មុខផ្ទះ (Front Space)</label>
+          <input type="text" id="frontSpace" data-ph-km="ឧ. សល់មុខ 5m" data-ph-en="e.g. 5m front yard">
+        </div>
+        <div class="form-group">
+          <label id="lbl-backSpace">សល់ក្រោយផ្ទះ (Back Space)</label>
+          <input type="text" id="backSpace" data-ph-km="ឧ. សល់ក្រោយ 2m" data-ph-en="e.g. 2m back yard">
+        </div>
       </div>
 
-      <!-- Front Space Field -->
-      <div class="form-group">
-        <label id="lbl-frontSpace">សល់មុខផ្ទះ (Front Space)</label>
-        <input type="text" id="frontSpace" data-ph-km="ឧ. សល់មុខ 5m" data-ph-en="e.g. 5m front yard">
-      </div>
-
-      <!-- Back Space Field -->
-      <div class="form-group">
-        <label id="lbl-backSpace">សល់ក្រោយផ្ទះ (Back Space)</label>
-        <input type="text" id="backSpace" data-ph-km="ឧ. សល់ក្រោយ 2m" data-ph-en="e.g. 2m back yard">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-bedrooms">បន្ទប់គេង</label>
-        <select id="bedrooms">
-          <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5+">5+</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
-        <select id="bathrooms">
-          <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5+">5+</option>
-        </select>
+      <!-- Bedrooms & Bathrooms Side-by-Side -->
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-bedrooms">បន្ទប់គេង</label>
+          <select id="bedrooms">
+            <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5+">5+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
+          <select id="bathrooms">
+            <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5+">5+</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
