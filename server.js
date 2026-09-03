@@ -11,7 +11,7 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
 // Ensure CHAT_ID and TOPIC_ID are correctly parsed
 const RAW_CHAT_ID = process.env.TELEGRAM_GROUP_ID;
-const CHAT_ID = RAW_CHAT_ID && !isNaN(RAW_CHAT_ID) ? Number(RAW_CHAT_ID) : RAW_CHAT_ID;
+const CHAT_ID = !isNaN(RAW_CHAT_ID) ? Number(RAW_CHAT_ID) : RAW_CHAT_ID;
 
 const RAW_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 const TOPIC_ID = RAW_TOPIC_ID && !isNaN(RAW_TOPIC_ID) ? Number(RAW_TOPIC_ID) : null;
@@ -21,41 +21,41 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**
- * Formats all submitted property form data into an HTML summary card for Telegram.
+ * Formats all submitted property form data into an HTML summary card in Khmer for Telegram.
  */
 function generatePropertyTelegramCard(data) {
-  let card = `<b>🏠 NEW PROPERTY LISTING SUBMITTED</b>\n\n`;
+  let card = `<b>🏠 ការចុះបញ្ជីអចលនទ្រព្យថ្មី (NEW PROPERTY LISTING)</b>\n\n`;
 
   // --- Owner Information ---
-  card += `<b>👤 OWNER INFORMATION</b>\n`;
-  card += `• <b>Name:</b> ${data.ownerName || 'N/A'}\n`;
-  card += `• <b>Phone 1:</b> ${data.tel1 || 'N/A'}\n`;
+  card += `<b>👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</b>\n`;
+  card += `• <b>ឈ្មោះម្ចាស់:</b> ${data.ownerName || 'មិនមាន'}\n`;
+  card += `• <b>លេខទូរស័ព្ទទី១:</b> ${data.tel1 || 'មិនមាន'}\n`;
   if (data.tel2) {
-    card += `• <b>Phone 2:</b> ${data.tel2}\n`;
+    card += `• <b>លេខទូរស័ព្ទទី២:</b> ${data.tel2}\n`;
   }
   if (data.telegram) {
-    card += `• <b>Telegram:</b> ${data.telegram}\n`;
+    card += `• <b>Telegram ម្ចាស់:</b> ${data.telegram}\n`;
   }
 
   // --- Property Core Details ---
-  card += `\n<b>📌 PROPERTY DETAILS</b>\n`;
-  card += `• <b>Purpose:</b> ${data.listingType || 'N/A'}\n`;
-  card += `• <b>Type:</b> ${data.propertyType || 'N/A'}\n`;
-  card += `• <b>Price:</b> $${data.price ? Number(data.price).toLocaleString() : 'N/A'}\n`;
-  card += `• <b>Location:</b> ${data.location || 'N/A'}\n`;
+  card += `\n<b>📌 ព័ត៌មានអចលនទ្រព្យ</b>\n`;
+  card += `• <b>គោលបំណង:</b> ${data.listingType || 'មិនមាន'}\n`;
+  card += `• <b>ប្រភេទអចលនទ្រព្យ:</b> ${data.propertyType || 'មិនមាន'}\n`;
+  card += `• <b>តម្លៃ:</b> $${data.price ? Number(data.price).toLocaleString() : 'មិនមាន'}\n`;
+  card += `• <b>ទីតាំង/អាសយដ្ឋាន:</b> ${data.location || 'មិនមាន'}\n`;
   if (data.mapLink) {
-    card += `• <b>Google Maps:</b> <a href="${data.mapLink}">View Location</a>\n`;
+    card += `• <b>លីង Google Maps:</b> <a href="${data.mapLink}">មើលទីតាំងនៅលើផែនទី</a>\n`;
   }
 
   // --- Dimensions & Specifications ---
   const dimensions = [];
-  if (data.landSize) dimensions.push(`<b>Land:</b> ${data.landSize}`);
-  if (data.houseSize) dimensions.push(`<b>House:</b> ${data.houseSize}`);
-  if (data.frontSpace) dimensions.push(`<b>Front:</b> ${data.frontSpace}`);
-  if (data.backSpace) dimensions.push(`<b>Back:</b> ${data.backSpace}`);
+  if (data.landSize) dimensions.push(`<b>ទំហំដី:</b> ${data.landSize}`);
+  if (data.houseSize) dimensions.push(`<b>ទំហំផ្ទះ:</b> ${data.houseSize}`);
+  if (data.frontSpace) dimensions.push(`<b>សល់មុខផ្ទះ:</b> ${data.frontSpace}`);
+  if (data.backSpace) dimensions.push(`<b>សល់ក្រោយផ្ទះ:</b> ${data.backSpace}`);
 
   if (dimensions.length > 0) {
-    card += `\n<b>📐 SPECIFICATIONS</b>\n`;
+    card += `\n<b>📐 ទំហំ និងលក្ខណៈបច្ចេកទេស</b>\n`;
     dimensions.forEach(dim => {
       card += `• ${dim}\n`;
     });
@@ -63,39 +63,39 @@ function generatePropertyTelegramCard(data) {
 
   // --- Features & Direction ---
   const specs = [];
-  if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') specs.push(`🛏️ ${data.bedrooms} Bed`);
-  if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') specs.push(`🚿 ${data.bathrooms} Bath`);
-  if (data.direction && data.direction !== 'មិនកំណត់') specs.push(`🧭 ${data.direction}`);
+  if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') specs.push(`🛏️ បន្ទប់គេង: ${data.bedrooms}`);
+  if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') specs.push(`🚿 បន្ទប់ទឹក: ${data.bathrooms}`);
+  if (data.direction && data.direction !== 'មិនកំណត់') specs.push(`🧭 ទិស: ${data.direction}`);
 
   if (specs.length > 0) {
-    card += `• <b>Features:</b> ${specs.join(' | ')}\n`;
+    card += `• <b>បន្ទប់ និងទិស:</b> ${specs.join(' | ')}\n`;
   }
 
   // --- Rental Terms (Conditional) ---
   const isRent = data.listingType === 'ជួល' || data.listingType === 'For Rent';
   if (isRent) {
-    card += `\n<b>🔑 RENTAL TERMS</b>\n`;
-    if (data.deposit) card += `• <b>Deposit:</b> ${data.deposit}\n`;
-    if (data.rentFee) card += `• <b>Payment:</b> ${data.rentFee}\n`;
-    if (data.contract) card += `• <b>Contract:</b> ${data.contract}\n`;
+    card += `\n<b>🔑 លក្ខខណ្ឌនៃការជួល</b>\n`;
+    if (data.deposit) card += `• <b>ប្រាក់កក់:</b> ${data.deposit}\n`;
+    if (data.rentFee) card += `• <b>បង់ថ្លៃឈ្នួល:</b> ${data.rentFee}\n`;
+    if (data.contract) card += `• <b>កុងត្រា:</b> ${data.contract}\n`;
   }
 
   // --- Property Certificate / Title (Conditional for Sale) ---
   const isSale = data.listingType === 'លក់' || data.listingType === 'For Sale';
   if (isSale && data.certificate) {
-    card += `\n<b>📜 LEGAL & TITLE</b>\n`;
-    card += `• <b>Certificate:</b> ${data.certificate}\n`;
+    card += `\n<b>📜 ប្លង់កម្មសិទ្ធ</b>\n`;
+    card += `• <b>ប្រភេទប្លង់:</b> ${data.certificate}\n`;
   }
 
   // --- Additional Notes ---
   if (data.description) {
-    card += `\n<b>📝 ADDITIONAL NOTES</b>\n`;
+    card += `\n<b>📝 សម្គាល់បន្ថែម</b>\n`;
     card += `${data.description}\n`;
   }
 
   // --- Submitter Info ---
   if (data.submittedBy) {
-    card += `\n<b>📥 SUBMITTED BY</b>\n`;
+    card += `\n<b>📥 បញ្ជូនទិន្នន័យដោយ</b>\n`;
     card += `• ${data.submittedBy}\n`;
   }
 
