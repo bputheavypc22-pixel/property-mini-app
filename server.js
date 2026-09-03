@@ -111,12 +111,16 @@ app.post('/webhook', async (req, res) => {
       const chatId = update.message.chat.id;
 
       if (text.startsWith('/start')) {
+        const welcomeMessage = 
+          `សូមស្វាគមន៍មកកាន់ Twenty5Realty! សូមចុច Open Form ដើម្បីបំពេញបែបបទ。\n\n` +
+          `Welcome to Twenty5Realty! Please Click Open Form to get the Form.`;
+
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: chatId,
-            text: '👋 ជម្រាបសួរ! សូមស្វាគមន៍មកកាន់ Twenty5Realty Bot។\n\nលោកអ្នកអាចប្រើប្រាស់ Mini App ឬ Form ដើម្បីបញ្ជូនទិន្នន័យអចលនទ្រព្យបាន។',
+            text: welcomeMessage,
             parse_mode: 'HTML'
           })
         });
