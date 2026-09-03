@@ -196,8 +196,9 @@
       border: 0;
     }
 
-    /* Dynamic Rent Options Block */
-    #rent-terms-section {
+    /* Dynamic Options Blocks */
+    #rent-terms-section,
+    #sale-terms-section {
       display: none;
       background: #f0f9ff;
       border: 1px solid #bae6fd;
@@ -306,7 +307,7 @@
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-listingType">គោលបំណង *</label>
-          <select id="listingType" required onchange="toggleRentTerms()">
+          <select id="listingType" required onchange="togglePurposeSections()">
             <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
             <option value="លក់" id="opt-list-sale">លក់</option>
             <option value="ជួល" id="opt-list-rent">ជួល</option>
@@ -449,6 +450,19 @@
         </div>
       </div>
 
+      <div id="sale-terms-section">
+        <div class="form-group">
+          <label id="lbl-certificate">ប្លង់កម្មសិទ្ធ *</label>
+          <select id="certificate" onchange="toggleCertOther()">
+            <option value="មិនមាន" id="opt-cert-none">មិនមាន</option>
+            <option value="ប្លង់រឹង" id="opt-cert-hard">ប្លង់រឹង</option>
+            <option value="ប្លង់ទន់" id="opt-cert-soft">ប្លង់ទន់</option>
+            <option value="ប្រភេទផ្សេង" id="opt-cert-other">ប្រភេទផ្សេង</option>
+          </select>
+          <input type="text" id="certOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រភេទប្លង់..." data-ph-en="Specify certificate type...">
+        </div>
+      </div>
+
       <div class="form-group">
         <label id="lbl-description">សម្គាល់បន្ថែម</label>
         <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
@@ -532,6 +546,11 @@
         optCon2y: "2 ឆ្នាំ",
         optCon3y: "3 ឆ្នាំ",
         optConNeg: "ចរចា",
+        lblCertificate: "ប្លង់កម្មសិទ្ធ *",
+        optCertNone: "មិនមាន",
+        optCertHard: "ប្លង់រឹង",
+        optCertSoft: "ប្លង់ទន់",
+        optCertOther: "ប្រភេទផ្សេង",
         lblDescription: "សម្គាល់បន្ថែម",
         lblImages: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *",
         uploadText: "ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
@@ -598,6 +617,11 @@
         optCon2y: "2 years",
         optCon3y: "3 years",
         optConNeg: "Negotiate",
+        lblCertificate: "Property Certificate *",
+        optCertNone: "No Certificate",
+        optCertHard: "Hard Title",
+        optCertSoft: "Soft Title",
+        optCertOther: "Other type",
         lblDescription: "Additional Notes",
         lblImages: "🖼️ Property Images (Max 10) *",
         uploadText: "Click here to select images *",
@@ -610,13 +634,20 @@
       }
     };
 
-    function toggleRentTerms() {
+    function togglePurposeSections() {
       const listingType = document.getElementById('listingType').value;
       const rentSection = document.getElementById('rent-terms-section');
+      const saleSection = document.getElementById('sale-terms-section');
+
       if (listingType === 'ជួល' || listingType === 'For Rent') {
         rentSection.style.display = 'block';
+        saleSection.style.display = 'none';
+      } else if (listingType === 'លក់' || listingType === 'For Sale') {
+        saleSection.style.display = 'block';
+        rentSection.style.display = 'none';
       } else {
         rentSection.style.display = 'none';
+        saleSection.style.display = 'none';
       }
     }
 
@@ -624,6 +655,19 @@
       const depositVal = document.getElementById('deposit').value;
       const otherInput = document.getElementById('depositOther');
       if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other' || depositVal === 'optDepOther') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    function toggleCertOther() {
+      const certVal = document.getElementById('certificate').value;
+      const otherInput = document.getElementById('certOther');
+      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type' || certVal === 'optCertOther') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -693,7 +737,7 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      /* Dynamic Language Translation for Rent Terms Dropdowns */
+      /* Rent Terms Translations */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -712,6 +756,13 @@
       document.getElementById('opt-con-2y').textContent = t.optCon2y;
       document.getElementById('opt-con-3y').textContent = t.optCon3y;
       document.getElementById('opt-con-neg').textContent = t.optConNeg;
+
+      /* Sale Terms Translations */
+      document.getElementById('lbl-certificate').textContent = t.lblCertificate;
+      document.getElementById('opt-cert-none').textContent = t.optCertNone;
+      document.getElementById('opt-cert-hard').textContent = t.optCertHard;
+      document.getElementById('opt-cert-soft').textContent = t.optCertSoft;
+      document.getElementById('opt-cert-other').textContent = t.optCertOther;
 
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
@@ -842,8 +893,11 @@
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
 
+      const listingType = document.getElementById('listingType').value;
+      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
+      const isSale = listingType === 'លក់' || listingType === 'For Sale';
+
       /* Append Rent Terms if Renting */
-      const isRent = document.getElementById('listingType').value === 'ជួល' || document.getElementById('listingType').value === 'For Rent';
       if (isRent) {
         const depSelect = document.getElementById('deposit');
         const depVal = depSelect.options[depSelect.selectedIndex].text;
@@ -857,6 +911,17 @@
         formData.append('deposit', finalDeposit);
         formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
         formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
+      }
+
+      /* Append Certificate if For Sale */
+      if (isSale) {
+        const certSelect = document.getElementById('certificate');
+        const certVal = certSelect.options[certSelect.selectedIndex].text;
+        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
+          ? document.getElementById('certOther').value
+          : certVal;
+
+        formData.append('certificate', finalCert);
       }
 
       formData.append('description', document.getElementById('description').value);
