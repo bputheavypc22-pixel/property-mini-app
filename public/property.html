@@ -278,7 +278,6 @@
     </div>
 
     <form id="listingForm">
-      <!-- Owner Info -->
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
@@ -286,7 +285,6 @@
         <input type="text" id="ownerName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
       </div>
 
-      <!-- Phone Numbers 1 & 2 Side-by-Side -->
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
@@ -303,10 +301,8 @@
         <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
       </div>
 
-      <!-- Property Details -->
       <div class="section-title" id="sec-details">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
 
-      <!-- Purpose & Property Type Side-by-Side -->
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-listingType">គោលបំណង *</label>
@@ -340,7 +336,6 @@
         <input type="text" id="location" required data-ph-km="ឧ. សង្កាត់ទួលសង្កែ, ខណ្ឌឫស្សីកែវ" data-ph-en="e.g. Toul Sangke, Russey Keo">
       </div>
 
-      <!-- Required Google Map Link Field -->
       <div class="form-group">
         <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link) *</label>
         <div class="map-input-wrapper">
@@ -357,7 +352,6 @@
         </div>
       </div>
 
-      <!-- Land Size & House Size Side-by-Side -->
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-landSize">ទំហំដី</label>
@@ -369,7 +363,6 @@
         </div>
       </div>
 
-      <!-- Front Space & Back Space Side-by-Side -->
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-frontSpace">សល់មុខផ្ទះ (Front Space)</label>
@@ -381,7 +374,6 @@
         </div>
       </div>
 
-      <!-- Bedrooms & Bathrooms Side-by-Side -->
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-bedrooms">បន្ទប់គេង</label>
@@ -422,37 +414,36 @@
         </select>
       </div>
 
-      <!-- Conditional Rent Terms & Conditions Section -->
       <div id="rent-terms-section">
         <div class="form-group">
-          <label id="lbl-deposit">1. ប្រាក់កក់ (Deposit) *</label>
+          <label id="lbl-deposit">ប្រាក់កក់ *</label>
           <select id="deposit" onchange="toggleDepositOther()">
-            <option value="1ខែ" id="opt-dep-1">1 ខែ (1 month)</option>
-            <option value="2ខែ" id="opt-dep-2">2 ខែ (2 months)</option>
-            <option value="3ខែ" id="opt-dep-3">3 ខែ (3 months)</option>
-            <option value="ផ្សេងៗ" id="opt-dep-other">ផ្សេងៗ (Other)</option>
+            <option value="1ខែ" id="opt-dep-1">1 ខែ</option>
+            <option value="2ខែ" id="opt-dep-2">2 ខែ</option>
+            <option value="3ខែ" id="opt-dep-3">3 ខែ</option>
+            <option value="ផ្សេងៗ" id="opt-dep-other">ផ្សេងៗ</option>
           </select>
           <input type="text" id="depositOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រាក់កក់..." data-ph-en="Specify deposit terms...">
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label id="lbl-rentFee">2. បង់ថ្លៃឈ្នួល (Rent Fee) *</label>
+            <label id="lbl-rentFee">បង់ថ្លៃឈ្នួល *</label>
             <select id="rentFee">
-              <option value="ដើមខែ" id="opt-fee-start">ដើមខែ (Beginning of Month)</option>
-              <option value="ចុងខែ" id="opt-fee-end">ចុងខែ (End of Month)</option>
-              <option value="ចរចា" id="opt-fee-neg">ចរចា (Negotiate)</option>
+              <option value="ដើមខែ" id="opt-fee-start">ដើមខែ</option>
+              <option value="ចុងខែ" id="opt-fee-end">ចុងខែ</option>
+              <option value="ចរចា" id="opt-fee-neg">ចរចា</option>
             </select>
           </div>
           <div class="form-group">
-            <label id="lbl-contract">3. កុងត្រា (Contract) *</label>
+            <label id="lbl-contract">កុងត្រា *</label>
             <select id="contract">
-              <option value="3ខែ" id="opt-con-3m">3 ខែ (3 months)</option>
-              <option value="6ខែ" id="opt-con-6m">6 ខែ (6 months)</option>
-              <option value="1ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ (1 year)</option>
-              <option value="2ឆ្នាំ" id="opt-con-2y">2 ឆ្នាំ (2 years)</option>
-              <option value="3ឆ្នាំ" id="opt-con-3y">3 ឆ្នាំ (3 years)</option>
-              <option value="ចរចា" id="opt-con-neg">ចរចា (Negotiate)</option>
+              <option value="3ខែ" id="opt-con-3m">3 ខែ</option>
+              <option value="6ខែ" id="opt-con-6m">6 ខែ</option>
+              <option value="1ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ</option>
+              <option value="2ឆ្នាំ" id="opt-con-2y">2 ឆ្នាំ</option>
+              <option value="3ឆ្នាំ" id="opt-con-3y">3 ឆ្នាំ</option>
+              <option value="ចរចា" id="opt-con-neg">ចរចា</option>
             </select>
           </div>
         </div>
@@ -463,7 +454,6 @@
         <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
       </div>
 
-      <!-- Property Images Upload -->
       <div class="form-group">
         <label id="lbl-images">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *</label>
         
@@ -526,22 +516,22 @@
         optNE: "កើតជើង",
         optSW: "លិចត្បូង",
         optNW: "លិចជើង",
-        lblDeposit: "1. ប្រាក់កក់ (Deposit) *",
-        optDep1: "1 ខែ (1 month)",
-        optDep2: "2 ខែ (2 months)",
-        optDep3: "3 ខែ (3 months)",
-        optDepOther: "ផ្សេងៗ (Other)",
-        lblRentFee: "2. បង់ថ្លៃឈ្នួល (Rent Fee) *",
-        optFeeStart: "ដើមខែ (Beginning of Month)",
-        optFeeEnd: "ចុងខែ (End of Month)",
-        optFeeNeg: "ចរចា (Negotiate)",
-        lblContract: "3. កុងត្រា (Contract) *",
-        optCon3m: "3 ខែ (3 months)",
-        optCon6m: "6 ខែ (6 months)",
-        optCon1y: "1 ឆ្នាំ (1 year)",
-        optCon2y: "2 ឆ្នាំ (2 years)",
-        optCon3y: "3 ឆ្នាំ (3 years)",
-        optConNeg: "ចរចា (Negotiate)",
+        lblDeposit: "ប្រាក់កក់ *",
+        optDep1: "1 ខែ",
+        optDep2: "2 ខែ",
+        optDep3: "3 ខែ",
+        optDepOther: "ផ្សេងៗ",
+        lblRentFee: "បង់ថ្លៃឈ្នួល *",
+        optFeeStart: "ដើមខែ",
+        optFeeEnd: "ចុងខែ",
+        optFeeNeg: "ចរចា",
+        lblContract: "កុងត្រា *",
+        optCon3m: "3 ខែ",
+        optCon6m: "6 ខែ",
+        optCon1y: "1 ឆ្នាំ",
+        optCon2y: "2 ឆ្នាំ",
+        optCon3y: "3 ឆ្នាំ",
+        optConNeg: "ចរចា",
         lblDescription: "សម្គាល់បន្ថែម",
         lblImages: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *",
         uploadText: "ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
@@ -592,16 +582,16 @@
         optNE: "North East",
         optSW: "South West",
         optNW: "North West",
-        lblDeposit: "1. Deposit *",
+        lblDeposit: "Deposit *",
         optDep1: "1 month",
         optDep2: "2 months",
         optDep3: "3 months",
         optDepOther: "Other",
-        lblRentFee: "2. Rent Fee *",
+        lblRentFee: "Rent Fee *",
         optFeeStart: "Settle beginning of the month",
         optFeeEnd: "Settle End of the Month",
         optFeeNeg: "Negotiate",
-        lblContract: "3. Contract *",
+        lblContract: "Contract *",
         optCon3m: "3 months",
         optCon6m: "6 months",
         optCon1y: "1 year",
@@ -633,7 +623,7 @@
     function toggleDepositOther() {
       const depositVal = document.getElementById('deposit').value;
       const otherInput = document.getElementById('depositOther');
-      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') {
+      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other' || depositVal === 'optDepOther') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -703,7 +693,7 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      /* Rent Terms Labels */
+      /* Dynamic Language Translation for Rent Terms Dropdowns */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -855,14 +845,18 @@
       /* Append Rent Terms if Renting */
       const isRent = document.getElementById('listingType').value === 'ជួល' || document.getElementById('listingType').value === 'For Rent';
       if (isRent) {
-        const depVal = document.getElementById('deposit').value;
-        const finalDeposit = (depVal === 'ផ្សេងៗ' || depVal === 'Other') 
+        const depSelect = document.getElementById('deposit');
+        const depVal = depSelect.options[depSelect.selectedIndex].text;
+        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
           ? document.getElementById('depositOther').value 
           : depVal;
           
+        const rentFeeSelect = document.getElementById('rentFee');
+        const contractSelect = document.getElementById('contract');
+
         formData.append('deposit', finalDeposit);
-        formData.append('rentFee', document.getElementById('rentFee').value);
-        formData.append('contract', document.getElementById('contract').value);
+        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
+        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
       }
 
       formData.append('description', document.getElementById('description').value);
