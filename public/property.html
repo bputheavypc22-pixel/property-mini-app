@@ -349,7 +349,7 @@
       <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <form id="listingForm" onsubmit="event.preventDefault(); submitForm();">
+    <form id="listingForm" onsubmit="handleFormSubmit(event)">
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
@@ -553,10 +553,11 @@
         <div id="preview-grid" class="preview-grid"></div>
       </div>
 
-      <button type="button" class="btn-submit-web" id="btn-submit-web" onclick="submitForm()">បញ្ជូនទិន្នន័យ</button>
+      <button type="submit" class="btn-submit-web" id="btn-submit-web">បញ្ជូនទិន្នន័យ</button>
     </form>
   </div>
 
+  <!-- Summary Modal Overlay -->
   <div id="summaryModal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-title" id="modal-summary-title">🎉 សង្ខេបទិន្នន័យដែលបានបញ្ជូន</div>
@@ -638,9 +639,9 @@
         noImages: "គ្មានរូបភាពត្រូវបានជ្រើសរើស",
         imgCountText: "បានជ្រើសរើស",
         submitBtn: "បញ្ជូនទិន្នន័យ",
-        successAlert: "បានចុះបញ្ជីអចលនទ្រព្យជោគជ័យ! 🎉",
         limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្ណោះ",
         minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក",
+        fillRequiredAlert: "សូមបំពេញព័ត៌មានចាំបាច់ទាំងអស់ដែលបានផ្កាយ (*)",
         modalTitle: "🎉 សង្ខេបទិន្នន័យដែលបានបញ្ជូន",
         modalClose: "បិទ"
       },
@@ -711,9 +712,9 @@
         noImages: "No images selected",
         imgCountText: "selected",
         submitBtn: "SUBMIT LISTING",
-        successAlert: "Property registered successfully! 🎉",
         limitAlert: "You can only upload up to 10 images.",
         minImgAlert: "Please upload at least 1 image.",
+        fillRequiredAlert: "Please fill in all required fields (*)",
         modalTitle: "🎉 Submission Summary",
         modalClose: "Close"
       }
@@ -887,7 +888,7 @@
       const t = translations[currentLang];
 
       if (selectedFiles.length + newFiles.length > 10) {
-        tg?.showAlert ? tg.showAlert(t.limitAlert) : alert(t.limitAlert);
+        alert(t.limitAlert);
         return;
       }
 
@@ -970,35 +971,25 @@
 
     function closeSummaryModal() {
       document.getElementById('summaryModal').style.display = 'none';
-      if (tg) tg.close();
+      if (tg && tg.close) tg.close();
     }
 
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      tg.setBackgroundColor('#f8fafc');
-      if (tg.MainButton) {
-        tg.MainButton.setText(translations[currentLang].submitBtn);
-        tg.MainButton.onClick(submitForm);
-        tg.MainButton.show();
-      }
-    }
-
-    const submitForm = async () => {
+    function handleFormSubmit(e) {
+      if (e) e.preventDefault();
+      
       const t = translations[currentLang];
       const form = document.getElementById('listingForm');
       
       if (!form.checkValidity()) {
         form.reportValidity();
+        alert(t.fillRequiredAlert);
         return;
       }
 
       if (selectedFiles.length === 0) {
-        tg?.showAlert ? tg.showAlert(t.minImgAlert) : alert(t.minImgAlert);
+        alert(t.minImgAlert);
         return;
       }
-
-      if (tg && tg.MainButton) tg.MainButton.showProgress();
 
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
@@ -1041,15 +1032,23 @@
         if (tg && tg.sendData) {
           tg.sendData(JSON.stringify(summaryData));
         }
-
-        // Display summary modal directly to submitter
-        displaySummaryModal(summaryData);
       } catch (err) {
-        console.error('Submission error:', err);
-      } finally {
-        if (tg && tg.MainButton) tg.MainButton.hideProgress();
+        console.error('Telegram sendData error:', err);
       }
-    };
+
+      displaySummaryModal(summaryData);
+    }
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setBackgroundColor('#f8fafc');
+      if (tg.MainButton) {
+        tg.MainButton.setText(translations[currentLang].submitBtn);
+        tg.MainButton.onClick(() => handleFormSubmit());
+        tg.MainButton.show();
+      }
+    }
 
     switchLanguage(currentLang);
   </script>
