@@ -263,6 +263,26 @@
       justify-content: center;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
+
+    /* Fallback Submit Button for standard Web browsers */
+    .fallback-submit-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+      text-align: center;
+      transition: background-color 0.2s;
+    }
+    .fallback-submit-btn:hover {
+      background-color: #0369a1;
+    }
   </style>
 </head>
 <body>
@@ -278,7 +298,7 @@
       <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <form id="listingForm">
+    <form id="listingForm" onsubmit="event.preventDefault(); submitForm();">
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
@@ -481,6 +501,8 @@
         
         <div id="preview-grid" class="preview-grid"></div>
       </div>
+
+      <button type="submit" id="fallback-submit" class="fallback-submit-btn">បញ្ជូនទិន្នន័យ</button>
     </form>
   </div>
 
@@ -767,6 +789,7 @@
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
       document.getElementById('upload-text').textContent = t.uploadText;
+      document.getElementById('fallback-submit').textContent = t.submitBtn;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
@@ -849,13 +872,6 @@
       });
     }
 
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      tg.setBackgroundColor('#f8fafc');
-      tg.MainButton.show();
-    }
-
     const submitForm = async () => {
       const t = translations[currentLang];
       const form = document.getElementById('listingForm');
@@ -876,6 +892,7 @@
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
       const formData = new FormData();
+      formData.append('submittedBy', submittedBy);
       formData.append('ownerName', document.getElementById('ownerName').value);
       formData.append('tel1', document.getElementById('tel1').value);
       formData.append('tel2', document.getElementById('tel2').value);
@@ -894,79 +911,70 @@
       formData.append('direction', document.getElementById('direction').value);
 
       const listingType = document.getElementById('listingType').value;
-      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
-      const isSale = listingType === 'លក់' || listingType === 'For Sale';
-
-      /* Append Rent Terms if Renting */
-      if (isRent) {
-        const depSelect = document.getElementById('deposit');
-        const depVal = depSelect.options[depSelect.selectedIndex].text;
-        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
-          ? document.getElementById('depositOther').value 
-          : depVal;
-          
-        const rentFeeSelect = document.getElementById('rentFee');
-        const contractSelect = document.getElementById('contract');
-
-        formData.append('deposit', finalDeposit);
-        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
-        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
-      }
-
-      /* Append Certificate if For Sale */
-      if (isSale) {
-        const certSelect = document.getElementById('certificate');
-        const certVal = certSelect.options[certSelect.selectedIndex].text;
-        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
-          ? document.getElementById('certOther').value
-          : certVal;
-
-        formData.append('certificate', finalCert);
+      if (listingType === 'ជួល' || listingType === 'For Rent') {
+        const depositVal = document.getElementById('deposit').value;
+        formData.append('deposit', (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') ? document.getElementById('depositOther').value : depositVal);
+        formData.append('rentFee', document.getElementById('rentFee').value);
+        formData.append('contract', document.getElementById('contract').value);
+      } else if (listingType === 'លក់' || listingType === 'For Sale') {
+        const certVal = document.getElementById('certificate').value;
+        formData.append('certificate', (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type') ? document.getElementById('certOther').value : certVal);
       }
 
       formData.append('description', document.getElementById('description').value);
-      formData.append('submittedBy', submittedBy);
-      formData.append('initData', tg?.initData || '');
 
-      selectedFiles.forEach((file) => {
-        formData.append('photos', file);
+      selectedFiles.forEach((file, index) => {
+        formData.append(`photos`, file);
       });
 
       try {
-        const response = await fetch('/api/register-property', {
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await response.json();
-
-        if (tg) tg.MainButton.hideProgress();
-
-        if (result.success) {
-          if (tg) {
-            tg.showAlert(t.successAlert, () => tg.close());
-          } else {
-            alert(t.successAlert);
-            location.reload();
-          }
+        // If sending directly to Telegram WebApp sendData flow:
+        if (tg && tg.sendData) {
+          const payload = {
+            submittedBy,
+            ownerName: document.getElementById('ownerName').value,
+            tel1: document.getElementById('tel1').value,
+            tel2: document.getElementById('tel2').value,
+            telegram: document.getElementById('telegram').value,
+            listingType: document.getElementById('listingType').value,
+            propertyType: document.getElementById('propertyType').value,
+            price: document.getElementById('price').value,
+            location: document.getElementById('location').value,
+            mapLink: document.getElementById('mapLink').value,
+            landSize: document.getElementById('landSize').value,
+            houseSize: document.getElementById('houseSize').value,
+            frontSpace: document.getElementById('frontSpace').value,
+            backSpace: document.getElementById('backSpace').value,
+            bedrooms: document.getElementById('bedrooms').value,
+            bathrooms: document.getElementById('bathrooms').value,
+            direction: document.getElementById('direction').value,
+            description: document.getElementById('description').value,
+            photosCount: selectedFiles.length
+          };
+          tg.sendData(JSON.stringify(payload));
         } else {
-          throw new Error(result.error || 'Submission failed');
+          // Standard web browser fallback alert
+          alert(t.successAlert);
         }
       } catch (err) {
+        console.error("Submission failed:", err);
+      } finally {
         if (tg) tg.MainButton.hideProgress();
-        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
       }
     };
 
+    // Initialize Telegram WebApp Settings
     if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setBackgroundColor('#f8fafc');
+      tg.MainButton.setText(translations[currentLang].submitBtn);
+      tg.MainButton.show();
       tg.MainButton.onClick(submitForm);
-    } else {
-      document.getElementById('listingForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-      });
+      document.getElementById('fallback-submit').style.display = 'none';
     }
 
+    // Set initial language configuration
     switchLanguage(currentLang);
   </script>
 </body>
