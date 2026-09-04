@@ -304,7 +304,34 @@
       </div>
     </div>
 
-    <!-- NEW FIELD: Purpose Dropdown & Conditional Business Type Input -->
+    <!-- Direction and Parking Needed Dropdowns -->
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_direction">Direction</span></label>
+        <select id="direction" name="direction">
+          <option value="Not Required" id="opt_dir_none">Not Required</option>
+          <option value="East" id="opt_dir_e">East</option>
+          <option value="West" id="opt_dir_w">West</option>
+          <option value="South" id="opt_dir_s">South</option>
+          <option value="North" id="opt_dir_n">North</option>
+          <option value="Northeast" id="opt_dir_ne">Northeast</option>
+          <option value="Southeast" id="opt_dir_se">Southeast</option>
+          <option value="Northwest" id="opt_dir_nw">Northwest</option>
+          <option value="Southwest" id="opt_dir_sw">Southwest</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><span id="t_parkingNeeded">Parking Needed</span></label>
+        <select id="parkingNeeded" name="parkingNeeded">
+          <option value="Not Required" id="opt_park_none">Not Required</option>
+          <option value="Car" id="opt_park_car">Car</option>
+          <option value="Motor" id="opt_park_motor">Motor</option>
+          <option value="Both" id="opt_park_both">Both</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Purpose Dropdown & Conditional Business Type Input -->
     <div class="form-group">
       <label><span id="t_purpose">Purpose</span> <span class="required">*</span></label>
       <select id="purpose" name="purpose" required onchange="togglePurposeFields()">
@@ -358,6 +385,8 @@
       preferredTerm: "Preferred Contract",
       bedrooms: "Bedrooms",
       bathrooms: "Bathrooms",
+      direction: "Direction",
+      parkingNeeded: "Parking Needed",
       purpose: "Purpose",
       businessType: "Business Type",
       description: "Additional Requirements",
@@ -380,6 +409,18 @@
       optTerm1y: "1 Year",
       optTerm2y: "2+ Years",
       optAny: "Any",
+      optNotRequired: "Not Required",
+      optDirE: "East",
+      optDirW: "West",
+      optDirS: "South",
+      optDirN: "North",
+      optDirNE: "Northeast",
+      optDirSE: "Southeast",
+      optDirNW: "Northwest",
+      optDirSW: "Southwest",
+      optParkCar: "Car",
+      optParkMotor: "Motor",
+      optParkBoth: "Both",
       optPurposeLiving: "For Living",
       optPurposeBusiness: "For Business"
     },
@@ -401,6 +442,8 @@
       preferredTerm: "រយៈពេលកុងត្រា",
       bedrooms: "បន្ទប់គេង",
       bathrooms: "បន្ទប់ទឹក",
+      direction: "បែរមុខទៅ",
+      parkingNeeded: "ចំណត",
       purpose: "គោលបំណងប្រប្រើប្រាស់",
       businessType: "ប្រភេទអាជីវកម្ម",
       description: "តម្រូវការបន្ថែម",
@@ -423,6 +466,18 @@
       optTerm1y: "1 ឆ្នាំ",
       optTerm2y: "2 ឆ្នាំឡើង",
       optAny: "មិនកំណត់",
+      optNotRequired: "មិនកំណត់",
+      optDirE: "កើត",
+      optDirW: "លិច",
+      optDirS: "ត្បូង",
+      optDirN: "ជើង",
+      optDirNE: "កើតឈៀងជើង",
+      optDirSE: "កើតឈៀងត្បូង",
+      optDirNW: "លិចឈៀងជើង",
+      optDirSW: "លិចឈៀងត្បូង",
+      optParkCar: "ឡាន",
+      optParkMotor: "ម៉ូតូ",
+      optParkBoth: "ទាំងពីរ",
       optPurposeLiving: "សម្រាប់រស់នៅ",
       optPurposeBusiness: "សម្រាប់ធ្វើអាជីវកម្ម"
     }
@@ -454,6 +509,8 @@
     document.getElementById('t_preferredTerm').innerText = t.preferredTerm;
     document.getElementById('t_bedrooms').innerText = t.bedrooms;
     document.getElementById('t_bathrooms').innerText = t.bathrooms;
+    document.getElementById('t_direction').innerText = t.direction;
+    document.getElementById('t_parkingNeeded').innerText = t.parkingNeeded;
     document.getElementById('t_purpose').innerText = t.purpose;
     document.getElementById('t_businessType').innerText = t.businessType;
     document.getElementById('t_description').innerText = t.description;
@@ -497,6 +554,36 @@
     document.getElementById('opt_bed_any').value = t.optAny;
     document.getElementById('opt_bath_any').innerText = t.optAny;
     document.getElementById('opt_bath_any').value = t.optAny;
+
+    // Direction Dropdowns
+    document.getElementById('opt_dir_none').innerText = t.optNotRequired;
+    document.getElementById('opt_dir_none').value = t.optNotRequired;
+    document.getElementById('opt_dir_e').innerText = t.optDirE;
+    document.getElementById('opt_dir_e').value = t.optDirE;
+    document.getElementById('opt_dir_w').innerText = t.optDirW;
+    document.getElementById('opt_dir_w').value = t.optDirW;
+    document.getElementById('opt_dir_s').innerText = t.optDirS;
+    document.getElementById('opt_dir_s').value = t.optDirS;
+    document.getElementById('opt_dir_n').innerText = t.optDirN;
+    document.getElementById('opt_dir_n').value = t.optDirN;
+    document.getElementById('opt_dir_ne').innerText = t.optDirNE;
+    document.getElementById('opt_dir_ne').value = t.optDirNE;
+    document.getElementById('opt_dir_se').innerText = t.optDirSE;
+    document.getElementById('opt_dir_se').value = t.optDirSE;
+    document.getElementById('opt_dir_nw').innerText = t.optDirNW;
+    document.getElementById('opt_dir_nw').value = t.optDirNW;
+    document.getElementById('opt_dir_sw').innerText = t.optDirSW;
+    document.getElementById('opt_dir_sw').value = t.optDirSW;
+
+    // Parking Dropdowns
+    document.getElementById('opt_park_none').innerText = t.optNotRequired;
+    document.getElementById('opt_park_none').value = t.optNotRequired;
+    document.getElementById('opt_park_car').innerText = t.optParkCar;
+    document.getElementById('opt_park_car').value = t.optParkCar;
+    document.getElementById('opt_park_motor').innerText = t.optParkMotor;
+    document.getElementById('opt_park_motor').value = t.optParkMotor;
+    document.getElementById('opt_park_both').innerText = t.optParkBoth;
+    document.getElementById('opt_park_both').value = t.optParkBoth;
 
     document.getElementById('opt_purpose_living').innerText = t.optPurposeLiving;
     document.getElementById('opt_purpose_living').value = t.optPurposeLiving;
@@ -574,6 +661,8 @@
       preferredTerm: document.getElementById('preferredTerm')?.value || '',
       bedrooms: document.getElementById('bedrooms')?.value || '',
       bathrooms: document.getElementById('bathrooms')?.value || '',
+      direction: document.getElementById('direction')?.value || '',
+      parkingNeeded: document.getElementById('parkingNeeded')?.value || '',
       purpose: combinedPurpose,
       description: document.getElementById('description')?.value || '',
       submittedBy: document.getElementById('submittedBy')?.value || ''
