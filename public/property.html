@@ -83,8 +83,6 @@
       padding-bottom: 4px;
       border-bottom: 2px solid #f1f5f9;
     }
-    
-    /* Layout Scaffolding for Form Fields */
     .form-group {
       margin-bottom: 12px;
     }
@@ -98,7 +96,6 @@
       margin-bottom: 0;
       min-width: 0;
     }
-
     label {
       display: block;
       font-size: 12px;
@@ -142,8 +139,6 @@
       resize: vertical;
       min-height: 70px;
     }
-
-    /* Map Input & Compact Button Layout */
     .map-input-wrapper {
       display: flex;
       gap: 6px;
@@ -195,8 +190,6 @@
       height: 100%;
       border: 0;
     }
-
-    /* Dynamic Options Blocks */
     #rent-terms-section,
     #sale-terms-section {
       display: none;
@@ -206,8 +199,6 @@
       border-radius: 8px;
       margin-bottom: 12px;
     }
-
-    /* Image Upload Box & Grid */
     .upload-box {
       border: 2px dashed #cbd5e1;
       border-radius: 10px;
@@ -263,6 +254,86 @@
       justify-content: center;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
+    .btn-submit-web {
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      background-color: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .btn-submit-web:hover {
+      background-color: #0369a1;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      padding: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0284c7;
+      margin-bottom: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .summary-list {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #334155;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed #f1f5f9;
+    }
+    .summary-label {
+      font-weight: 600;
+      color: #64748b;
+    }
+    .summary-value {
+      font-weight: 500;
+      color: #0f172a;
+      text-align: right;
+    }
+    .btn-modal-close {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px;
+      background-color: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -278,7 +349,7 @@
       <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <form id="listingForm">
+    <form id="listingForm" onsubmit="event.preventDefault(); submitForm();">
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
@@ -481,7 +552,17 @@
         
         <div id="preview-grid" class="preview-grid"></div>
       </div>
+
+      <button type="button" class="btn-submit-web" id="btn-submit-web" onclick="submitForm()">បញ្ជូនទិន្នន័យ</button>
     </form>
+  </div>
+
+  <div id="summaryModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-title" id="modal-summary-title">🎉 សង្ខេបទិន្នន័យដែលបានបញ្ជូន</div>
+      <div id="summaryContent" class="summary-list"></div>
+      <button type="button" class="btn-modal-close" id="btn-modal-close" onclick="closeSummaryModal()">បិទ / Done</button>
+    </div>
   </div>
 
   <script>
@@ -559,7 +640,9 @@
         submitBtn: "បញ្ជូនទិន្នន័យ",
         successAlert: "បានចុះបញ្ជីអចលនទ្រព្យជោគជ័យ! 🎉",
         limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្ណោះ",
-        minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក"
+        minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក",
+        modalTitle: "🎉 សង្ខេបទិន្នន័យដែលបានបញ្ជូន",
+        modalClose: "បិទ"
       },
       en: {
         headerTitle: "🏠 Property Listing",
@@ -630,7 +713,9 @@
         submitBtn: "SUBMIT LISTING",
         successAlert: "Property registered successfully! 🎉",
         limitAlert: "You can only upload up to 10 images.",
-        minImgAlert: "Please upload at least 1 image."
+        minImgAlert: "Please upload at least 1 image.",
+        modalTitle: "🎉 Submission Summary",
+        modalClose: "Close"
       }
     };
 
@@ -737,7 +822,6 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      /* Rent Terms Translations */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -757,7 +841,6 @@
       document.getElementById('opt-con-3y').textContent = t.optCon3y;
       document.getElementById('opt-con-neg').textContent = t.optConNeg;
 
-      /* Sale Terms Translations */
       document.getElementById('lbl-certificate').textContent = t.lblCertificate;
       document.getElementById('opt-cert-none').textContent = t.optCertNone;
       document.getElementById('opt-cert-hard').textContent = t.optCertHard;
@@ -767,6 +850,10 @@
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
       document.getElementById('upload-text').textContent = t.uploadText;
+      document.getElementById('btn-submit-web').textContent = t.submitBtn;
+
+      document.getElementById('modal-summary-title').textContent = t.modalTitle;
+      document.getElementById('btn-modal-close').textContent = t.modalClose;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
@@ -849,11 +936,52 @@
       });
     }
 
+    function displaySummaryModal(data) {
+      const summaryContent = document.getElementById('summaryContent');
+      let html = `
+        <div class="summary-item"><span class="summary-label">Owner Name:</span> <span class="summary-value">${data.ownerName}</span></div>
+        <div class="summary-item"><span class="summary-label">Primary Tel:</span> <span class="summary-value">${data.tel1}</span></div>
+        ${data.tel2 ? `<div class="summary-item"><span class="summary-label">Secondary Tel:</span> <span class="summary-value">${data.tel2}</span></div>` : ''}
+        ${data.telegram ? `<div class="summary-item"><span class="summary-label">Telegram:</span> <span class="summary-value">${data.telegram}</span></div>` : ''}
+        <div class="summary-item"><span class="summary-label">Listing Purpose:</span> <span class="summary-value">${data.listingType}</span></div>
+        <div class="summary-item"><span class="summary-label">Property Type:</span> <span class="summary-value">${data.propertyType}</span></div>
+        <div class="summary-item"><span class="summary-label">Price:</span> <span class="summary-value">$${data.price}</span></div>
+        <div class="summary-item"><span class="summary-label">Location:</span> <span class="summary-value">${data.location}</span></div>
+      `;
+
+      if (data.landSize) html += `<div class="summary-item"><span class="summary-label">Land Size:</span> <span class="summary-value">${data.landSize}</span></div>`;
+      if (data.houseSize) html += `<div class="summary-item"><span class="summary-label">House Size:</span> <span class="summary-value">${data.houseSize}</span></div>`;
+      if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') html += `<div class="summary-item"><span class="summary-label">Bedrooms:</span> <span class="summary-value">${data.bedrooms}</span></div>`;
+      if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') html += `<div class="summary-item"><span class="summary-label">Bathrooms:</span> <span class="summary-value">${data.bathrooms}</span></div>`;
+
+      if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
+        if (data.deposit) html += `<div class="summary-item"><span class="summary-label">Deposit:</span> <span class="summary-value">${data.deposit}</span></div>`;
+        if (data.contract) html += `<div class="summary-item"><span class="summary-label">Contract:</span> <span class="summary-value">${data.contract}</span></div>`;
+        if (data.rentFee) html += `<div class="summary-item"><span class="summary-label">Rent Fee:</span> <span class="summary-value">${data.rentFee}</span></div>`;
+      } else if (data.listingType === 'លក់' || data.listingType === 'For Sale') {
+        if (data.certificate) html += `<div class="summary-item"><span class="summary-label">Title/Cert:</span> <span class="summary-value">${data.certificate}</span></div>`;
+      }
+
+      html += `<div class="summary-item"><span class="summary-label">Photos Uploaded:</span> <span class="summary-value">${data.photoCount} file(s)</span></div>`;
+
+      summaryContent.innerHTML = html;
+      document.getElementById('summaryModal').style.display = 'flex';
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summaryModal').style.display = 'none';
+      if (tg) tg.close();
+    }
+
     if (tg) {
       tg.ready();
       tg.expand();
       tg.setBackgroundColor('#f8fafc');
-      tg.MainButton.show();
+      if (tg.MainButton) {
+        tg.MainButton.setText(translations[currentLang].submitBtn);
+        tg.MainButton.onClick(submitForm);
+        tg.MainButton.show();
+      }
     }
 
     const submitForm = async () => {
@@ -870,102 +998,58 @@
         return;
       }
 
-      if (tg) tg.MainButton.showProgress();
+      if (tg && tg.MainButton) tg.MainButton.showProgress();
 
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
-      const formData = new FormData();
-      formData.append('ownerName', document.getElementById('ownerName').value);
-      formData.append('tel1', document.getElementById('tel1').value);
-      formData.append('tel2', document.getElementById('tel2').value);
-      formData.append('telegram', document.getElementById('telegram').value);
-      formData.append('listingType', document.getElementById('listingType').value);
-      formData.append('propertyType', document.getElementById('propertyType').value);
-      formData.append('price', document.getElementById('price').value);
-      formData.append('location', document.getElementById('location').value);
-      formData.append('mapLink', document.getElementById('mapLink').value);
-      formData.append('landSize', document.getElementById('landSize').value);
-      formData.append('houseSize', document.getElementById('houseSize').value);
-      formData.append('frontSpace', document.getElementById('frontSpace').value);
-      formData.append('backSpace', document.getElementById('backSpace').value);
-      formData.append('bedrooms', document.getElementById('bedrooms').value);
-      formData.append('bathrooms', document.getElementById('bathrooms').value);
-      formData.append('direction', document.getElementById('direction').value);
-
       const listingType = document.getElementById('listingType').value;
-      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
-      const isSale = listingType === 'លក់' || listingType === 'For Sale';
+      
+      const summaryData = {
+        ownerName: document.getElementById('ownerName').value,
+        tel1: document.getElementById('tel1').value,
+        tel2: document.getElementById('tel2').value,
+        telegram: document.getElementById('telegram').value,
+        listingType: listingType,
+        propertyType: document.getElementById('propertyType').value,
+        price: document.getElementById('price').value,
+        location: document.getElementById('location').value,
+        mapLink: document.getElementById('mapLink').value,
+        landSize: document.getElementById('landSize').value,
+        houseSize: document.getElementById('houseSize').value,
+        frontSpace: document.getElementById('frontSpace').value,
+        backSpace: document.getElementById('backSpace').value,
+        bedrooms: document.getElementById('bedrooms').value,
+        bathrooms: document.getElementById('bathrooms').value,
+        direction: document.getElementById('direction').value,
+        description: document.getElementById('description').value,
+        submittedBy: submittedBy,
+        photoCount: selectedFiles.length
+      };
 
-      /* Append Rent Terms if Renting */
-      if (isRent) {
-        const depSelect = document.getElementById('deposit');
-        const depVal = depSelect.options[depSelect.selectedIndex].text;
-        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
-          ? document.getElementById('depositOther').value 
-          : depVal;
-          
-        const rentFeeSelect = document.getElementById('rentFee');
-        const contractSelect = document.getElementById('contract');
-
-        formData.append('deposit', finalDeposit);
-        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
-        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
+      if (listingType === 'ជួល' || listingType === 'For Rent') {
+        const depVal = document.getElementById('deposit').value;
+        summaryData.deposit = (depVal === 'ផ្សេងៗ' || depVal === 'Other' || depVal === 'optDepOther') ? document.getElementById('depositOther').value : depVal;
+        summaryData.rentFee = document.getElementById('rentFee').value;
+        summaryData.contract = document.getElementById('contract').value;
+      } else if (listingType === 'លក់' || listingType === 'For Sale') {
+        const certVal = document.getElementById('certificate').value;
+        summaryData.certificate = (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type' || certVal === 'optCertOther') ? document.getElementById('certOther').value : certVal;
       }
-
-      /* Append Certificate if For Sale */
-      if (isSale) {
-        const certSelect = document.getElementById('certificate');
-        const certVal = certSelect.options[certSelect.selectedIndex].text;
-        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
-          ? document.getElementById('certOther').value
-          : certVal;
-
-        formData.append('certificate', finalCert);
-      }
-
-      formData.append('description', document.getElementById('description').value);
-      formData.append('submittedBy', submittedBy);
-      formData.append('initData', tg?.initData || '');
-
-      selectedFiles.forEach((file) => {
-        formData.append('photos', file);
-      });
 
       try {
-        const response = await fetch('/api/register-property', {
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await response.json();
-
-        if (tg) tg.MainButton.hideProgress();
-
-        if (result.success) {
-          if (tg) {
-            tg.showAlert(t.successAlert, () => tg.close());
-          } else {
-            alert(t.successAlert);
-            location.reload();
-          }
-        } else {
-          throw new Error(result.error || 'Submission failed');
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify(summaryData));
         }
+
+        // Display summary modal directly to submitter
+        displaySummaryModal(summaryData);
       } catch (err) {
-        if (tg) tg.MainButton.hideProgress();
-        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
+        console.error('Submission error:', err);
+      } finally {
+        if (tg && tg.MainButton) tg.MainButton.hideProgress();
       }
     };
-
-    if (tg) {
-      tg.MainButton.onClick(submitForm);
-    } else {
-      document.getElementById('listingForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-      });
-    }
 
     switchLanguage(currentLang);
   </script>
