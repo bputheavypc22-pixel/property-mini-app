@@ -349,28 +349,28 @@
       <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <form id="listingForm" onsubmit="handleFormSubmit(event)">
+    <form id="listingForm">
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
         <label id="lbl-ownerName">ឈ្មោះម្ចាស់ *</label>
-        <input type="text" id="ownerName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
+        <input type="text" id="ownerName" name="ownerName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
-          <input type="tel" id="tel1" required placeholder="012 345 678">
+          <input type="tel" id="tel1" name="tel1" required placeholder="012 345 678">
         </div>
         <div class="form-group">
           <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
-          <input type="tel" id="tel2" placeholder="098 765 432">
+          <input type="tel" id="tel2" name="tel2" placeholder="098 765 432">
         </div>
       </div>
 
       <div class="form-group">
         <label id="lbl-telegram">Telegram ម្ចាស់</label>
-        <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
+        <input type="text" id="telegram" name="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
       </div>
 
       <div class="section-title" id="sec-details">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
@@ -378,7 +378,7 @@
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-listingType">គោលបំណង *</label>
-          <select id="listingType" required onchange="togglePurposeSections()">
+          <select id="listingType" name="listingType" required onchange="togglePurposeSections()">
             <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
             <option value="លក់" id="opt-list-sale">លក់</option>
             <option value="ជួល" id="opt-list-rent">ជួល</option>
@@ -386,7 +386,7 @@
         </div>
         <div class="form-group">
           <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
-          <select id="propertyType" required>
+          <select id="propertyType" name="propertyType" required>
             <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
             <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
             <option value="វីឡា" id="opt-type-villa">វីឡា</option>
@@ -400,18 +400,18 @@
 
       <div class="form-group">
         <label id="lbl-price">តម្លៃ ($) *</label>
-        <input type="number" id="price" step="any" required placeholder="e.g. 150000">
+        <input type="number" id="price" name="price" step="any" required placeholder="e.g. 150000">
       </div>
 
       <div class="form-group">
         <label id="lbl-location">ទីតាំង / អាសយដ្ឋាន *</label>
-        <input type="text" id="location" required data-ph-km="ឧ. សង្កាត់ទួលសង្កែ, ខណ្ឌឫស្សីកែវ" data-ph-en="e.g. Toul Sangke, Russey Keo">
+        <input type="text" id="location" name="location" required data-ph-km="ឧ. សង្កាត់ទួលសង្កែ, ខណ្ឌឫស្សីកែវ" data-ph-en="e.g. Toul Sangke, Russey Keo">
       </div>
 
       <div class="form-group">
         <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link) *</label>
         <div class="map-input-wrapper">
-          <input type="url" id="mapLink" required data-ph-km="https://maps.app.goo.gl/..." data-ph-en="https://maps.app.goo.gl/..." oninput="previewMap()">
+          <input type="url" id="mapLink" name="mapLink" required data-ph-km="https://maps.app.goo.gl/..." data-ph-en="https://maps.app.goo.gl/..." oninput="previewMap()">
           <a href="https://maps.google.com" target="_blank" class="btn-gps-small" id="btn-openMap">
             📍 Google Maps
           </a>
@@ -427,29 +427,29 @@
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-landSize">ទំហំដី</label>
-          <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
+          <input type="text" id="landSize" name="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
         </div>
         <div class="form-group">
           <label id="lbl-houseSize">ទំហំផ្ទះ</label>
-          <input type="text" id="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
+          <input type="text" id="houseSize" name="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-frontSpace">សល់មុខផ្ទះ (Front Space)</label>
-          <input type="text" id="frontSpace" data-ph-km="ឧ. សល់មុខ 5m" data-ph-en="e.g. 5m front yard">
+          <input type="text" id="frontSpace" name="frontSpace" data-ph-km="ឧ. សល់មុខ 5m" data-ph-en="e.g. 5m front yard">
         </div>
         <div class="form-group">
           <label id="lbl-backSpace">សល់ក្រោយផ្ទះ (Back Space)</label>
-          <input type="text" id="backSpace" data-ph-km="ឧ. សល់ក្រោយ 2m" data-ph-en="e.g. 2m back yard">
+          <input type="text" id="backSpace" name="backSpace" data-ph-km="ឧ. សល់ក្រោយ 2m" data-ph-en="e.g. 2m back yard">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label id="lbl-bedrooms">បន្ទប់គេង</label>
-          <select id="bedrooms">
+          <select id="bedrooms" name="bedrooms">
             <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
             <option value="1">1</option>
             <option value="2">2</option>
@@ -460,7 +460,7 @@
         </div>
         <div class="form-group">
           <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
-          <select id="bathrooms">
+          <select id="bathrooms" name="bathrooms">
             <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
             <option value="1">1</option>
             <option value="2">2</option>
@@ -473,7 +473,7 @@
 
       <div class="form-group">
         <label id="lbl-direction">ទិស</label>
-        <select id="direction">
+        <select id="direction" name="direction">
           <option value="មិនកំណត់" id="opt-dir-select">-- ជ្រើសរើស --</option>
           <option value="កើត" id="opt-dir-east">កើត</option>
           <option value="លិច" id="opt-dir-west">លិច</option>
@@ -489,19 +489,19 @@
       <div id="rent-terms-section">
         <div class="form-group">
           <label id="lbl-deposit">ប្រាក់កក់ *</label>
-          <select id="deposit" onchange="toggleDepositOther()">
+          <select id="deposit" name="deposit" onchange="toggleDepositOther()">
             <option value="1ខែ" id="opt-dep-1">1 ខែ</option>
             <option value="2ខែ" id="opt-dep-2">2 ខែ</option>
             <option value="3ខែ" id="opt-dep-3">3 ខែ</option>
             <option value="ផ្សេងៗ" id="opt-dep-other">ផ្សេងៗ</option>
           </select>
-          <input type="text" id="depositOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រាក់កក់..." data-ph-en="Specify deposit terms...">
+          <input type="text" id="depositOther" name="depositOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រាក់កក់..." data-ph-en="Specify deposit terms...">
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label id="lbl-rentFee">បង់ថ្លៃឈ្នួល *</label>
-            <select id="rentFee">
+            <select id="rentFee" name="rentFee">
               <option value="ដើមខែ" id="opt-fee-start">ដើមខែ</option>
               <option value="ចុងខែ" id="opt-fee-end">ចុងខែ</option>
               <option value="ចរចា" id="opt-fee-neg">ចរចា</option>
@@ -509,7 +509,7 @@
           </div>
           <div class="form-group">
             <label id="lbl-contract">កុងត្រា *</label>
-            <select id="contract">
+            <select id="contract" name="contract">
               <option value="3ខែ" id="opt-con-3m">3 ខែ</option>
               <option value="6ខែ" id="opt-con-6m">6 ខែ</option>
               <option value="1ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ</option>
@@ -524,19 +524,19 @@
       <div id="sale-terms-section">
         <div class="form-group">
           <label id="lbl-certificate">ប្លង់កម្មសិទ្ធ *</label>
-          <select id="certificate" onchange="toggleCertOther()">
+          <select id="certificate" name="certificate" onchange="toggleCertOther()">
             <option value="មិនមាន" id="opt-cert-none">មិនមាន</option>
             <option value="ប្លង់រឹង" id="opt-cert-hard">ប្លង់រឹង</option>
             <option value="ប្លង់ទន់" id="opt-cert-soft">ប្លង់ទន់</option>
             <option value="ប្រភេទផ្សេង" id="opt-cert-other">ប្រភេទផ្សេង</option>
           </select>
-          <input type="text" id="certOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រភេទប្លង់..." data-ph-en="Specify certificate type...">
+          <input type="text" id="certOther" name="certOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រភេទប្លង់..." data-ph-en="Specify certificate type...">
         </div>
       </div>
 
       <div class="form-group">
         <label id="lbl-description">សម្គាល់បន្ថែម</label>
-        <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
+        <textarea id="description" name="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
       </div>
 
       <div class="form-group">
@@ -553,11 +553,10 @@
         <div id="preview-grid" class="preview-grid"></div>
       </div>
 
-      <button type="submit" class="btn-submit-web" id="btn-submit-web">បញ្ជូនទិន្នន័យ</button>
+      <button type="button" class="btn-submit-web" id="btn-submit-web" onclick="submitForm()">បញ្ជូនទិន្នន័យ</button>
     </form>
   </div>
 
-  <!-- Summary Modal Overlay -->
   <div id="summaryModal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-title" id="modal-summary-title">🎉 សង្ខេបទិន្នន័យដែលបានបញ្ជូន</div>
@@ -974,9 +973,7 @@
       if (tg && tg.close) tg.close();
     }
 
-    function handleFormSubmit(e) {
-      if (e) e.preventDefault();
-      
+    async function submitForm() {
       const t = translations[currentLang];
       const form = document.getElementById('listingForm');
       
@@ -991,11 +988,28 @@
         return;
       }
 
+      const submitBtn = document.getElementById('btn-submit-web');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Submitting...';
+
+      if (tg && tg.MainButton) {
+        tg.MainButton.showProgress();
+      }
+
+      const formData = new FormData(form);
+
+      // Attach Telegram user details if available
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
+      formData.append('submittedBy', submittedBy);
 
+      // Append images to multipart body
+      selectedFiles.forEach((file) => {
+        formData.append('photos', file);
+      });
+
+      // Local Object for Summary Modal display
       const listingType = document.getElementById('listingType').value;
-      
       const summaryData = {
         ownerName: document.getElementById('ownerName').value,
         tel1: document.getElementById('tel1').value,
@@ -1008,13 +1022,8 @@
         mapLink: document.getElementById('mapLink').value,
         landSize: document.getElementById('landSize').value,
         houseSize: document.getElementById('houseSize').value,
-        frontSpace: document.getElementById('frontSpace').value,
-        backSpace: document.getElementById('backSpace').value,
         bedrooms: document.getElementById('bedrooms').value,
         bathrooms: document.getElementById('bathrooms').value,
-        direction: document.getElementById('direction').value,
-        description: document.getElementById('description').value,
-        submittedBy: submittedBy,
         photoCount: selectedFiles.length
       };
 
@@ -1029,14 +1038,28 @@
       }
 
       try {
-        if (tg && tg.sendData) {
-          tg.sendData(JSON.stringify(summaryData));
+        // Send data & photos directly to your Render server
+        const response = await fetch('/api/submit', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          // Success: Display summary modal back to the submitter
+          displaySummaryModal(summaryData);
+        } else {
+          alert('Submission failed on server. Please try again.');
         }
       } catch (err) {
-        console.error('Telegram sendData error:', err);
+        console.error('Server upload error:', err);
+        alert('Network error. Failed to reach server.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = t.submitBtn;
+        if (tg && tg.MainButton) {
+          tg.MainButton.hideProgress();
+        }
       }
-
-      displaySummaryModal(summaryData);
     }
 
     if (tg) {
@@ -1045,7 +1068,7 @@
       tg.setBackgroundColor('#f8fafc');
       if (tg.MainButton) {
         tg.MainButton.setText(translations[currentLang].submitBtn);
-        tg.MainButton.onClick(() => handleFormSubmit());
+        tg.MainButton.onClick(submitForm);
         tg.MainButton.show();
       }
     }
