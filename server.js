@@ -112,59 +112,68 @@ function generatePropertyTelegramCard(data) {
 }
 
 /**
- * Formats client inquiry data into an HTML summary card for Telegram properly arranged.
+ * Formats client inquiry data into an HTML summary card for Telegram matching exact layout requested.
  */
 function generateClientInquiryCard(data) {
-  let card = `🔍 <b>ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)</b>\n\n`;
+  let card = `👤<b>ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)</b>\n\n`;
 
-  card += `📌 <b>ព័ត៌មានតម្រូវការ</b>\n`;
-  const pType = data.propertyType || '';
-  const lType = data.listingType || '';
-  card += `🏠 <b>${pType}${pType && lType ? ' ' : ''}${lType}</b>\n`;
-  card += `📍 <b>ទីតាំងចង់បាន:</b> ${data.targetLocation || 'មិនមាន'}\n`;
-  card += `• <b>ថវិកា (Budget):</b> $${data.budget ? Number(data.budget).toLocaleString() : 'មិនមាន'}\n`;
+  card += `🔍<b>ភ្ញៀវកំពុងស្វែងរក៖</b>\n`;
 
-  // Optional Sizes (Land / Warehouse)
-  if (data.landSize) {
-    card += `• <b>ទំហំដី (Land Size):</b> ${data.landSize}\n`;
-  }
-  if (data.buildingSize) {
-    card += `• <b>ទំហំអាគារ/ផ្ទះ (Building Size):</b> ${data.buildingSize}\n`;
-  }
+  // Target + Property Type (e.g., ទិញ ឃ្លាំង)
+  const listType = data.listingType || '';
+  const propType = data.propertyType || '';
+  const combinedType = `${listType}${listType && propType ? ' ' : ''}${propType}`;
+  card += `🏠 ${combinedType || 'មិនមាន'}\n`;
 
-  // Contract Term for Rental
+  // Target Location
+  card += `📍 <b>តំបន់:</b> ${data.targetLocation || 'មិនមាន'}\n`;
+
+  // Budget
+  card += `• <b>តម្លៃចន្លោះ  :</b> $${data.budget ? Number(data.budget).toLocaleString() : 'មិនមាន'}\n`;
+
+  // Contract Term for Rent
   if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
-    card += `• <b>រយៈពេលកុងត្រា:</b> ${data.preferredTerm || 'មិនមាន'}\n`;
+    if (data.preferredTerm) {
+      card += `• <b>រយៈពេលកុងត្រា:</b> ${data.preferredTerm}\n`;
+    }
   }
+
+  // Land Size & Building Size
+  card += `• <b>ទំហំដី     :</b> ${data.landSize || 'មិនមាន'}\n`;
+  card += `• <b>ទំហំអាគារ :</b> ${data.buildingSize || 'មិនមាន'}\n`;
 
   // Bedrooms & Bathrooms
   const bed = data.bedrooms && data.bedrooms !== 'មិនកំណត់' ? data.bedrooms : 'មិនមាន';
   const bath = data.bathrooms && data.bathrooms !== 'មិនកំណត់' ? data.bathrooms : 'មិនមាន';
-  card += `• <b>បន្ទប់គេង:</b> ${bed}  |  <b>បន្ទប់ទឹក:</b> ${bath}\n`;
+  card += `• <b>បន្ទប់គេង  :</b> ${bed}  |  <b>បន្ទប់ទឹក:</b> ${bath}\n`;
 
-  // Direction, Parking, Purpose
-  if (data.direction && data.direction !== 'មិនកំណត់') {
-    card += `• <b>ទិសបែទៅ:</b> ${data.direction}\n`;
-  }
-  if (data.parkingNeeded) {
-    card += `• <b>ចំណតរថយន្ត:</b> ${data.parkingNeeded}\n`;
-  }
-  if (data.purpose) {
-    card += `• <b>គោលបំណង:</b> ${data.purpose}\n`;
-  }
+  // Direction
+  const dir = data.direction && data.direction !== 'មិនកំណត់' ? data.direction : 'មិនមាន';
+  card += `• <b>ទិសបែទៅ :</b> ${dir}\n`;
 
-  card += `\n📝 <b>សម្គាល់បន្ថែម</b>\n`;
-  card += `${data.description || 'មិនមាន'}\n`;
+  // Parking
+  card += `• <b>ចំណត     :</b> ${data.parkingNeeded || 'មិនមាន'}\n`;
+
+  // Purpose
+  card += `• <b>គោលបំណង:</b> ${data.purpose || 'មិនមាន'}\n\n`;
+
+  // Additional Notes
+  card += `📝 <b>សម្គាល់បន្ថែម</b>\n`;
+  card += `${data.description || 'មិនមាន'}\n\n`;
   card += `———————————\n`;
 
+  // Client Details
   card += `👤 <b>ព័ត៌មានអតិថិជន</b>\n`;
   card += `• <b>ឈ្មោះ:</b> ${data.clientName || 'មិនមាន'}\n`;
-  card += `• <b>Tel 1:</b> ${data.tel1 || 'មិនមាន'}\n`;
-  if (data.tel2) {
-    card += `• <b>Tel 2:</b> ${data.tel2}\n`;
-  }
+
+  // Phone numbers combined
+  const phoneText = data.tel2 ? `${data.tel1 || ''} / ${data.tel2}` : `${data.tel1 || 'មិនមាន'}`;
+  card += `• <b>Tel:</b> ${phoneText}\n`;
+
+  // Telegram link
   card += `• <b>Telegram:</b> ${data.telegram || 'មិនមាន'}\n\n`;
 
+  // Submission Info
   if (data.submittedBy) {
     card += `<b>Submitted by:</b> ${data.submittedBy}\n`;
   }
