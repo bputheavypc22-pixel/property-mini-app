@@ -232,28 +232,42 @@
 
     <div class="row">
       <div class="form-group">
-        <label><span id="t_listingType">Inquiry Type</span> <span class="required">*</span></label>
+        <!-- 3. Changed label to Target -->
+        <label><span id="t_listingType">Target</span> <span class="required">*</span></label>
         <select id="listingType" name="listingType" required onchange="toggleTypeFields()">
-          <option value="ជួល" data-en="Rent" data-kh="ជួល">Rent / ជួល</option>
-          <option value="ទិញ" data-en="Buy" data-kh="ទិញ">Buy / ទិញ</option>
+          <option value="Rent" id="opt_rent">Rent</option>
+          <option value="Buy" id="opt_buy">Buy</option>
         </select>
       </div>
       <div class="form-group">
+        <!-- 2. Updated Property Types strictly to House/Flat, Villa, Condo, Apartment, Warehouse, Land -->
         <label><span id="t_propertyType">Property Type</span> <span class="required">*</span></label>
         <select id="propertyType" name="propertyType" required>
-          <option value="ខុនដូ" data-en="Condo" data-kh="ខុនដូ">Condo / ខុនដូ</option>
-          <option value="ផ្ទះល្វែង / វីឡា" data-en="House / Villa" data-kh="ផ្ទះល្វែង / វីឡា">House / Villa</option>
-          <option value="ដី" data-en="Land" data-kh="ដី">Land / ដី</option>
-          <option value="ការិយាល័យ" data-en="Office" data-kh="ការិយាល័យ">Office / ការិយាល័យ</option>
-          <option value="ឃ្លាំង" data-en="Warehouse" data-kh="ឃ្លាំង">Warehouse / ឃ្លាំង</option>
-          <option value="ផ្សេងៗ" data-en="Other" data-kh="ផ្សេងៗ">Other / ផ្សេងៗ</option>
+          <option value="House/Flat" id="opt_house">House / Flat</option>
+          <option value="Villa" id="opt_villa">Villa</option>
+          <option value="Condo" id="opt_condo">Condo</option>
+          <option value="Apartment" id="opt_apartment">Apartment</option>
+          <option value="Warehouse" id="opt_warehouse">Warehouse</option>
+          <option value="Land" id="opt_land">Land</option>
         </select>
       </div>
     </div>
 
+    <!-- 4. Target Location changed to Target Area with 3 options: Area 1, Area 2, Area 3 -->
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_targetArea1">Target Area 1</span> <span class="required">*</span></label>
+        <input type="text" id="targetArea1" name="targetArea1" placeholder="e.g. Toul Kork" required>
+      </div>
+      <div class="form-group">
+        <label><span id="t_targetArea2">Target Area 2</span></label>
+        <input type="text" id="targetArea2" name="targetArea2" placeholder="e.g. BKK1">
+      </div>
+    </div>
+
     <div class="form-group">
-      <label><span id="t_targetLocation">Target Location</span> <span class="required">*</span></label>
-      <input type="text" id="targetLocation" name="targetLocation" placeholder="e.g. Toul Kork, BKK1, Chroy Changvar" required>
+      <label><span id="t_targetArea3">Target Area 3</span></label>
+      <input type="text" id="targetArea3" name="targetArea3" placeholder="e.g. Chroy Changvar">
     </div>
 
     <div class="row">
@@ -264,9 +278,9 @@
       <div class="form-group" id="preferredTermGroup">
         <label><span id="t_preferredTerm">Preferred Contract</span></label>
         <select id="preferredTerm" name="preferredTerm">
-          <option value="6 ខែ">6 Months / 6 ខែ</option>
-          <option value="1 ឆ្នាំ" selected>1 Year / 1 ឆ្នាំ</option>
-          <option value="2 ឆ្នាំឡើង">2+ Years / 2 ឆ្នាំឡើង</option>
+          <option value="6 Months" id="opt_term_6m">6 Months</option>
+          <option value="1 Year" id="opt_term_1y" selected>1 Year</option>
+          <option value="2+ Years" id="opt_term_2y">2+ Years</option>
         </select>
       </div>
     </div>
@@ -275,7 +289,7 @@
       <div class="form-group">
         <label><span id="t_bedrooms">Bedrooms</span></label>
         <select id="bedrooms" name="bedrooms">
-          <option value="មិនកំណត់" id="opt_bed_any">Any / មិនកំណត់</option>
+          <option value="Any" id="opt_bed_any">Any</option>
           <option value="Studio">Studio</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -285,7 +299,7 @@
       <div class="form-group">
         <label><span id="t_bathrooms">Bathrooms</span></label>
         <select id="bathrooms" name="bathrooms">
-          <option value="មិនកំណត់" id="opt_bath_any">Any / មិនកំណត់</option>
+          <option value="Any" id="opt_bath_any">Any</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3+">3+</option>
@@ -313,7 +327,7 @@
     tg.expand();
   }
 
-  // Multi-Language Dictionary
+  // 1. Fully isolated language dictionaries (No combining EN and KH)
   const translations = {
     en: {
       mainTitle: "Client Inquiry",
@@ -324,9 +338,11 @@
       tel2: "Phone Number 2",
       telegram: "Telegram Account",
       secDetails: "Property Preferences",
-      listingType: "Inquiry Type",
+      listingType: "Target",
       propertyType: "Property Type",
-      targetLocation: "Target Location",
+      targetArea1: "Target Area 1",
+      targetArea2: "Target Area 2",
+      targetArea3: "Target Area 3",
       budget: "Budget ($)",
       preferredTerm: "Preferred Contract",
       bedrooms: "Bedrooms",
@@ -334,8 +350,21 @@
       description: "Additional Requirements",
       submitBtn: "SUBMIT INQUIRY",
       placeholderClient: "e.g. Chan Sokha",
-      placeholderLoc: "e.g. Toul Kork, BKK1, Chroy Changvar",
+      placeholderArea1: "e.g. Toul Kork",
+      placeholderArea2: "e.g. BKK1",
+      placeholderArea3: "e.g. Chroy Changvar",
       placeholderDesc: "e.g. High floor, pet friendly, fully furnished...",
+      optRent: "Rent",
+      optBuy: "Buy",
+      optHouse: "House / Flat",
+      optVilla: "Villa",
+      optCondo: "Condo",
+      optApartment: "Apartment",
+      optWarehouse: "Warehouse",
+      optLand: "Land",
+      optTerm6m: "6 Months",
+      optTerm1y: "1 Year",
+      optTerm2y: "2+ Years",
       optAny: "Any"
     },
     kh: {
@@ -349,7 +378,9 @@
       secDetails: "ព័ត៌មានតម្រូវការអចលនទ្រព្យ",
       listingType: "គោលបំណង",
       propertyType: "ប្រភេទអចលនទ្រព្យ",
-      targetLocation: "ទីតាំងចង់បាន",
+      targetArea1: "តំបន់គោលដៅ ទី១",
+      targetArea2: "តំបន់គោលដៅ ទី២",
+      targetArea3: "តំបន់គោលដៅ ទី៣",
       budget: "ថវិកា ($)",
       preferredTerm: "រយៈពេលកុងត្រា",
       bedrooms: "បន្ទប់គេង",
@@ -357,8 +388,21 @@
       description: "តម្រូវការបន្ថែម",
       submitBtn: "បញ្ជូនទិន្នន័យ",
       placeholderClient: "ឧ. ចាន់ សុខា",
-      placeholderLoc: "ឧ. ទួលគោក, បឹងកេងកង, ជ្រោយចង្វារ",
+      placeholderArea1: "ឧ. ទួលគោក",
+      placeholderArea2: "ឧ. បឹងកេងកង១",
+      placeholderArea3: "ឧ. ជ្រោយចង្វារ",
       placeholderDesc: "ឧ. ចង់បានជាន់ខ្ពស់, អនុញ្ញាតឲ្យចិញ្ចឹមសត្វ, មានគ្រឿងសង្ហារិមស្រាប់...",
+      optRent: "ជួល",
+      optBuy: "ទិញ",
+      optHouse: "ផ្ទះ / ផ្ទះល្វែង",
+      optVilla: "វីឡា",
+      optCondo: "ខុនដូ",
+      optApartment: "អាផាតមិន",
+      optWarehouse: "ឃ្លាំង",
+      optLand: "ដី",
+      optTerm6m: "6 ខែ",
+      optTerm1y: "1 ឆ្នាំ",
+      optTerm2y: "2 ឆ្នាំឡើង",
       optAny: "មិនកំណត់"
     }
   };
@@ -382,7 +426,9 @@
     document.getElementById('t_secDetails').innerText = t.secDetails;
     document.getElementById('t_listingType').innerText = t.listingType;
     document.getElementById('t_propertyType').innerText = t.propertyType;
-    document.getElementById('t_targetLocation').innerText = t.targetLocation;
+    document.getElementById('t_targetArea1').innerText = t.targetArea1;
+    document.getElementById('t_targetArea2').innerText = t.targetArea2;
+    document.getElementById('t_targetArea3').innerText = t.targetArea3;
     document.getElementById('t_budget').innerText = t.budget;
     document.getElementById('t_preferredTerm').innerText = t.preferredTerm;
     document.getElementById('t_bedrooms').innerText = t.bedrooms;
@@ -390,12 +436,43 @@
     document.getElementById('t_description').innerText = t.description;
     document.getElementById('submitBtn').innerText = t.submitBtn;
 
+    // Placeholders
     document.getElementById('clientName').placeholder = t.placeholderClient;
-    document.getElementById('targetLocation').placeholder = t.placeholderLoc;
+    document.getElementById('targetArea1').placeholder = t.placeholderArea1;
+    document.getElementById('targetArea2').placeholder = t.placeholderArea2;
+    document.getElementById('targetArea3').placeholder = t.placeholderArea3;
     document.getElementById('description').placeholder = t.placeholderDesc;
 
+    // Dropdown Labels
+    document.getElementById('opt_rent').innerText = t.optRent;
+    document.getElementById('opt_rent').value = t.optRent;
+    document.getElementById('opt_buy').innerText = t.optBuy;
+    document.getElementById('opt_buy').value = t.optBuy;
+
+    document.getElementById('opt_house').innerText = t.optHouse;
+    document.getElementById('opt_house').value = t.optHouse;
+    document.getElementById('opt_villa').innerText = t.optVilla;
+    document.getElementById('opt_villa').value = t.optVilla;
+    document.getElementById('opt_condo').innerText = t.optCondo;
+    document.getElementById('opt_condo').value = t.optCondo;
+    document.getElementById('opt_apartment').innerText = t.optApartment;
+    document.getElementById('opt_apartment').value = t.optApartment;
+    document.getElementById('opt_warehouse').innerText = t.optWarehouse;
+    document.getElementById('opt_warehouse').value = t.optWarehouse;
+    document.getElementById('opt_land').innerText = t.optLand;
+    document.getElementById('opt_land').value = t.optLand;
+
+    document.getElementById('opt_term_6m').innerText = t.optTerm6m;
+    document.getElementById('opt_term_6m').value = t.optTerm6m;
+    document.getElementById('opt_term_1y').innerText = t.optTerm1y;
+    document.getElementById('opt_term_1y').value = t.optTerm1y;
+    document.getElementById('opt_term_2y').innerText = t.optTerm2y;
+    document.getElementById('opt_term_2y').value = t.optTerm2y;
+
     document.getElementById('opt_bed_any').innerText = t.optAny;
+    document.getElementById('opt_bed_any').value = t.optAny;
     document.getElementById('opt_bath_any').innerText = t.optAny;
+    document.getElementById('opt_bath_any').value = t.optAny;
   }
 
   // Context user extraction
@@ -414,7 +491,7 @@
   function toggleTypeFields() {
     const listingType = document.getElementById('listingType').value;
     const termGroup = document.getElementById('preferredTermGroup');
-    if (listingType === 'ទិញ' || listingType === 'Buy') {
+    if (listingType === 'Buy' || listingType === 'ទិញ') {
       termGroup.classList.add('hidden');
     } else {
       termGroup.classList.remove('hidden');
@@ -428,6 +505,12 @@
     btn.disabled = true;
     btn.innerText = currentLang === 'kh' ? 'កំពុងបញ្ជូន...' : 'SUBMITTING...';
 
+    // Build combined Target Area string for backend compatibility
+    const area1 = document.getElementById('targetArea1')?.value.trim() || '';
+    const area2 = document.getElementById('targetArea2')?.value.trim() || '';
+    const area3 = document.getElementById('targetArea3')?.value.trim() || '';
+    const combinedAreas = [area1, area2, area3].filter(Boolean).join(', ');
+
     const payload = {
       clientName: document.getElementById('clientName')?.value || '',
       tel1: document.getElementById('tel1')?.value || '',
@@ -435,7 +518,7 @@
       telegram: document.getElementById('telegram')?.value || '',
       listingType: document.getElementById('listingType')?.value || '',
       propertyType: document.getElementById('propertyType')?.value || '',
-      targetLocation: document.getElementById('targetLocation')?.value || '',
+      targetLocation: combinedAreas,
       budget: document.getElementById('budget')?.value || '',
       preferredTerm: document.getElementById('preferredTerm')?.value || '',
       bedrooms: document.getElementById('bedrooms')?.value || '',
