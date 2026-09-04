@@ -232,7 +232,6 @@
 
     <div class="row">
       <div class="form-group">
-        <!-- 3. Changed label to Target -->
         <label><span id="t_listingType">Target</span> <span class="required">*</span></label>
         <select id="listingType" name="listingType" required onchange="toggleTypeFields()">
           <option value="Rent" id="opt_rent">Rent</option>
@@ -240,7 +239,6 @@
         </select>
       </div>
       <div class="form-group">
-        <!-- 2. Updated Property Types strictly to House/Flat, Villa, Condo, Apartment, Warehouse, Land -->
         <label><span id="t_propertyType">Property Type</span> <span class="required">*</span></label>
         <select id="propertyType" name="propertyType" required>
           <option value="House/Flat" id="opt_house">House / Flat</option>
@@ -253,7 +251,6 @@
       </div>
     </div>
 
-    <!-- 4. Target Location changed to Target Area with 3 options: Area 1, Area 2, Area 3 -->
     <div class="row">
       <div class="form-group">
         <label><span id="t_targetArea1">Target Area 1</span> <span class="required">*</span></label>
@@ -307,6 +304,20 @@
       </div>
     </div>
 
+    <!-- NEW FIELD: Purpose Dropdown & Conditional Business Type Input -->
+    <div class="form-group">
+      <label><span id="t_purpose">Purpose</span> <span class="required">*</span></label>
+      <select id="purpose" name="purpose" required onchange="togglePurposeFields()">
+        <option value="For Living" id="opt_purpose_living">For Living</option>
+        <option value="For Business" id="opt_purpose_business">For Business</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="businessTypeGroup">
+      <label><span id="t_businessType">Business Type</span> <span class="required">*</span></label>
+      <input type="text" id="businessType" name="businessType" placeholder="e.g. Restaurant, Office, Coffee Shop">
+    </div>
+
     <div class="form-group">
       <label><span id="t_description">Additional Requirements</span></label>
       <textarea id="description" name="description" rows="3" placeholder="e.g. High floor, pet friendly, fully furnished..."></textarea>
@@ -327,7 +338,7 @@
     tg.expand();
   }
 
-  // 1. Fully isolated language dictionaries (No combining EN and KH)
+  // Multi-Language Dictionaries
   const translations = {
     en: {
       mainTitle: "Client Inquiry",
@@ -347,12 +358,15 @@
       preferredTerm: "Preferred Contract",
       bedrooms: "Bedrooms",
       bathrooms: "Bathrooms",
+      purpose: "Purpose",
+      businessType: "Business Type",
       description: "Additional Requirements",
       submitBtn: "SUBMIT INQUIRY",
       placeholderClient: "e.g. Chan Sokha",
       placeholderArea1: "e.g. Toul Kork",
       placeholderArea2: "e.g. BKK1",
       placeholderArea3: "e.g. Chroy Changvar",
+      placeholderBusiness: "e.g. Restaurant, Office, Coffee Shop",
       placeholderDesc: "e.g. High floor, pet friendly, fully furnished...",
       optRent: "Rent",
       optBuy: "Buy",
@@ -365,7 +379,9 @@
       optTerm6m: "6 Months",
       optTerm1y: "1 Year",
       optTerm2y: "2+ Years",
-      optAny: "Any"
+      optAny: "Any",
+      optPurposeLiving: "For Living",
+      optPurposeBusiness: "For Business"
     },
     kh: {
       mainTitle: "តម្រូវការអតិថិជន",
@@ -385,12 +401,15 @@
       preferredTerm: "រយៈពេលកុងត្រា",
       bedrooms: "បន្ទប់គេង",
       bathrooms: "បន្ទប់ទឹក",
+      purpose: "គោលបំណងប្រប្រើប្រាស់",
+      businessType: "ប្រភេទអាជីវកម្ម",
       description: "តម្រូវការបន្ថែម",
       submitBtn: "បញ្ជូនទិន្នន័យ",
       placeholderClient: "ឧ. ចាន់ សុខា",
       placeholderArea1: "ឧ. ទួលគោក",
       placeholderArea2: "ឧ. បឹងកេងកង១",
       placeholderArea3: "ឧ. ជ្រោយចង្វារ",
+      placeholderBusiness: "ឧ. ហាងបាយ, ការិយាល័យ, ហាងកាហ្វេ",
       placeholderDesc: "ឧ. ចង់បានជាន់ខ្ពស់, អនុញ្ញាតឲ្យចិញ្ចឹមសត្វ, មានគ្រឿងសង្ហារិមស្រាប់...",
       optRent: "ជួល",
       optBuy: "ទិញ",
@@ -403,7 +422,9 @@
       optTerm6m: "6 ខែ",
       optTerm1y: "1 ឆ្នាំ",
       optTerm2y: "2 ឆ្នាំឡើង",
-      optAny: "មិនកំណត់"
+      optAny: "មិនកំណត់",
+      optPurposeLiving: "សម្រាប់រស់នៅ",
+      optPurposeBusiness: "សម្រាប់ធ្វើអាជីវកម្ម"
     }
   };
 
@@ -433,6 +454,8 @@
     document.getElementById('t_preferredTerm').innerText = t.preferredTerm;
     document.getElementById('t_bedrooms').innerText = t.bedrooms;
     document.getElementById('t_bathrooms').innerText = t.bathrooms;
+    document.getElementById('t_purpose').innerText = t.purpose;
+    document.getElementById('t_businessType').innerText = t.businessType;
     document.getElementById('t_description').innerText = t.description;
     document.getElementById('submitBtn').innerText = t.submitBtn;
 
@@ -441,6 +464,7 @@
     document.getElementById('targetArea1').placeholder = t.placeholderArea1;
     document.getElementById('targetArea2').placeholder = t.placeholderArea2;
     document.getElementById('targetArea3').placeholder = t.placeholderArea3;
+    document.getElementById('businessType').placeholder = t.placeholderBusiness;
     document.getElementById('description').placeholder = t.placeholderDesc;
 
     // Dropdown Labels
@@ -473,6 +497,11 @@
     document.getElementById('opt_bed_any').value = t.optAny;
     document.getElementById('opt_bath_any').innerText = t.optAny;
     document.getElementById('opt_bath_any').value = t.optAny;
+
+    document.getElementById('opt_purpose_living').innerText = t.optPurposeLiving;
+    document.getElementById('opt_purpose_living').value = t.optPurposeLiving;
+    document.getElementById('opt_purpose_business').innerText = t.optPurposeBusiness;
+    document.getElementById('opt_purpose_business').value = t.optPurposeBusiness;
   }
 
   // Context user extraction
@@ -498,6 +527,22 @@
     }
   }
 
+  // Toggle Purpose / Business Type conditional field
+  function togglePurposeFields() {
+    const purpose = document.getElementById('purpose').value;
+    const busGroup = document.getElementById('businessTypeGroup');
+    const busInput = document.getElementById('businessType');
+
+    if (purpose === 'For Business' || purpose === 'សម្រាប់ធ្វើអាជីវកម្ម') {
+      busGroup.classList.remove('hidden');
+      busInput.required = true;
+    } else {
+      busGroup.classList.add('hidden');
+      busInput.required = false;
+      busInput.value = '';
+    }
+  }
+
   // Form Submit Handler
   document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -511,6 +556,12 @@
     const area3 = document.getElementById('targetArea3')?.value.trim() || '';
     const combinedAreas = [area1, area2, area3].filter(Boolean).join(', ');
 
+    const purposeVal = document.getElementById('purpose')?.value || '';
+    const busTypeVal = document.getElementById('businessType')?.value.trim() || '';
+    const combinedPurpose = (purposeVal === 'For Business' || purposeVal === 'សម្រាប់ធ្វើអាជីវកម្ម') && busTypeVal 
+      ? `${purposeVal} (${busTypeVal})` 
+      : purposeVal;
+
     const payload = {
       clientName: document.getElementById('clientName')?.value || '',
       tel1: document.getElementById('tel1')?.value || '',
@@ -523,6 +574,7 @@
       preferredTerm: document.getElementById('preferredTerm')?.value || '',
       bedrooms: document.getElementById('bedrooms')?.value || '',
       bathrooms: document.getElementById('bathrooms')?.value || '',
+      purpose: combinedPurpose,
       description: document.getElementById('description')?.value || '',
       submittedBy: document.getElementById('submittedBy')?.value || ''
     };
@@ -551,6 +603,7 @@
         } else {
           alert(msg);
           this.reset();
+          togglePurposeFields();
         }
       } else {
         alert('Error: ' + (result.error || 'Please try again.'));
