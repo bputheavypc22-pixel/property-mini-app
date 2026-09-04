@@ -2,494 +2,329 @@
 <html lang="km">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Client Inquiry - Twenty5 Realty</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twenty5Realty - ទម្រង់ស្នើសុំស្វែងរកអចលនទ្រព្យ</title>
+  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --primary-color: #0088cc;
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #e0e0e0;
+      --focus-ring: rgba(0, 136, 204, 0.25);
+    }
+
+    body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-    html, body {
-      background-color: #f8fafc !important;
-      color: #0f172a !important;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
       padding: 16px;
-      padding-bottom: 30px;
+      display: flex;
+      justify-content: center;
     }
+
     .container {
-      max-width: 480px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      box-sizing: border-box;
     }
+
     .header {
-      position: relative;
       text-align: center;
       margin-bottom: 20px;
     }
-    .lang-switcher {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: flex;
-      gap: 4px;
-      background: #f1f5f9;
-      padding: 3px;
-      border-radius: 20px;
-      border: 1px solid #e2e8f0;
-    }
-    .lang-btn {
-      border: none;
-      background: transparent;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 16px;
-      cursor: pointer;
-      color: #64748b;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .lang-btn.active {
-      background: #0284c7;
-      color: #ffffff;
-    }
-    .logo-img {
-      max-width: 130px;
-      height: auto;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
+
     .header h2 {
-      font-size: 18px;
-      color: #0b2545;
-      margin-bottom: 2px;
+      margin: 0 0 6px 0;
+      color: var(--primary-color);
+      font-size: 1.25rem;
     }
+
     .header p {
-      font-size: 12px;
-      color: #64748b;
+      margin: 0;
+      font-size: 0.875rem;
+      color: #666;
     }
-    .section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #0284c7;
-      margin: 18px 0 12px 0;
-      padding-bottom: 4px;
-      border-bottom: 2px solid #f1f5f9;
-    }
+
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
+
     label {
       display: block;
-      font-size: 12px;
       font-weight: 600;
-      margin-bottom: 4px;
-      color: #334155;
+      font-size: 0.875rem;
+      margin-bottom: 6px;
     }
-    input[type="text"],
-    input[type="number"],
-    input[type="tel"],
-    select,
-    textarea {
+
+    label .required {
+      color: #e53935;
+    }
+
+    input, select, textarea {
       width: 100%;
       padding: 10px 12px;
-      font-size: 13px;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      background-color: #f8fafc;
-      color: #0f172a;
-      font-weight: 500;
+      font-size: 0.95rem;
+      box-sizing: border-box;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input::placeholder,
-    textarea::placeholder {
-      color: #94a3b8;
-      opacity: 1;
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #0284c7;
-      background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+
+    .row {
+      display: flex;
+      gap: 10px;
     }
-    textarea {
-      resize: vertical;
-      min-height: 70px;
+
+    .row .form-group {
+      flex: 1;
+    }
+
+    button.submit-btn {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 10px;
+    }
+
+    button.submit-btn:hover {
+      background-color: #0077b3;
+    }
+
+    button.submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
-      <div class="lang-switcher">
-        <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
-        <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
-      </div>
-      <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
-      <h2 id="header-title">📋 ទម្រង់ស្វែងរកអចលនទ្រព្យ</h2>
-      <p id="header-subtitle">Client Inquiry Form</p>
-    </div>
-
-    <form id="inquiryForm">
-      <!-- Client Info -->
-      <div class="section-title" id="sec-client">👤 ព័ត៌មានអតិថិជន</div>
-      
-      <div class="form-group">
-        <label id="lbl-clientName">ឈ្មោះអតិថិជន *</label>
-        <input type="text" id="clientName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
-        <input type="tel" id="tel1" required placeholder="012 345 678">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
-        <input type="tel" id="tel2" placeholder="098 765 432">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-telegram">Telegram អតិថិជន</label>
-        <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
-      </div>
-
-      <!-- Requirements Details -->
-      <div class="section-title" id="sec-requirements">🔍 តម្រូវការអចលនទ្រព្យ</div>
-
-      <div class="form-group">
-        <label id="lbl-inquiryType">ប្រភេទតម្រូវការ *</label>
-        <select id="inquiryType" required>
-          <option value="" id="opt-inq-select">-- ជ្រើសរើស --</option>
-          <option value="ទិញ" id="opt-inq-buy">ទិញ</option>
-          <option value="ជួល" id="opt-inq-rent">ជួល</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
-        <select id="propertyType" required>
-          <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
-          <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
-          <option value="វីឡា" id="opt-type-villa">វីឡា</option>
-          <option value="ខុនដូ" id="opt-type-condo">ខុនដូ</option>
-          <option value="ដី" id="opt-type-land">ដី</option>
-          <option value="ឃ្លាំង" id="opt-type-warehouse">ឃ្លាំង</option>
-          <option value="អាជីវកម្ម" id="opt-type-business">អាជីវកម្ម</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-budget">ថវិកា / តម្លៃ *</label>
-        <input type="text" id="budget" required data-ph-km="ឧ. $500 - $1000/ខែ ឬ $100,000" data-ph-en="e.g. $500 - $1000/mo or $100,000">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-location">តំបន់ / ទីតាំងដែលត្រូវការ *</label>
-        <input type="text" id="location" required data-ph-km="ឧ. ទួលគោក, ចំការមន" data-ph-en="e.g. Toul Kork, Chamkarmon">
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-bedrooms">បន្ទប់គេង</label>
-        <select id="bedrooms">
-          <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5+">5+</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
-        <select id="bathrooms">
-          <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5+">5+</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-direction">ទិសដែលពេញចិត្ត</label>
-        <select id="direction">
-          <option value="មិនកំណត់" id="opt-dir-select">-- ជ្រើសរើស --</option>
-          <option value="កើត" id="opt-dir-east">កើត</option>
-          <option value="លិច" id="opt-dir-west">លិច</option>
-          <option value="ត្បូង" id="opt-dir-south">ត្បូង</option>
-          <option value="ជើង" id="opt-dir-north">ជើង</option>
-          <option value="កើតត្បូង" id="opt-dir-se">កើតត្បូង</option>
-          <option value="កើតជើង" id="opt-dir-ne">កើតជើង</option>
-          <option value="លិចត្បូង" id="opt-dir-sw">លិចត្បូង</option>
-          <option value="លិចជើង" id="opt-dir-nw">លិចជើង</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-urgency">កម្រិតប្រញាប់</label>
-        <select id="urgency">
-          <option value="ធម្មតា" id="opt-urgency-normal">ធម្មតា</option>
-          <option value="ប្រញាប់" id="opt-urgency-urgent">ប្រញាប់</option>
-          <option value="ប្រញាប់ខ្លាំង" id="opt-urgency-vurgent">ប្រញាប់ខ្លាំង</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label id="lbl-description">សម្គាល់បន្ថែម</label>
-        <textarea id="description" data-ph-km="តម្រូវការបន្ថែមផ្សេងៗ..." data-ph-en="Other specific requirements..."></textarea>
-      </div>
-    </form>
+<div class="container">
+  <div class="header">
+    <h2>🔍 តម្រូវការស្វែងរកអចលនទ្រព្យ</h2>
+    <p>Client Property Inquiry Form</p>
   </div>
 
-  <script>
-    const tg = window.Telegram?.WebApp;
-    let currentLang = localStorage.getItem('appLang') || 'km';
+  <form id="inquiryForm">
+    <!-- Client Name & Contact -->
+    <div class="form-group">
+      <label>ឈ្មោះអតិថិជន / Client Name <span class="required">*</span></label>
+      <input type="text" id="clientName" name="clientName" placeholder="ឧ. ចាន់ តារា" required>
+    </div>
 
-    const translations = {
-      km: {
-        headerTitle: "📋 ទម្រង់ស្វែងរកអចលនទ្រព្យ",
-        headerSubtitle: "ទម្រង់សម្រាប់អតិថិជនត្រូវការទិញ/ជួល",
-        secClient: "👤 ព័ត៌មានអតិថិជន",
-        lblClientName: "ឈ្មោះអតិថិជន *",
-        lblTel1: "លេខទូរស័ព្ទទី១ *",
-        lblTel2: "លេខទូរស័ព្ទទី២",
-        lblTelegram: "Telegram អតិថិជន",
-        secRequirements: "🔍 តម្រូវការអចលនទ្រព្យ",
-        lblInquiryType: "ប្រភេទតម្រូវការ *",
-        optSelect: "-- ជ្រើសរើស --",
-        optBuy: "ទិញ",
-        optRent: "ជួល",
-        lblPropertyType: "ប្រភេទអចលនទ្រព្យ *",
-        optFlat: "ផ្ទះល្វែង",
-        optVilla: "វីឡា",
-        optCondo: "ខុនដូ",
-        optLand: "ដី",
-        optWarehouse: "ឃ្លាំង",
-        optBusiness: "អាជីវកម្ម",
-        lblBudget: "ថវិកា / តម្លៃ *",
-        lblLocation: "តំបន់ / ទីតាំងដែលត្រូវការ *",
-        lblBedrooms: "បន្ទប់គេង",
-        lblBathrooms: "បន្ទប់ទឹក",
-        lblDirection: "ទិសដែលពេញចិត្ត",
-        optEast: "កើត",
-        optWest: "លិច",
-        optSouth: "ត្បូង",
-        optNorth: "ជើង",
-        optSE: "កើតត្បូង",
-        optNE: "កើតជើង",
-        optSW: "លិចត្បូង",
-        optNW: "លិចជើង",
-        lblUrgency: "កម្រិតប្រញាប់",
-        optUrgencyNormal: "ធម្មតា",
-        optUrgencyUrgent: "ប្រញាប់",
-        optUrgencyVUrgent: "ប្រញាប់ខ្លាំង",
-        lblDescription: "សម្គាល់បន្ថែម",
-        submitBtn: "បញ្ជូនព័ត៌មាន",
-        successAlert: "បានផ្ញើព័ត៌មានតម្រូវការជោគជ័យ! 🎉"
-      },
-      en: {
-        headerTitle: "📋 Client Inquiry",
-        headerSubtitle: "Property Request Form",
-        secClient: "👤 Client Information",
-        lblClientName: "Client Name *",
-        lblTel1: "Phone Number 1 *",
-        lblTel2: "Phone Number 2",
-        lblTelegram: "Client Telegram",
-        secRequirements: "🔍 Property Requirements",
-        lblInquiryType: "Inquiry Type *",
-        optSelect: "-- Select --",
-        optBuy: "To Buy",
-        optRent: "To Rent",
-        lblPropertyType: "Property Type *",
-        optFlat: "Flat House",
-        optVilla: "Villa",
-        optCondo: "Condo",
-        optLand: "Land",
-        optWarehouse: "Warehouse",
-        optBusiness: "Business",
-        lblBudget: "Budget / Price *",
-        lblLocation: "Preferred Location *",
-        lblBedrooms: "Bedrooms",
-        lblBathrooms: "Bathrooms",
-        lblDirection: "Preferred Direction",
-        optEast: "East",
-        optWest: "West",
-        optSouth: "South",
-        optNorth: "North",
-        optSE: "South East",
-        optNE: "North East",
-        optSW: "South West",
-        optNW: "North West",
-        lblUrgency: "Urgency Level",
-        optUrgencyNormal: "Normal",
-        optUrgencyUrgent: "Urgent",
-        optUrgencyVUrgent: "Very Urgent",
-        lblDescription: "Additional Notes",
-        submitBtn: "SUBMIT INQUIRY",
-        successAlert: "Inquiry submitted successfully! 🎉"
-      }
-    };
+    <div class="row">
+      <div class="form-group">
+        <label>លេខទូរស័ព្ទទី១ / Tel 1 <span class="required">*</span></label>
+        <input type="tel" id="tel1" name="tel1" placeholder="081XXXXXX" required>
+      </div>
+      <div class="form-group">
+        <label>លេខទូរស័ព្ទទី២ / Tel 2</label>
+        <input type="tel" id="tel2" name="tel2" placeholder="012XXXXXX">
+      </div>
+    </div>
 
-    function switchLanguage(lang) {
-      currentLang = lang;
-      localStorage.setItem('appLang', lang);
+    <div class="form-group">
+      <label>គណនី Telegram / Telegram Account</label>
+      <input type="text" id="telegram" name="telegram" placeholder="@username ឬ លេខទូរស័ព្ទ">
+    </div>
 
-      document.getElementById('btn-km').classList.toggle('active', lang === 'km');
-      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    <!-- Inquiry Type & Property Category -->
+    <div class="row">
+      <div class="form-group">
+        <label>គោលបំណង / Inquiry Type <span class="required">*</span></label>
+        <select id="listingType" name="listingType" required onchange="toggleTypeFields()">
+          <option value="ជួល">ជួល (For Rent)</option>
+          <option value="ទិញ">ទិញ (For Sale)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ប្រភេទ / Property Type <span class="required">*</span></label>
+        <select id="propertyType" name="propertyType" required>
+          <option value="ខុនដូ">ខុនដូ (Condo)</option>
+          <option value="ផ្ទះល្វែង / វីឡា">ផ្ទះ / វីឡា (House/Villa)</option>
+          <option value="ដី">ដី (Land)</option>
+          <option value="ការិយាល័យ">ការិយាល័យ (Office)</option>
+          <option value="ឃ្លាំង">ឃ្លាំង (Warehouse)</option>
+          <option value="ផ្សេងៗ">ផ្សេងៗ (Other)</option>
+        </select>
+      </div>
+    </div>
 
-      const t = translations[lang];
+    <!-- Target Location & Budget -->
+    <div class="form-group">
+      <label>ទីតាំងចង់បាន / Target Location <span class="required">*</span></label>
+      <input type="text" id="targetLocation" name="targetLocation" placeholder="ឧ. ទួលគោក, បឹងកេងកង, ជ្រោយចង្វារ" required>
+    </div>
 
-      document.getElementById('header-title').textContent = t.headerTitle;
-      document.getElementById('header-subtitle').textContent = t.headerSubtitle;
-      document.getElementById('sec-client').textContent = t.secClient;
-      document.getElementById('lbl-clientName').textContent = t.lblClientName;
-      document.getElementById('lbl-tel1').textContent = t.lblTel1;
-      document.getElementById('lbl-tel2').textContent = t.lblTel2;
-      document.getElementById('lbl-telegram').textContent = t.lblTelegram;
-      
-      document.getElementById('sec-requirements').textContent = t.secRequirements;
-      document.getElementById('lbl-inquiryType').textContent = t.lblInquiryType;
-      document.getElementById('opt-inq-select').textContent = t.optSelect;
-      document.getElementById('opt-inq-buy').textContent = t.optBuy;
-      document.getElementById('opt-inq-rent').textContent = t.optRent;
+    <div class="row">
+      <div class="form-group">
+        <label>ថវិកា / Budget ($) <span class="required">*</span></label>
+        <input type="number" id="budget" name="budget" placeholder="ឧ. 300 ឬ 50000" required>
+      </div>
+      <div class="form-group" id="preferredTermGroup">
+        <label>រយៈពេលកុងត្រា / Preferred Contract</label>
+        <select id="preferredTerm" name="preferredTerm">
+          <option value="6 ខែ">6 ខែ (6 Months)</option>
+          <option value="1 ឆ្នាំ">1 ឆ្នាំ (1 Year)</option>
+          <option value="2 ឆ្នាំឡើង">2 ឆ្នាំឡើង (2+ Years)</option>
+        </select>
+      </div>
+    </div>
 
-      document.getElementById('lbl-propertyType').textContent = t.lblPropertyType;
-      document.getElementById('opt-type-select').textContent = t.optSelect;
-      document.getElementById('opt-type-flat').textContent = t.optFlat;
-      document.getElementById('opt-type-villa').textContent = t.optVilla;
-      document.getElementById('opt-type-condo').textContent = t.optCondo;
-      document.getElementById('opt-type-land').textContent = t.optLand;
-      document.getElementById('opt-type-warehouse').textContent = t.optWarehouse;
-      document.getElementById('opt-type-business').textContent = t.optBusiness;
+    <!-- Requirements Specs -->
+    <div class="row">
+      <div class="form-group">
+        <label>បន្ទប់គេង / Bedroom</label>
+        <select id="bedrooms" name="bedrooms">
+          <option value="មិនកំណត់">មិនកំណត់ (Any)</option>
+          <option value="Studio">Studio</option>
+          <option value="1">1 បន្ទប់</option>
+          <option value="2">2 បន្ទប់</option>
+          <option value="3+">3 បន្ទប់ឡើង</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>បន្ទប់ទឹក / Bathroom</label>
+        <select id="bathrooms" name="bathrooms">
+          <option value="មិនកំណត់">មិនកំណត់ (Any)</option>
+          <option value="1">1 បន្ទប់</option>
+          <option value="2">2 បន្ទប់</option>
+          <option value="3+">3 បន្ទប់ឡើង</option>
+        </select>
+      </div>
+    </div>
 
-      document.getElementById('lbl-budget').textContent = t.lblBudget;
-      document.getElementById('lbl-location').textContent = t.lblLocation;
-      
-      document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
-      document.getElementById('opt-bed-select').textContent = t.optSelect;
-      
-      document.getElementById('lbl-bathrooms').textContent = t.lblBathrooms;
-      document.getElementById('opt-bath-select').textContent = t.optSelect;
+    <!-- Additional Requirements -->
+    <div class="form-group">
+      <label>តម្រូវការបន្ថែម / Additional Requirements</label>
+      <textarea id="description" name="description" rows="3" placeholder="ឧ. ចង់បានជាន់ខ្ពស់, មានកែច្នៃស្រាប់, អនុញ្ញាតឲ្យចិញ្ចឹមសត្វ..."></textarea>
+    </div>
 
-      document.getElementById('lbl-direction').textContent = t.lblDirection;
-      document.getElementById('opt-dir-select').textContent = t.optSelect;
-      document.getElementById('opt-dir-east').textContent = t.optEast;
-      document.getElementById('opt-dir-west').textContent = t.optWest;
-      document.getElementById('opt-dir-south').textContent = t.optSouth;
-      document.getElementById('opt-dir-north').textContent = t.optNorth;
-      document.getElementById('opt-dir-se').textContent = t.optSE;
-      document.getElementById('opt-dir-ne').textContent = t.optNE;
-      document.getElementById('opt-dir-sw').textContent = t.optSW;
-      document.getElementById('opt-dir-nw').textContent = t.optNW;
+    <!-- Hidden Submitter field -->
+    <input type="hidden" id="submittedBy" name="submittedBy">
 
-      document.getElementById('lbl-urgency').textContent = t.lblUrgency;
-      document.getElementById('opt-urgency-normal').textContent = t.optUrgencyNormal;
-      document.getElementById('opt-urgency-urgent').textContent = t.optUrgencyUrgent;
-      document.getElementById('opt-urgency-vurgent').textContent = t.optUrgencyVUrgent;
+    <button type="submit" class="submit-btn" id="submitBtn">បញ្ជូនទិន្នន័យ / Submit Inquiry</button>
+  </form>
+</div>
 
-      document.getElementById('lbl-description').textContent = t.lblDescription;
+<script>
+  // Initialize Telegram WebApp
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
 
-      document.querySelectorAll('[data-ph-km]').forEach(el => {
-        el.placeholder = el.getAttribute(`data-ph-${lang}`);
-      });
-
-      if (tg && tg.MainButton) {
-        tg.MainButton.setText(t.submitBtn);
-      }
-    }
-
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      tg.setBackgroundColor('#f8fafc');
-      tg.MainButton.show();
-    }
-
-    const submitForm = async () => {
-      const t = translations[currentLang];
-      const form = document.getElementById('inquiryForm');
-      
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-      if (tg) tg.MainButton.showProgress();
-
-      const user = tg?.initDataUnsafe?.user;
-      const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
-
-      const payload = {
-        clientName: document.getElementById('clientName').value,
-        tel1: document.getElementById('tel1').value,
-        tel2: document.getElementById('tel2').value,
-        telegram: document.getElementById('telegram').value,
-        inquiryType: document.getElementById('inquiryType').value,
-        propertyType: document.getElementById('propertyType').value,
-        budget: document.getElementById('budget').value,
-        location: document.getElementById('location').value,
-        bedrooms: document.getElementById('bedrooms').value,
-        bathrooms: document.getElementById('bathrooms').value,
-        direction: document.getElementById('direction').value,
-        urgency: document.getElementById('urgency').value,
-        description: document.getElementById('description').value,
-        submittedBy: submittedBy,
-        initData: tg?.initData || ''
-      };
-
-      try {
-        // Updated fallback endpoints matching common express server routes
-        const response = await fetch('/api/submit-client', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (tg) tg.MainButton.hideProgress();
-
-        if (result.success) {
-          if (tg) {
-            tg.showAlert(t.successAlert, () => tg.close());
-          } else {
-            alert(t.successAlert);
-            location.reload();
-          }
-        } else {
-          throw new Error(result.error || 'Submission failed');
-        }
-      } catch (err) {
-        if (tg) tg.MainButton.hideProgress();
-        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
-      }
-    };
-
-    if (tg) {
-      tg.MainButton.onClick(submitForm);
+  // Pre-fill submitter handle from Telegram context
+  window.addEventListener('DOMContentLoaded', () => {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const u = tg.initDataUnsafe.user;
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+      const username = u.username ? `(@${u.username})` : '';
+      document.getElementById('submittedBy').value = `${name} ${username}`.trim();
     } else {
-      document.getElementById('inquiryForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-      });
+      document.getElementById('submittedBy').value = 'Agent/Client (Web Direct)';
     }
+  });
 
-    switchLanguage(currentLang);
-  </script>
+  // Toggle fields based on Rent or Buy
+  function toggleTypeFields() {
+    const listingType = document.getElementById('listingType').value;
+    const termGroup = document.getElementById('preferredTermGroup');
+    if (listingType === 'ទិញ') {
+      termGroup.classList.add('hidden');
+    } else {
+      termGroup.classList.remove('hidden');
+    }
+  }
+
+  // Form Submit Handler
+  document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = 'កំពុងបញ្ជូន... / Submitting...';
+
+    // Construct JSON payload explicitly
+    const payload = {
+      clientName: document.getElementById('clientName')?.value || '',
+      tel1: document.getElementById('tel1')?.value || '',
+      tel2: document.getElementById('tel2')?.value || '',
+      telegram: document.getElementById('telegram')?.value || '',
+      listingType: document.getElementById('listingType')?.value || '',
+      propertyType: document.getElementById('propertyType')?.value || '',
+      targetLocation: document.getElementById('targetLocation')?.value || '',
+      budget: document.getElementById('budget')?.value || '',
+      preferredTerm: document.getElementById('preferredTerm')?.value || '',
+      bedrooms: document.getElementById('bedrooms')?.value || '',
+      bathrooms: document.getElementById('bathrooms')?.value || '',
+      description: document.getElementById('description')?.value || '',
+      submittedBy: document.getElementById('submittedBy')?.value || ''
+    };
+
+    try {
+      const response = await fetch('/api/client-inquiry', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      // Catch non-JSON server responses (like 404 HTML pages)
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned HTML instead of JSON. Check backend routing and Render deployment.');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        if (tg && tg.showAlert) {
+          tg.showAlert('ទិន្នន័យត្រូវបានបញ្ជូនជោគជ័យ! / Inquiry submitted successfully!', () => {
+            tg.close();
+          });
+        } else {
+          alert('ទិន្នន័យត្រូវបានបញ្ជូនជោគជ័យ! / Inquiry submitted successfully!');
+          this.reset();
+        }
+      } else {
+        alert('មានបញ្ហា: ' + (result.error || 'សូមព្យាយាមម្តងទៀត'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = 'បញ្ជូនទិន្នន័យ / Submit Inquiry';
+    }
+  });
+</script>
+
 </body>
 </html>
