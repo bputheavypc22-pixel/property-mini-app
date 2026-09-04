@@ -349,7 +349,7 @@
       <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <form id="listingForm">
+    <form id="listingForm" onsubmit="return false;">
       <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
       
       <div class="form-group">
@@ -557,6 +557,7 @@
     </form>
   </div>
 
+  <!-- Summary Modal Overlay -->
   <div id="summaryModal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-title" id="modal-summary-title">🎉 សង្ខេបទិន្នន័យដែលបានបញ្ជូន</div>
@@ -724,15 +725,34 @@
       const rentSection = document.getElementById('rent-terms-section');
       const saleSection = document.getElementById('sale-terms-section');
 
+      const rentInputs = rentSection.querySelectorAll('input, select');
+      const saleInputs = saleSection.querySelectorAll('input, select');
+
       if (listingType === 'ជួល' || listingType === 'For Rent') {
         rentSection.style.display = 'block';
         saleSection.style.display = 'none';
+
+        document.getElementById('deposit').required = true;
+        document.getElementById('rentFee').required = true;
+        document.getElementById('contract').required = true;
+
+        document.getElementById('certificate').required = false;
+        document.getElementById('certOther').required = false;
       } else if (listingType === 'លក់' || listingType === 'For Sale') {
         saleSection.style.display = 'block';
         rentSection.style.display = 'none';
+
+        document.getElementById('certificate').required = true;
+
+        document.getElementById('deposit').required = false;
+        document.getElementById('depositOther').required = false;
+        document.getElementById('rentFee').required = false;
+        document.getElementById('contract').required = false;
       } else {
         rentSection.style.display = 'none';
         saleSection.style.display = 'none';
+
+        [...rentInputs, ...saleInputs].forEach(el => el.required = false);
       }
     }
 
@@ -976,9 +996,22 @@
     async function submitForm() {
       const t = translations[currentLang];
       const form = document.getElementById('listingForm');
-      
-      if (!form.checkValidity()) {
-        form.reportValidity();
+
+      const requiredInputs = form.querySelectorAll('[required]');
+      let isValid = true;
+
+      requiredInputs.forEach(input => {
+        if (input.offsetWidth > 0 || input.offsetHeight > 0 || input.getClientRects().length > 0) {
+          if (!input.value.trim()) {
+            isValid = false;
+            input.style.borderColor = '#ef4444';
+          } else {
+            input.style.borderColor = '#cbd5e1';
+          }
+        }
+      });
+
+      if (!isValid) {
         alert(t.fillRequiredAlert);
         return;
       }
@@ -998,17 +1031,15 @@
 
       const formData = new FormData(form);
 
-      // Attach Telegram user details if available
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
       formData.append('submittedBy', submittedBy);
 
-      // Append images to multipart body
+      formData.delete('photos');
       selectedFiles.forEach((file) => {
         formData.append('photos', file);
       });
 
-      // Local Object for Summary Modal display
       const listingType = document.getElementById('listingType').value;
       const summaryData = {
         ownerName: document.getElementById('ownerName').value,
@@ -1038,14 +1069,12 @@
       }
 
       try {
-        // Send data & photos directly to your Render server
         const response = await fetch('/api/submit', {
           method: 'POST',
           body: formData
         });
 
         if (response.ok) {
-          // Success: Display summary modal back to the submitter
           displaySummaryModal(summaryData);
         } else {
           alert('Submission failed on server. Please try again.');
