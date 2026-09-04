@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**
- * Formats all submitted property form data into an HTML summary card in Khmer for Telegram.
+ * Formats property listing data into an HTML summary card in Khmer for Telegram.
  */
 function generatePropertyTelegramCard(data) {
   let card = `🏠 <b>ការចុះបញ្ជីអចលនទ្រព្យថ្មី (NEW PROPERTY LISTING)</b>\n\n`;
@@ -29,7 +29,6 @@ function generatePropertyTelegramCard(data) {
   // --- Property Core Details ---
   card += `📌 <b>ព័ត៌មានអចលនទ្រព្យ</b>\n`;
   
-  // Property Type + Purpose Heading (e.g. 🏠ខុនដូ ជួល)
   const propType = data.propertyType || '';
   const listType = data.listingType || '';
   card += `🏠<b>${propType}${propType && listType ? ' ' : ''}${listType}</b>\n`;
@@ -92,7 +91,6 @@ function generatePropertyTelegramCard(data) {
     card += `<b>Submitted by:</b> ${data.submittedBy}\n`;
   }
 
-  // Current Date and Time (ICT / Phnom Penh Time Zone)
   const now = new Date();
   const options = {
     timeZone: 'Asia/Phnom_Penh',
@@ -104,9 +102,58 @@ function generatePropertyTelegramCard(data) {
     second: '2-digit',
     hour12: true
   };
-  const formattedDate = now.toLocaleString('en-US', options);
+  card += `<b>Submitted Date:</b> ${now.toLocaleString('en-US', options)}`;
 
-  card += `<b>Submitted Date:</b> ${formattedDate}`;
+  return card;
+}
+
+/**
+ * Formats client inquiry data into an HTML summary card for Telegram.
+ */
+function generateClientInquiryCard(data) {
+  let card = `🔍 <b>ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)</b>\n\n`;
+
+  card += `📌 <b>ព័ត៌មានតម្រូវការ</b>\n`;
+  const pType = data.propertyType || '';
+  const lType = data.listingType || '';
+  card += `🏠<b>${pType}${pType && lType ? ' ' : ''}${lType}</b>\n`;
+  card += `📍<b>ទីតាំងចង់បាន:</b> ${data.targetLocation || 'មិនមាន'}\n`;
+  card += `• <b>ថវិកា (Budget)  :</b> $${data.budget ? Number(data.budget).toLocaleString() : 'មិនមាន'}\n`;
+
+  if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
+    card += `• <b>រយៈពេលកុងត្រា :</b> ${data.preferredTerm || 'មិនមាន'}\n`;
+  }
+
+  const bed = data.bedrooms && data.bedrooms !== 'មិនកំណត់' ? data.bedrooms : 'មិនមាន';
+  const bath = data.bathrooms && data.bathrooms !== 'មិនកំណត់' ? data.bathrooms : 'មិនមាន';
+  card += `• <b>បន្ទប់គេង  :</b> ${bed}  | <b>បន្ទប់ទឹក    :</b> ${bath}\n\n`;
+
+  card += `📝 <b>សម្គាល់បន្ថែម</b>\n`;
+  card += `${data.description || 'មិនមាន'}\n`;
+  card += `———————————\n`;
+
+  card += `👤 <b>ព័ត៌មានអតិថិជន</b>\n`;
+  card += `• <b>ឈ្មោះ:</b> ${data.clientName || 'មិនមាន'}\n`;
+  card += `• <b>Tel 1:</b> ${data.tel1 || 'មិនមាន'}\n`;
+  card += `• <b>Tel 2:</b> ${data.tel2 || 'មិនមាន'}\n`;
+  card += `• <b>Telegram:</b> ${data.telegram || 'មិនមាន'}\n\n`;
+
+  if (data.submittedBy) {
+    card += `<b>Submitted by:</b> ${data.submittedBy}\n`;
+  }
+
+  const now = new Date();
+  const options = {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  };
+  card += `<b>Submitted Date:</b> ${now.toLocaleString('en-US', options)}`;
 
   return card;
 }
@@ -142,7 +189,7 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// API Route for Property Registration
+// API Route for Property Registration (UNTOUCHED)
 app.post('/api/register-property', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
@@ -150,7 +197,6 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
     const messageText = generatePropertyTelegramCard(data);
 
     if (files.length === 0) {
-      // Send text message directly
       const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
       const payload = {
         chat_id: CHAT_ID,
@@ -172,7 +218,6 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
         throw new Error(resJson.description || 'Telegram API Error');
       }
     } else if (files.length === 1) {
-      // Send single photo with caption
       const form = new FormData();
       form.append('chat_id', CHAT_ID.toString());
       if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID.toString());
@@ -193,7 +238,6 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
         throw new Error(resJson.description || 'Telegram API Error');
       }
     } else {
-      // Send multiple photos as a Media Group
       const mediaGroup = files.map((file, idx) => ({
         type: 'photo',
         media: `attach://file_${idx}`,
@@ -226,6 +270,40 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
     res.json({ success: true, message: 'Property listed successfully!' });
   } catch (error) {
     console.error('Error submitting property:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// API Route for Client Inquiry (NEW)
+app.post('/api/client-inquiry', async (req, res) => {
+  try {
+    const data = req.body;
+    const messageText = generateClientInquiryCard(data);
+
+    const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    const payload = {
+      chat_id: CHAT_ID,
+      text: messageText,
+      parse_mode: 'HTML',
+      disable_web_page_preview: false
+    };
+    if (TOPIC_ID) payload.message_thread_id = TOPIC_ID;
+
+    const resp = await fetch(telegramUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const resJson = await resp.json();
+
+    if (!resJson.ok) {
+      console.error('Telegram API Error Response:', resJson);
+      throw new Error(resJson.description || 'Telegram API Error');
+    }
+
+    res.json({ success: true, message: 'Inquiry submitted successfully!' });
+  } catch (error) {
+    console.error('Error submitting client inquiry:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
