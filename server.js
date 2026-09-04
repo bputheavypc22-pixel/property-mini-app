@@ -241,11 +241,81 @@ app.post('/api/register-property', upload.array('photos', 10), async (req, res) 
         console.error('Telegram API Error Response:', resJson);
         throw new Error(resJson.description || 'Telegram API Error');
       }
-To clarify what to modify in this Express script, what specific updates or features are needed? Here are a few options depending on what is being built:
+    } else {
+      const mediaGroup = files.map((file, idx) => ({
+        type: 'photo',
+        media: `attach://file_${idx}`,
+        caption: idx === 0 ? messageText : '',
+        parse_mode: 'HTML'
+      }));
 
-* **Telegram Topic Routing:** Route Client Inquiries (`/api/client-inquiry`) to a separate Telegram Topic ID instead of sharing `PROPERTY_TOPIC_ID`.
-* **Google Sheets / Database Integration:** Automatically log submitted listings or inquiries to a database or Google Sheet before sending to Telegram.
-* **Auto-Generating Property IDs:** Dynamically generate a structured `Property ID` (e.g., `25R-2026-001`) instead of leaving the field blank.
-* **Photo Support for Client Inquiries:** Allow users to upload attachments/photos when submitting a client inquiry.
+      const form = new FormData();
+      form.append('chat_id', CHAT_ID.toString());
+      if (TOPIC_ID) form.append('message_thread_id', TOPIC_ID.toString());
+      form.append('media', JSON.stringify(mediaGroup));
 
-Providing the specific goal or expected behavior will ensure the code is updated accurately.
+      files.forEach((file, idx) => {
+        const blob = new Blob([file.buffer], { type: file.mimetype });
+        form.append(`file_${idx}`, blob, file.originalname);
+      });
+
+      const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
+        method: 'POST',
+        body: form
+      });
+      const resJson = await resp.json();
+
+      if (!resJson.ok) {
+        console.error('Telegram API Error Response:', resJson);
+        throw new Error(resJson.description || 'Telegram API Error');
+      }
+    }
+
+    res.json({ success: true, message: 'Property listed successfully!' });
+  } catch (error) {
+    console.error('Error submitting property:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// API Route for Client Inquiry (Targeting CLIENT_TOPIC_ID)
+app.post('/api/client-inquiry', async (req, res) => {
+  try {
+    const data = req.body;
+    const messageText = generateClientInquiryCard(data);
+
+    const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    const payload = {
+      chat_id: CHAT_ID,
+      text: messageText,
+      parse_mode: 'HTML',
+      disable_web_page_preview: false
+    };
+
+    // Use CLIENT_TOPIC_ID specifically for client inquiries
+    if (CLIENT_TOPIC_ID) {
+      payload.message_thread_id = CLIENT_TOPIC_ID;
+    }
+
+    const resp = await fetch(telegramUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const resJson = await resp.json();
+
+    if (!resJson.ok) {
+      console.error('Telegram API Error Response:', resJson);
+      throw new Error(resJson.description || 'Telegram API Error');
+    }
+
+    res.json({ success: true, message: 'Inquiry submitted successfully!' });
+  } catch (error) {
+    console.error('Error submitting client inquiry:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
