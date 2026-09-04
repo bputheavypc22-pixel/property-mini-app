@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Inquiry Form - Twenty5Realty</title>
+  <title>Twenty5Realty - Client Inquiry</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --primary-color: #0088cc;
-      --bg-color: #f4f6f9;
+      --primary-color: #0072bc;
+      --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-color: #333333;
-      --border-color: #cccccc;
+      --text-color: #1e293b;
+      --border-color: #e2e8f0;
+      --input-bg: #f8fafc;
+      --focus-ring: rgba(0, 114, 188, 0.2);
     }
 
     body {
@@ -19,90 +21,128 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
-      padding: 15px;
+      padding: 12px;
       display: flex;
       justify-content: center;
     }
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 440px;
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      position: relative;
+      box-sizing: border-box;
     }
 
-    .lang-switch {
-      position: absolute;
-      top: 15px;
-      right: 15px;
+    /* Top Bar Header */
+    .top-bar {
       display: flex;
-      gap: 5px;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
     }
 
     .lang-btn {
-      background: #e9ecef;
-      border: 1px solid #ced4da;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
       cursor: pointer;
-      font-weight: bold;
+      color: #64748b;
+      transition: all 0.2s ease;
     }
 
     .lang-btn.active {
       background: var(--primary-color);
-      color: #fff;
-      border-color: var(--primary-color);
+      color: #ffffff;
     }
 
+    /* Logo & Header */
     .header {
       text-align: center;
-      margin-bottom: 20px;
-      margin-top: 10px;
+      margin-bottom: 24px;
     }
 
-    .header img {
-      max-width: 80px;
-      margin-bottom: 10px;
+    .logo-img {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 12px;
     }
 
     .header h2 {
+      margin: 0 0 4px 0;
+      color: #0f172a;
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .header p {
       margin: 0;
-      font-size: 20px;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
       color: var(--primary-color);
+      margin: 20px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 6px;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 14px;
     }
 
     label {
       display: block;
       font-weight: 600;
-      margin-bottom: 5px;
-      font-size: 14px;
+      font-size: 0.825rem;
+      margin-bottom: 6px;
+      color: #334155;
     }
 
-    input[type="text"],
-    input[type="number"],
-    input[type="tel"],
-    select,
-    textarea {
+    label .required {
+      color: #ef4444;
+    }
+
+    input, select, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 10px 12px;
+      background-color: var(--input-bg);
       border: 1px solid var(--border-color);
-      border-radius: 6px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #0f172a;
       box-sizing: border-box;
-      font-size: 14px;
-      background-color: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    textarea {
-      resize: vertical;
-      height: 80px;
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-color);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
     .row {
@@ -114,351 +154,672 @@
       flex: 1;
     }
 
-    button.btn-submit {
+    button.submit-btn {
       width: 100%;
-      padding: 12px;
       background-color: var(--primary-color);
-      color: white;
+      color: #ffffff;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 10px;
       cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 16px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    button.submit-btn:hover {
+      background-color: #005a96;
+    }
+
+    button.submit-btn:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Summary Card Styling */
+    #summaryCard {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
       margin-top: 10px;
     }
 
-    button.btn-submit:hover {
-      background-color: #006699;
-    }
-
-    /* Success Card Styling */
-    #successCard {
-      display: none;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #2e7d32;
-    }
-
-    .success-header {
-      color: #2e7d32;
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    .summary-box {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 8px;
+    #summaryContent {
       font-family: inherit;
       white-space: pre-wrap;
-      font-size: 14px;
+      font-size: 0.875rem;
       line-height: 1.6;
-      border: 1px solid #e0e0e0;
-    }
-
-    .btn-reset {
-      width: 100%;
-      padding: 10px;
-      background-color: #6c757d;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-top: 15px;
-      cursor: pointer;
+      color: #0f172a;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <div class="lang-switch" id="langSwitch">
-    <button type="button" class="lang-btn active" onclick="setLanguage('km')">ខ្មែរ</button>
-    <button type="button" class="lang-btn" onclick="setLanguage('en')">EN</button>
+  <div class="top-bar">
+    <div class="lang-toggle">
+      <button type="button" class="lang-btn" id="btnKH" onclick="setLanguage('kh')">KH ខ្មែរ</button>
+      <button type="button" class="lang-btn active" id="btnEN" onclick="setLanguage('en')">GB EN</button>
+    </div>
   </div>
 
-  <div id="successCard">
-    <div class="success-header" data-km="✅ ផ្ញើបានជោគជ័យ" data-en="✅ Submitted Successfully">✅ ផ្ញើបានជោគជ័យ</div>
-    <p style="font-size: 13px; color: #555; text-align: center;" data-km="នេះជាព័ត៌មានដែលអ្នកបានបញ្ជូន៖" data-en="Here is your submitted summary data:">នេះជាព័ត៌មានដែលអ្នកបានបញ្ជូន៖</p>
-    <div class="summary-box" id="summaryContent"></div>
-    <button class="btn-reset" onclick="window.location.reload()" data-km="បំពេញទម្រង់ថ្មី" data-en="New Submission">បំពេញទម្រង់ថ្មី</button>
+  <div class="header">
+    <img src="/logo.png" alt="Twenty5Realty Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x60?text=25Realty';">
+    <h2>🔍 <span id="t_mainTitle">Client Inquiry</span></h2>
+    <p id="t_subTitle">Client Property Requirement Form</p>
   </div>
 
-  <form id="clientInquiryForm">
-    <div class="header">
-      <img src="25logo.png" alt="Twenty5Realty Logo" onerror="this.src='logo.png'">
-      <h2><span data-km="ការចុះបញ្ជីតម្រូវការអតិថិជន" data-en="Client Inquiry Form">ការចុះបញ្ជីតម្រូវការអតិថិជន</span></h2>
+  <!-- Success Summary Container (Hidden by default) -->
+  <div id="summaryCard" class="hidden">
+    <div style="color: #16a34a; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; text-align: center;">
+      ✅ <span id="t_successTitle">Submitted Successfully!</span>
     </div>
+    <div id="summaryContent"></div>
+    <button type="button" class="submit-btn" style="background-color: #64748b; margin-top: 16px;" onclick="window.location.reload()">
+      <span id="t_btnReload">New Submission</span>
+    </button>
+  </div>
 
-    <input type="hidden" id="submittedBy" name="submittedBy" value="">
+  <form id="inquiryForm">
+    <div class="section-title">👤 <span id="t_secClient">Client Information</span></div>
 
     <div class="form-group">
-      <label data-km="ឈ្មោះអតិថិជន *" data-en="Client Name *">ឈ្មោះអតិថិជន *</label>
-      <input type="text" name="clientName" required placeholder="e.g. Test Client">
+      <label><span id="t_clientName">Client Name</span> <span class="required">*</span></label>
+      <input type="text" id="clientName" name="clientName" placeholder="e.g. Chan Sokha" required>
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label data-km="លេខទូរស័ព្ទ 1 *" data-en="Phone 1 *">លេខទូរស័ព្ទ 1 *</label>
-        <input type="tel" name="tel1" required placeholder="09987654">
+        <label><span id="t_tel1">Phone Number 1</span> <span class="required">*</span></label>
+        <input type="tel" id="tel1" name="tel1" placeholder="012 345 678" required>
       </div>
       <div class="form-group">
-        <label data-km="លេខទូរស័ព្ទ 2" data-en="Phone 2">លេខទូរស័ព្ទ 2</label>
-        <input type="tel" name="tel2" placeholder="0123456789">
+        <label><span id="t_tel2">Phone Number 2</span></label>
+        <input type="tel" id="tel2" name="tel2" placeholder="098 765 432">
       </div>
     </div>
 
     <div class="form-group">
-      <label data-km="Telegram / ទំនាក់ទំនង" data-en="Telegram / Contact Link">Telegram / ទំនាក់ទំនង</label>
-      <input type="text" name="telegram" placeholder="https://t.me/username">
+      <label><span id="t_telegram">Telegram Account</span></label>
+      <input type="text" id="telegram" name="telegram" placeholder="@username or Phone Number">
     </div>
 
-    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <div class="section-title">🏠 <span id="t_secDetails">Property Preferences</span></div>
 
     <div class="row">
       <div class="form-group">
-        <label data-km="តម្រូវការ *" data-en="Target *">តម្រូវការ *</label>
-        <select name="listingType" id="listingType" required>
-          <option value="ទិញ" data-km="ទិញ" data-en="Buy">ទិញ</option>
-          <option value="ជួល" data-km="ជួល" data-en="Rent">ជួល</option>
+        <label><span id="t_listingType">Target</span> <span class="required">*</span></label>
+        <select id="listingType" name="listingType" required onchange="toggleTypeFields()">
+          <option value="Rent" id="opt_rent">Rent</option>
+          <option value="Buy" id="opt_buy">Buy</option>
         </select>
       </div>
       <div class="form-group">
-        <label data-km="ប្រភេទ *" data-en="Property Type *">ប្រភេទ *</label>
-        <select name="propertyType" id="propertyType" required>
-          <option value="ឃ្លាំង" data-km="ឃ្លាំង" data-en="Warehouse">ឃ្លាំង</option>
-          <option value="ដី" data-km="ដី" data-en="Land">ដី</option>
-          <option value="ផ្ទះល្វែង" data-km="ផ្ទះល្វែង" data-en="Flat House">ផ្ទះល្វែង</option>
-          <option value="វីឡា" data-km="វីឡា" data-en="Villa">វីឡា</option>
-          <option value="ខុនដូ" data-km="ខុនដូ" data-en="Condo">ខុនដូ</option>
-          <option value="ការិយាល័យ" data-km="ការិយាល័យ" data-en="Office">ការិយាល័យ</option>
-          <option value="ផ្សេងៗ" data-km="ផ្សេងៗ" data-en="Other">ផ្សេងៗ</option>
+        <label><span id="t_propertyType">Property Type</span> <span class="required">*</span></label>
+        <select id="propertyType" name="propertyType" required onchange="togglePropertyTypeFields()">
+          <option value="House/Flat" id="opt_house">House / Flat</option>
+          <option value="Villa" id="opt_villa">Villa</option>
+          <option value="Condo" id="opt_condo">Condo</option>
+          <option value="Apartment" id="opt_apartment">Apartment</option>
+          <option value="Warehouse" id="opt_warehouse">Warehouse</option>
+          <option value="Land" id="opt_land">Land</option>
         </select>
       </div>
     </div>
 
+    <div class="row hidden" id="sizeFieldsGroup">
+      <div class="form-group hidden" id="landSizeGroup">
+        <label><span id="t_landSize">Land Size</span></label>
+        <input type="text" id="landSize" name="landSize" placeholder="e.g. 10m x 20m or 500 sqm">
+      </div>
+      <div class="form-group hidden" id="buildingSizeGroup">
+        <label><span id="t_buildingSize">Building Size</span></label>
+        <input type="text" id="buildingSize" name="buildingSize" placeholder="e.g. 8m x 15m or 300 sqm">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_targetArea1">Target Area 1</span> <span class="required">*</span></label>
+        <input type="text" id="targetArea1" name="targetArea1" placeholder="e.g. Toul Kork" required>
+      </div>
+      <div class="form-group">
+        <label><span id="t_targetArea2">Target Area 2</span></label>
+        <input type="text" id="targetArea2" name="targetArea2" placeholder="e.g. BKK1">
+      </div>
+    </div>
+
     <div class="form-group">
-      <label data-km="តំបន់ចង់បាន *" data-en="Target Location *">តំបន់ចង់បាន *</label>
-      <input type="text" name="targetLocation" required placeholder="e.g. បឹងកេងកង, sensok">
+      <label><span id="t_targetArea3">Target Area 3</span></label>
+      <input type="text" id="targetArea3" name="targetArea3" placeholder="e.g. Chroy Changvar">
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label data-km="ថវិកា ($)" data-en="Budget ($)">ថវិកា ($)</label>
-        <input type="number" name="budget" placeholder="e.g. 50000">
+        <label><span id="t_budget">Budget ($)</span> <span class="required">*</span></label>
+        <input type="number" id="budget" name="budget" placeholder="e.g. 500 or 120000" required>
       </div>
-      <div class="form-group" id="preferredTermGroup" style="display: none;">
-        <label data-km="រយៈពេលកុងត្រា" data-en="Contract Term">រយៈពេលកុងត្រា</label>
-        <input type="text" name="preferredTerm" placeholder="e.g. 1 ឆ្នាំ / 1 Year">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="form-group">
-        <label data-km="ទំហំដី" data-en="Land Size">ទំហំដី</label>
-        <input type="text" name="landSize" placeholder="e.g. 4x18m">
-      </div>
-      <div class="form-group">
-        <label data-km="ទំហំអាគារ" data-en="Building Size">ទំហំអាគារ</label>
-        <input type="text" name="buildingSize" placeholder="e.g. 4x14m">
+      <div class="form-group" id="preferredTermGroup">
+        <label><span id="t_preferredTerm">Preferred Contract</span></label>
+        <select id="preferredTerm" name="preferredTerm">
+          <option value="6 Months" id="opt_term_6m">6 Months</option>
+          <option value="1 Year" id="opt_term_1y" selected>1 Year</option>
+          <option value="2+ Years" id="opt_term_2y">2+ Years</option>
+        </select>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" id="bedBathGroup">
       <div class="form-group">
-        <label data-km="បន្ទប់គេង" data-en="Bedrooms">បន្ទប់គេង</label>
-        <select name="bedrooms">
-          <option value="មិនកំណត់" data-km="មិនកំណត់" data-en="Any">មិនកំណត់</option>
-          <option value="មិនមាន" data-km="មិនមាន" data-en="None">មិនមាន</option>
+        <label><span id="t_bedrooms">Bedrooms</span></label>
+        <select id="bedrooms" name="bedrooms">
+          <option value="Any" id="opt_bed_any">Any</option>
+          <option value="Studio">Studio</option>
           <option value="1">1</option>
           <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4+">4+</option>
+          <option value="3+">3+</option>
         </select>
       </div>
       <div class="form-group">
-        <label data-km="បន្ទប់ទឹក" data-en="Bathrooms">បន្ទប់ទឹក</label>
-        <select name="bathrooms">
-          <option value="មិនកំណត់" data-km="មិនកំណត់" data-en="Any">មិនកំណត់</option>
-          <option value="មិនមាន" data-km="មិនមាន" data-en="None">មិនមាន</option>
+        <label><span id="t_bathrooms">Bathrooms</span></label>
+        <select id="bathrooms" name="bathrooms">
+          <option value="Any" id="opt_bath_any">Any</option>
           <option value="1">1</option>
           <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4+">4+</option>
+          <option value="3+">3+</option>
         </select>
       </div>
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label data-km="ទិសបែទៅ" data-en="Direction">ទិសបែទៅ</label>
-        <select name="direction">
-          <option value="មិនកំណត់" data-km="មិនកំណត់" data-en="Any">មិនកំណត់</option>
-          <option value="កើត" data-km="កើត" data-en="East">កើត</option>
-          <option value="លិច" data-km="លិច" data-en="West">លិច</option>
-          <option value="ត្បូង" data-km="ត្បូង" data-en="South">ត្បូង</option>
-          <option value="ជើង" data-km="ជើង" data-en="North">ជើង</option>
+        <label><span id="t_direction">Direction</span></label>
+        <select id="direction" name="direction">
+          <option value="Not Required" id="opt_dir_none">Not Required</option>
+          <option value="East" id="opt_dir_e">East</option>
+          <option value="West" id="opt_dir_w">West</option>
+          <option value="South" id="opt_dir_s">South</option>
+          <option value="North" id="opt_dir_n">North</option>
+          <option value="Northeast" id="opt_dir_ne">Northeast</option>
+          <option value="Southeast" id="opt_dir_se">Southeast</option>
+          <option value="Northwest" id="opt_dir_nw">Northwest</option>
+          <option value="Southwest" id="opt_dir_sw">Southwest</option>
         </select>
       </div>
       <div class="form-group">
-        <label data-km="ចំណត" data-en="Parking">ចំណត</label>
-        <input type="text" name="parkingNeeded" placeholder="e.g. ទាំងពីរ (ឡាន និងម៉ូតូ)">
+        <label><span id="t_parkingNeeded">Parking Needed</span></label>
+        <select id="parkingNeeded" name="parkingNeeded">
+          <option value="Not Required" id="opt_park_none">Not Required</option>
+          <option value="Car" id="opt_park_car">Car</option>
+          <option value="Motor" id="opt_park_motor">Motor</option>
+          <option value="Both" id="opt_park_both">Both</option>
+        </select>
       </div>
     </div>
 
     <div class="form-group">
-      <label data-km="គោលបំណង" data-en="Purpose">គោលបំណង</label>
-      <input type="text" name="purpose" placeholder="e.g. សម្រាប់ធ្វើអាជីវកម្ម (coffee)">
+      <label><span id="t_purpose">Rent/Buy Purpose</span> <span class="required">*</span></label>
+      <select id="purpose" name="purpose" required onchange="togglePurposeFields()">
+        <option value="For Living" id="opt_purpose_living">For Living</option>
+        <option value="For Business" id="opt_purpose_business">For Business</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="businessTypeGroup">
+      <label><span id="t_businessType">Business Type</span> <span class="required">*</span></label>
+      <input type="text" id="businessType" name="businessType" placeholder="e.g. Restaurant, Office, Coffee Shop">
     </div>
 
     <div class="form-group">
-      <label data-km="សម្គាល់បន្ថែម" data-en="Additional Notes">សម្គាល់បន្ថែម</label>
-      <textarea name="description" placeholder="..."></textarea>
+      <label><span id="t_description">Additional Requirements</span></label>
+      <textarea id="description" name="description" rows="3" placeholder="e.g. High floor, pet friendly, fully furnished..."></textarea>
     </div>
 
-    <button type="submit" class="btn-submit" data-km="បញ្ជូនទិន្នន័យ" data-en="Submit Inquiry">បញ្ជូនទិន្នន័យ</button>
+    <input type="hidden" id="submittedBy" name="submittedBy">
+
+    <button type="submit" class="submit-btn" id="submitBtn">SUBMIT INQUIRY</button>
   </form>
-
 </div>
 
 <script>
-  let currentLang = 'km';
-
-  // Language Switcher Function
-  function setLanguage(lang) {
-    currentLang = lang;
-    
-    // Update button styles
-    const btns = document.querySelectorAll('.lang-btn');
-    btns.forEach(btn => btn.classList.remove('active'));
-    if (lang === 'km') btns[0].classList.add('active');
-    else btns[1].classList.add('active');
-
-    // Update Text Elements
-    document.querySelectorAll('[data-km]').forEach(el => {
-      const text = el.getAttribute(`data-${lang}`);
-      if (text) {
-        if (el.tagName === 'OPTION') {
-          el.innerText = text;
-        } else if (el.children.length === 0 || el.classList.contains('success-header')) {
-          el.innerText = text;
-        }
-      }
-    });
-  }
-
-  // Telegram Mini App Initialization
+  // Initialize Telegram WebApp SDK
   const tg = window.Telegram?.WebApp;
   if (tg) {
     tg.ready();
     tg.expand();
-
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-      const username = user.username ? `(@${user.username})` : '';
-      document.getElementById('submittedBy').value = `${fullName} ${username}`.trim();
-    }
   }
 
-  // Toggle Contract Term field for Rent vs Buy
-  const listingTypeSelect = document.getElementById('listingType');
-  const preferredTermGroup = document.getElementById('preferredTermGroup');
+  // Multi-Language Dictionaries
+  const translations = {
+    en: {
+      mainTitle: "Client Inquiry",
+      subTitle: "Client Property Requirement Form",
+      secClient: "Client Information",
+      clientName: "Client Name",
+      tel1: "Phone Number 1",
+      tel2: "Phone Number 2",
+      telegram: "Telegram Account",
+      secDetails: "Property Preferences",
+      listingType: "Target",
+      propertyType: "Property Type",
+      landSize: "Land Size",
+      buildingSize: "Building Size",
+      targetArea1: "Target Area 1",
+      targetArea2: "Target Area 2",
+      targetArea3: "Target Area 3",
+      budget: "Budget ($)",
+      preferredTerm: "Preferred Contract",
+      bedrooms: "Bedrooms",
+      bathrooms: "Bathrooms",
+      direction: "Direction",
+      parkingNeeded: "Parking Needed",
+      purpose: "Rent/Buy Purpose",
+      businessType: "Business Type",
+      description: "Additional Requirements",
+      submitBtn: "SUBMIT INQUIRY",
+      successTitle: "Submitted Successfully!",
+      btnReload: "New Submission",
+      placeholderClient: "e.g. Chan Sokha",
+      placeholderLandSize: "e.g. 10m x 20m or 500 sqm",
+      placeholderBuildingSize: "e.g. 8m x 15m or 300 sqm",
+      placeholderArea1: "e.g. Toul Kork",
+      placeholderArea2: "e.g. BKK1",
+      placeholderArea3: "e.g. Chroy Changvar",
+      placeholderBusiness: "e.g. Restaurant, Office, Coffee Shop",
+      placeholderDesc: "e.g. High floor, pet friendly, fully furnished...",
+      optRent: "Rent",
+      optBuy: "Buy",
+      optHouse: "House / Flat",
+      optVilla: "Villa",
+      optCondo: "Condo",
+      optApartment: "Apartment",
+      optWarehouse: "Warehouse",
+      optLand: "Land",
+      optTerm6m: "6 Months",
+      optTerm1y: "1 Year",
+      optTerm2y: "2+ Years",
+      optAny: "Any",
+      optNotRequired: "Not Required",
+      optDirE: "East",
+      optDirW: "West",
+      optDirS: "South",
+      optDirN: "North",
+      optDirNE: "Northeast",
+      optDirSE: "Southeast",
+      optDirNW: "Northwest",
+      optDirSW: "Southwest",
+      optParkCar: "Car",
+      optParkMotor: "Motor",
+      optParkBoth: "Both",
+      optPurposeLiving: "For Living",
+      optPurposeBusiness: "For Business"
+    },
+    kh: {
+      mainTitle: "តម្រូវការអតិថិជន",
+      subTitle: "ទម្រង់បែបបទចុះបញ្ជីតម្រូវការស្វែងរកអចលនទ្រព្យ",
+      secClient: "ព័ត៌មានអតិថិជន",
+      clientName: "ឈ្មោះអតិថិជន",
+      tel1: "លេខទូរស័ព្ទទី១",
+      tel2: "លេខទូរស័ព្ទទី២",
+      telegram: "គណនី Telegram",
+      secDetails: "ព័ត៌មានតម្រូវការអចលនទ្រព្យ",
+      listingType: "គោលបំណង",
+      propertyType: "ប្រភេទអចលនទ្រព្យ",
+      landSize: "ទំហំដី",
+      buildingSize: "ទំហំអាគារ/ឃ្លាំង",
+      targetArea1: "តំបន់គោលដៅ ទី១",
+      targetArea2: "តំបន់គោលដៅ ទី២",
+      targetArea3: "តំបន់គោលដៅ ទី៣",
+      budget: "ថវិកា ($)",
+      preferredTerm: "រយៈពេលកុងត្រា",
+      bedrooms: "បន្ទប់គេង",
+      bathrooms: "បន្ទប់ទឹក",
+      direction: "បែរមុខទៅ",
+      parkingNeeded: "ចំណត",
+      purpose: "គោលបំណងជួល/ទិញ",
+      businessType: "ប្រភេទអាជីវកម្ម",
+      description: "តម្រូវការបន្ថែម",
+      submitBtn: "បញ្ជូនទិន្នន័យ",
+      successTitle: "ផ្ញើបានជោគជ័យ!",
+      btnReload: "បំពេញទម្រង់ថ្មី",
+      placeholderClient: "ឧ. ចាន់ សុខា",
+      placeholderLandSize: "ឧ. 10m x 20m ឬ 500 ម៉ែត្រការ៉េ",
+      placeholderBuildingSize: "ឧ. 8m x 15m ឬ 300 ម៉ែត្រការ៉េ",
+      placeholderArea1: "ឧ. ទួលគោក",
+      placeholderArea2: "ឧ. បឹងកេងកង១",
+      placeholderArea3: "ឧ. ជ្រោយចង្វារ",
+      placeholderBusiness: "ឧ. ហាងបាយ, ការិយាល័យ, ហាងកាហ្វេ",
+      placeholderDesc: "ឧ. ចង់បានជាន់ខ្ពស់, អនុញ្ញាតឲ្យចិញ្ចឹមសត្វ, មានគ្រឿងសង្ហារិមស្រាប់...",
+      optRent: "ជួល",
+      optBuy: "ទិញ",
+      optHouse: "ផ្ទះ / ផ្ទះល្វែង",
+      optVilla: "វីឡា",
+      optCondo: "ខុនដូ",
+      optApartment: "អាផាតមិន",
+      optWarehouse: "ឃ្លាំង",
+      optLand: "ដី",
+      optTerm6m: "6 ខែ",
+      optTerm1y: "1 ឆ្នាំ",
+      optTerm2y: "2 ឆ្នាំឡើង",
+      optAny: "មិនកំណត់",
+      optNotRequired: "មិនកំណត់",
+      optDirE: "កើត",
+      optDirW: "លិច",
+      optDirS: "ត្បូង",
+      optDirN: "ជើង",
+      optDirNE: "កើតឈៀងជើង",
+      optDirSE: "កើតឈៀងត្បូង",
+      optDirNW: "លិចឈៀងជើង",
+      optDirSW: "លិចឈៀងត្បូង",
+      optParkCar: "ឡាន",
+      optParkMotor: "ម៉ូតូ",
+      optParkBoth: "ទាំងពីរ",
+      optPurposeLiving: "សម្រាប់រស់នៅ",
+      optPurposeBusiness: "សម្រាប់ធ្វើអាជីវកម្ម"
+    }
+  };
 
-  listingTypeSelect.addEventListener('change', function() {
-    if (this.value === 'ជួល' || this.value === 'For Rent') {
-      preferredTermGroup.style.display = 'block';
+  let currentLang = 'en';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    document.getElementById('btnKH').classList.toggle('active', lang === 'kh');
+    document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+
+    document.getElementById('t_mainTitle').innerText = t.mainTitle;
+    document.getElementById('t_subTitle').innerText = t.subTitle;
+    document.getElementById('t_secClient').innerText = t.secClient;
+    document.getElementById('t_clientName').innerText = t.clientName;
+    document.getElementById('t_tel1').innerText = t.tel1;
+    document.getElementById('t_tel2').innerText = t.tel2;
+    document.getElementById('t_telegram').innerText = t.telegram;
+    document.getElementById('t_secDetails').innerText = t.secDetails;
+    document.getElementById('t_listingType').innerText = t.listingType;
+    document.getElementById('t_propertyType').innerText = t.propertyType;
+    document.getElementById('t_landSize').innerText = t.landSize;
+    document.getElementById('t_buildingSize').innerText = t.buildingSize;
+    document.getElementById('t_targetArea1').innerText = t.targetArea1;
+    document.getElementById('t_targetArea2').innerText = t.targetArea2;
+    document.getElementById('t_targetArea3').innerText = t.targetArea3;
+    document.getElementById('t_budget').innerText = t.budget;
+    document.getElementById('t_preferredTerm').innerText = t.preferredTerm;
+    document.getElementById('t_bedrooms').innerText = t.bedrooms;
+    document.getElementById('t_bathrooms').innerText = t.bathrooms;
+    document.getElementById('t_direction').innerText = t.direction;
+    document.getElementById('t_parkingNeeded').innerText = t.parkingNeeded;
+    document.getElementById('t_purpose').innerText = t.purpose;
+    document.getElementById('t_businessType').innerText = t.businessType;
+    document.getElementById('t_description').innerText = t.description;
+    document.getElementById('submitBtn').innerText = t.submitBtn;
+
+    document.getElementById('t_successTitle').innerText = t.successTitle;
+    document.getElementById('t_btnReload').innerText = t.btnReload;
+
+    // Placeholders
+    document.getElementById('clientName').placeholder = t.placeholderClient;
+    document.getElementById('landSize').placeholder = t.placeholderLandSize;
+    document.getElementById('buildingSize').placeholder = t.placeholderBuildingSize;
+    document.getElementById('targetArea1').placeholder = t.placeholderArea1;
+    document.getElementById('targetArea2').placeholder = t.placeholderArea2;
+    document.getElementById('targetArea3').placeholder = t.placeholderArea3;
+    document.getElementById('businessType').placeholder = t.placeholderBusiness;
+    document.getElementById('description').placeholder = t.placeholderDesc;
+
+    // Dropdown Labels
+    document.getElementById('opt_rent').innerText = t.optRent;
+    document.getElementById('opt_rent').value = t.optRent;
+    document.getElementById('opt_buy').innerText = t.optBuy;
+    document.getElementById('opt_buy').value = t.optBuy;
+
+    document.getElementById('opt_house').innerText = t.optHouse;
+    document.getElementById('opt_house').value = t.optHouse;
+    document.getElementById('opt_villa').innerText = t.optVilla;
+    document.getElementById('opt_villa').value = t.optVilla;
+    document.getElementById('opt_condo').innerText = t.optCondo;
+    document.getElementById('opt_condo').value = t.optCondo;
+    document.getElementById('opt_apartment').innerText = t.optApartment;
+    document.getElementById('opt_apartment').value = t.optApartment;
+    document.getElementById('opt_warehouse').innerText = t.optWarehouse;
+    document.getElementById('opt_warehouse').value = t.optWarehouse;
+    document.getElementById('opt_land').innerText = t.optLand;
+    document.getElementById('opt_land').value = t.optLand;
+
+    document.getElementById('opt_term_6m').innerText = t.optTerm6m;
+    document.getElementById('opt_term_6m').value = t.optTerm6m;
+    document.getElementById('opt_term_1y').innerText = t.optTerm1y;
+    document.getElementById('opt_term_1y').value = t.optTerm1y;
+    document.getElementById('opt_term_2y').innerText = t.optTerm2y;
+    document.getElementById('opt_term_2y').value = t.optTerm2y;
+
+    document.getElementById('opt_bed_any').innerText = t.optAny;
+    document.getElementById('opt_bed_any').value = t.optAny;
+    document.getElementById('opt_bath_any').innerText = t.optAny;
+    document.getElementById('opt_bath_any').value = t.optAny;
+
+    // Direction Dropdowns
+    document.getElementById('opt_dir_none').innerText = t.optNotRequired;
+    document.getElementById('opt_dir_none').value = t.optNotRequired;
+    document.getElementById('opt_dir_e').innerText = t.optDirE;
+    document.getElementById('opt_dir_e').value = t.optDirE;
+    document.getElementById('opt_dir_w').innerText = t.optDirW;
+    document.getElementById('opt_dir_w').value = t.optDirW;
+    document.getElementById('opt_dir_s').innerText = t.optDirS;
+    document.getElementById('opt_dir_s').value = t.optDirS;
+    document.getElementById('opt_dir_n').innerText = t.optDirN;
+    document.getElementById('opt_dir_n').value = t.optDirN;
+    document.getElementById('opt_dir_ne').innerText = t.optDirNE;
+    document.getElementById('opt_dir_ne').value = t.optDirNE;
+    document.getElementById('opt_dir_se').innerText = t.optDirSE;
+    document.getElementById('opt_dir_se').value = t.optDirSE;
+    document.getElementById('opt_dir_nw').innerText = t.optDirNW;
+    document.getElementById('opt_dir_nw').value = t.optDirNW;
+    document.getElementById('opt_dir_sw').innerText = t.optDirSW;
+    document.getElementById('opt_dir_sw').value = t.optDirSW;
+
+    // Parking Dropdowns
+    document.getElementById('opt_park_none').innerText = t.optNotRequired;
+    document.getElementById('opt_park_none').value = t.optNotRequired;
+    document.getElementById('opt_park_car').innerText = t.optParkCar;
+    document.getElementById('opt_park_car').value = t.optParkCar;
+    document.getElementById('opt_park_motor').innerText = t.optParkMotor;
+    document.getElementById('opt_park_motor').value = t.optParkMotor;
+    document.getElementById('opt_park_both').innerText = t.optParkBoth;
+    document.getElementById('opt_park_both').value = t.optParkBoth;
+
+    document.getElementById('opt_purpose_living').innerText = t.optPurposeLiving;
+    document.getElementById('opt_purpose_living').value = t.optPurposeLiving;
+    document.getElementById('opt_purpose_business').innerText = t.optPurposeBusiness;
+    document.getElementById('opt_purpose_business').value = t.optPurposeBusiness;
+  }
+
+  // Context user extraction
+  window.addEventListener('DOMContentLoaded', () => {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const u = tg.initDataUnsafe.user;
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+      const username = u.username ? `(@${u.username})` : '';
+      document.getElementById('submittedBy').value = `${name} ${username}`.trim();
     } else {
-      preferredTermGroup.style.display = 'none';
+      document.getElementById('submittedBy').value = 'Agent/Client (Web Direct)';
     }
   });
 
-  // Handle Form Submission
-  document.getElementById('clientInquiryForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+  // Toggle field visibility when Buy / Rent changes
+  function toggleTypeFields() {
+    const listingType = document.getElementById('listingType').value;
+    const termGroup = document.getElementById('preferredTermGroup');
+    if (listingType === 'Buy' || listingType === 'ទិញ') {
+      termGroup.classList.add('hidden');
+    } else {
+      termGroup.classList.remove('hidden');
+    }
+  }
 
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
+  // Toggle Land Size, Building Size, and Bedrooms/Bathrooms based on Property Type
+  function togglePropertyTypeFields() {
+    const pType = document.getElementById('propertyType').value;
+    
+    const sizeFieldsGroup = document.getElementById('sizeFieldsGroup');
+    const landSizeGroup = document.getElementById('landSizeGroup');
+    const buildingSizeGroup = document.getElementById('buildingSizeGroup');
+    const bedBathGroup = document.getElementById('bedBathGroup');
+
+    const isLand = pType === 'Land' || pType === 'ដី';
+    const isWarehouse = pType === 'Warehouse' || pType === 'ឃ្លាំង';
+
+    if (isLand) {
+      sizeFieldsGroup.classList.remove('hidden');
+      landSizeGroup.classList.remove('hidden');
+      buildingSizeGroup.classList.add('hidden');
+      bedBathGroup.classList.add('hidden');
+      document.getElementById('buildingSize').value = '';
+    } else if (isWarehouse) {
+      sizeFieldsGroup.classList.remove('hidden');
+      landSizeGroup.classList.remove('hidden');
+      buildingSizeGroup.classList.remove('hidden');
+      bedBathGroup.classList.add('hidden');
+    } else {
+      sizeFieldsGroup.classList.add('hidden');
+      landSizeGroup.classList.add('hidden');
+      buildingSizeGroup.classList.add('hidden');
+      bedBathGroup.classList.remove('hidden');
+      document.getElementById('landSize').value = '';
+      document.getElementById('buildingSize').value = '';
+    }
+  }
+
+  // Toggle Purpose / Business Type conditional field
+  function togglePurposeFields() {
+    const purpose = document.getElementById('purpose').value;
+    const busGroup = document.getElementById('businessTypeGroup');
+    const busInput = document.getElementById('businessType');
+
+    if (purpose === 'For Business' || purpose === 'សម្រាប់ធ្វើអាជីវកម្ម') {
+      busGroup.classList.remove('hidden');
+      busInput.required = true;
+    } else {
+      busGroup.classList.add('hidden');
+      busInput.required = false;
+      busInput.value = '';
+    }
+  }
+
+  // Form Submit Handler
+  document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = currentLang === 'kh' ? 'កំពុងបញ្ជូន...' : 'SUBMITTING...';
+
+    // Build combined Target Area string for backend compatibility
+    const area1 = document.getElementById('targetArea1')?.value.trim() || '';
+    const area2 = document.getElementById('targetArea2')?.value.trim() || '';
+    const area3 = document.getElementById('targetArea3')?.value.trim() || '';
+    const combinedAreas = [area1, area2, area3].filter(Boolean).join(', ');
+
+    const purposeVal = document.getElementById('purpose')?.value || '';
+    const busTypeVal = document.getElementById('businessType')?.value.trim() || '';
+    const combinedPurpose = (purposeVal === 'For Business' || purposeVal === 'សម្រាប់ធ្វើអាជីវកម្ម') && busTypeVal 
+      ? `${purposeVal} (${busTypeVal})` 
+      : purposeVal;
+
+    const payload = {
+      clientName: document.getElementById('clientName')?.value || '',
+      tel1: document.getElementById('tel1')?.value || '',
+      tel2: document.getElementById('tel2')?.value || '',
+      telegram: document.getElementById('telegram')?.value || '',
+      listingType: document.getElementById('listingType')?.value || '',
+      propertyType: document.getElementById('propertyType')?.value || '',
+      landSize: document.getElementById('landSize')?.value || '',
+      buildingSize: document.getElementById('buildingSize')?.value || '',
+      targetLocation: combinedAreas,
+      budget: document.getElementById('budget')?.value || '',
+      preferredTerm: document.getElementById('preferredTerm')?.value || '',
+      bedrooms: document.getElementById('bedrooms')?.value || '',
+      bathrooms: document.getElementById('bathrooms')?.value || '',
+      direction: document.getElementById('direction')?.value || '',
+      parkingNeeded: document.getElementById('parkingNeeded')?.value || '',
+      purpose: combinedPurpose,
+      description: document.getElementById('description')?.value || '',
+      submittedBy: document.getElementById('submittedBy')?.value || ''
+    };
 
     try {
       const response = await fetch('/api/client-inquiry', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response.');
+      }
 
       const result = await response.json();
 
       if (result.success) {
-        // Hide Form and Language Switcher
-        document.getElementById('clientInquiryForm').style.display = 'none';
-        document.getElementById('langSwitch').style.display = 'none';
+        // Hide Form
+        document.getElementById('inquiryForm').classList.add('hidden');
 
-        // Build Summary Card Text
-        const listType = data.listingType || '';
-        const propType = data.propertyType || '';
-        const combinedType = `${listType}${listType && propType ? ' ' : ''}${propType}`;
-        const bed = data.bedrooms && data.bedrooms !== 'មិនកំណត់' ? data.bedrooms : 'មិនមាន';
-        const bath = data.bathrooms && data.bathrooms !== 'មិនកំណត់' ? data.bathrooms : 'មិនមាន';
-        const dir = data.direction && data.direction !== 'មិនកំណត់' ? data.direction : 'មិនមាន';
-        const phoneText = data.tel2 ? `${data.tel1 || ''} / ${data.tel2}` : `${data.tel1 || 'មិនមាន'}`;
+        // Build Summary Text
+        const isKh = currentLang === 'kh';
+        const bed = payload.bedrooms && payload.bedrooms !== 'Any' && payload.bedrooms !== 'មិនកំណត់' ? payload.bedrooms : (isKh ? 'មិនកំណត់' : 'N/A');
+        const bath = payload.bathrooms && payload.bathrooms !== 'Any' && payload.bathrooms !== 'មិនកំណត់' ? payload.bathrooms : (isKh ? 'មិនកំណត់' : 'N/A');
+        const dir = payload.direction && payload.direction !== 'Not Required' && payload.direction !== 'មិនកំណត់' ? payload.direction : (isKh ? 'មិនកំណត់' : 'N/A');
+        const phoneText = payload.tel2 ? `${payload.tel1} / ${payload.tel2}` : payload.tel1;
 
-        let summaryText = `👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)\n\n`;
-        summaryText += `🔍 ភ្ញៀវកំពុងស្វែងរក៖\n`;
-        summaryText += `🏠 ${combinedType || 'មិនមាន'}\n`;
-        summaryText += `📍 តំបន់: ${data.targetLocation || 'មិនមាន'}\n`;
-        summaryText += `• តម្លៃចន្លោះ  : $${data.budget ? Number(data.budget).toLocaleString() : 'មិនមាន'}\n`;
+        let summaryText = isKh ? `👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)\n\n` : `👤 CLIENT INQUIRY SUMMARY\n\n`;
+        summaryText += isKh ? `🔍 ភ្ញៀវកំពុងស្វែងរក៖\n` : `🔍 Target Requirement:\n`;
+        summaryText += `🏠 ${payload.listingType} ${payload.propertyType}\n`;
+        summaryText += isKh ? `📍 តំបន់: ${payload.targetLocation || 'មិនមាន'}\n` : `📍 Location: ${payload.targetLocation || 'N/A'}\n`;
+        summaryText += isKh ? `• តម្លៃចន្លោះ : $${payload.budget ? Number(payload.budget).toLocaleString() : 'មិនមាន'}\n` : `• Budget : $${payload.budget ? Number(payload.budget).toLocaleString() : 'N/A'}\n`;
 
-        if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
-          if (data.preferredTerm) summaryText += `• រយៈពេលកុងត្រា: ${data.preferredTerm}\n`;
+        if (payload.listingType === 'Rent' || payload.listingType === 'ជួល') {
+          if (payload.preferredTerm) summaryText += isKh ? `• រយៈពេលកុងត្រា: ${payload.preferredTerm}\n` : `• Term : ${payload.preferredTerm}\n`;
         }
 
-        summaryText += `• ទំហំដី     : ${data.landSize || 'មិនមាន'}\n`;
-        summaryText += `• ទំហំអាគារ : ${data.buildingSize || 'មិនមាន'}\n`;
-        summaryText += `• បន្ទប់គេង  : ${bed}  |  បន្ទប់ទឹក: ${bath}\n`;
-        summaryText += `• ទិសបែទៅ : ${dir}\n`;
-        summaryText += `• ចំណត     : ${data.parkingNeeded || 'មិនមាន'}\n`;
-        summaryText += `• គោលបំណង: ${data.purpose || 'មិនមាន'}\n\n`;
-
-        summaryText += `📝 សម្គាល់បន្ថែម\n${data.description || 'មិនមាន'}\n\n`;
+        if (payload.landSize) summaryText += isKh ? `• ទំហំដី : ${payload.landSize}\n` : `• Land Size : ${payload.landSize}\n`;
+        if (payload.buildingSize) summaryText += isKh ? `• ទំហំអាគារ : ${payload.buildingSize}\n` : `• Building Size : ${payload.buildingSize}\n`;
+        summaryText += isKh ? `• បន្ទប់គេង : ${bed}  |  បន្ទប់ទឹក: ${bath}\n` : `• Bed : ${bed}  |  Bath: ${bath}\n`;
+        summaryText += isKh ? `• ទិសបែទៅ : ${dir}\n` : `• Direction : ${dir}\n`;
+        summaryText += isKh ? `• ចំណត : ${payload.parkingNeeded || 'មិនមាន'}\n` : `• Parking : ${payload.parkingNeeded || 'N/A'}\n`;
+        summaryText += isKh ? `• គោលបំណង : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
+        summaryText += isKh ? `📝 សម្គាល់បន្ថែម\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
         summaryText += `———————————\n`;
-        summaryText += `👤 ព័ត៌មានអតិថិជន\n`;
-        summaryText += `• ឈ្មោះ: ${data.clientName || 'មិនមាន'}\n`;
+        summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន\n` : `👤 Client Info:\n`;
+        summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name : ${payload.clientName}\n`;
         summaryText += `• Tel: ${phoneText}\n`;
-        summaryText += `• Telegram: ${data.telegram || 'មិនមាន'}\n\n`;
+        summaryText += `• Telegram: ${payload.telegram || (isKh ? 'មិនមាន' : 'N/A')}\n\n`;
+        if (payload.submittedBy) summaryText += `Submitted by: ${payload.submittedBy}\n`;
 
-        if (data.submittedBy) {
-          summaryText += `Submitted by: ${data.submittedBy}\n`;
-        }
-
-        const now = new Date();
-        const options = {
-          timeZone: 'Asia/Phnom_Penh',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true
-        };
-        summaryText += `Submitted Date: ${now.toLocaleString('en-US', options)}`;
-
-        // Display Summary Card
+        // Render Summary Card
         document.getElementById('summaryContent').innerText = summaryText;
-        document.getElementById('successCard').style.display = 'block';
+        document.getElementById('summaryCard').classList.remove('hidden');
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        alert(' Error submitting inquiry: ' + (result.error || 'Unknown error'));
+        alert('Error: ' + (result.error || 'Please try again.'));
       }
-    } catch (error) {
-      console.error('Submission error:', error);
-      alert(' Failed to connect to server.');
+    } catch (err) {
+      console.error(err);
+      alert('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = translations[currentLang].submitBtn;
     }
   });
 </script>
