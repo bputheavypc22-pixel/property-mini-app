@@ -31,11 +31,37 @@
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .lang-switch {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .lang-btn {
+      background: #e9ecef;
+      border: 1px solid #ced4da;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .lang-btn.active {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
     }
 
     .header {
       text-align: center;
       margin-bottom: 20px;
+      margin-top: 10px;
     }
 
     .header img {
@@ -150,104 +176,104 @@
 
 <div class="container">
   
-  <!-- Success Card Container -->
-  <div id="successCard">
-    <div class="success-header">✅ ផ្ញើបានជោគជ័យ / Submitted Successfully</div>
-    <p style="font-size: 13px; color: #555; text-align: center;">នេះជាព័ត៌មានដែលអ្នកបានបញ្ជូន / Here is your summary data:</p>
-    <div class="summary-box" id="summaryContent"></div>
-    <button class="btn-reset" onclick="window.location.reload()">បំពេញទម្រង់ថ្មី (New Submission)</button>
+  <div class="lang-switch" id="langSwitch">
+    <button type="button" class="lang-btn active" onclick="setLanguage('km')">ខ្មែរ</button>
+    <button type="button" class="lang-btn" onclick="setLanguage('en')">EN</button>
   </div>
 
-  <!-- Client Inquiry Form -->
+  <div id="successCard">
+    <div class="success-header" data-km="✅ ផ្ញើបានជោគជ័យ" data-en="✅ Submitted Successfully">✅ ផ្ញើបានជោគជ័យ</div>
+    <p style="font-size: 13px; color: #555; text-align: center;" data-km="នេះជាព័ត៌មានដែលអ្នកបានបញ្ជូន៖" data-en="Here is your submitted summary data:">នេះជាព័ត៌មានដែលអ្នកបានបញ្ជូន៖</p>
+    <div class="summary-box" id="summaryContent"></div>
+    <button class="btn-reset" onclick="window.location.reload()" data-km="បំពេញទម្រង់ថ្មី" data-en="New Submission">បំពេញទម្រង់ថ្មី</button>
+  </div>
+
   <form id="clientInquiryForm">
     <div class="header">
       <img src="25logo.png" alt="Twenty5Realty Logo" onerror="this.src='logo.png'">
-      <h2>ការចុះបញ្ជីតម្រូវការអតិថិជន<br><span style="font-size: 14px; font-weight: normal;">Client Inquiry Form</span></h2>
+      <h2><span data-km="ការចុះបញ្ជីតម្រូវការអតិថិជន" data-en="Client Inquiry Form">ការចុះបញ្ជីតម្រូវការអតិថិជន</span></h2>
     </div>
 
-    <!-- Hidden field for auto-detected Telegram user -->
     <input type="hidden" id="submittedBy" name="submittedBy" value="">
 
-    <!-- Client Details -->
     <div class="form-group">
-      <label>ឈ្មោះអតិថិជន / Client Name *</label>
+      <label data-km="ឈ្មោះអតិថិជន *" data-en="Client Name *">ឈ្មោះអតិថិជន *</label>
       <input type="text" name="clientName" required placeholder="e.g. Test Client">
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label>លេខទូរស័ព្ទ 1 / Tel 1 *</label>
+        <label data-km="លេខទូរស័ព្ទ 1 *" data-en="Phone 1 *">លេខទូរស័ព្ទ 1 *</label>
         <input type="tel" name="tel1" required placeholder="09987654">
       </div>
       <div class="form-group">
-        <label>លេខទូរស័ព្ទ 2 / Tel 2</label>
+        <label data-km="លេខទូរស័ព្ទ 2" data-en="Phone 2">លេខទូរស័ព្ទ 2</label>
         <input type="tel" name="tel2" placeholder="0123456789">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Telegram / Contact Link</label>
+      <label data-km="Telegram / ទំនាក់ទំនង" data-en="Telegram / Contact Link">Telegram / ទំនាក់ទំនង</label>
       <input type="text" name="telegram" placeholder="https://t.me/username">
     </div>
 
     <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
 
-    <!-- Requirement Details -->
     <div class="row">
       <div class="form-group">
-        <label>តម្រូវការ / Target *</label>
+        <label data-km="តម្រូវការ *" data-en="Target *">តម្រូវការ *</label>
         <select name="listingType" id="listingType" required>
-          <option value="ទិញ">ទិញ (Buy)</option>
-          <option value="ជួល">ជួល (Rent)</option>
+          <option value="ទិញ" data-km="ទិញ" data-en="Buy">ទិញ</option>
+          <option value="ជួល" data-km="ជួល" data-en="Rent">ជួល</option>
         </select>
       </div>
       <div class="form-group">
-        <label>ប្រភេទ / Property Type *</label>
+        <label data-km="ប្រភេទ *" data-en="Property Type *">ប្រភេទ *</label>
         <select name="propertyType" id="propertyType" required>
-          <option value="ឃ្លាំង">ឃ្លាំង (Warehouse)</option>
-          <option value="ដី">ដី (Land)</option>
-          <option value="ផ្ទះល្វែង">ផ្ទះល្វែង (Flat House)</option>
-          <option value="វីឡា">វីឡា (Villa)</option>
-          <option value="ខុនដូ">ខុនដូ (Condo)</option>
-          <option value="ការិយាល័យ">ការិយាល័យ (Office)</option>
-          <option value="ផ្សេងៗ">ផ្សេងៗ (Other)</option>
+          <option value="ឃ្លាំង" data-km="ឃ្លាំង" data-en="Warehouse">ឃ្លាំង</option>
+          <option value="ដី" data-km="ដី" data-en="Land">ដី</option>
+          <option value="ផ្ទះល្វែង" data-km="ផ្ទះល្វែង" data-en="Flat House">ផ្ទះល្វែង</option>
+          <option value="វីឡា" data-km="វីឡា" data-en="Villa">វីឡា</option>
+          <option value="ខុនដូ" data-km="ខុនដូ" data-en="Condo">ខុនដូ</option>
+          <option value="ការិយាល័យ" data-km="ការិយាល័យ" data-en="Office">ការិយាល័យ</option>
+          <option value="ផ្សេងៗ" data-km="ផ្សេងៗ" data-en="Other">ផ្សេងៗ</option>
         </select>
       </div>
     </div>
 
     <div class="form-group">
-      <label>តំបន់ចង់បាន / Target Location *</label>
+      <label data-km="តំបន់ចង់បាន *" data-en="Target Location *">តំបន់ចង់បាន *</label>
       <input type="text" name="targetLocation" required placeholder="e.g. បឹងកេងកង, sensok">
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label>ថវិកា / Budget ($)</label>
+        <label data-km="ថវិកា ($)" data-en="Budget ($)">ថវិកា ($)</label>
         <input type="number" name="budget" placeholder="e.g. 50000">
       </div>
       <div class="form-group" id="preferredTermGroup" style="display: none;">
-        <label>រយៈពេលកុងត្រា / Contract Term</label>
+        <label data-km="រយៈពេលកុងត្រា" data-en="Contract Term">រយៈពេលកុងត្រា</label>
         <input type="text" name="preferredTerm" placeholder="e.g. 1 ឆ្នាំ / 1 Year">
       </div>
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label>ទំហំដី / Land Size</label>
+        <label data-km="ទំហំដី" data-en="Land Size">ទំហំដី</label>
         <input type="text" name="landSize" placeholder="e.g. 4x18m">
       </div>
       <div class="form-group">
-        <label>ទំហំអាគារ / Building Size</label>
+        <label data-km="ទំហំអាគារ" data-en="Building Size">ទំហំអាគារ</label>
         <input type="text" name="buildingSize" placeholder="e.g. 4x14m">
       </div>
     </div>
 
     <div class="row">
       <div class="form-group">
-        <label>បន្ទប់គេង / Bedrooms</label>
+        <label data-km="បន្ទប់គេង" data-en="Bedrooms">បន្ទប់គេង</label>
         <select name="bedrooms">
-          <option value="មិនកំណត់">មិនកំណត់ (Any)</option>
-          <option value="មិនមាន">មិនមាន (None)</option>
+          <option value="មិនកំណត់" data-km="មិនកំណត់" data-en="Any">មិនកំណត់</option>
+          <option value="មិនមាន" data-km="មិនមាន" data-en="None">មិនមាន</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -255,10 +281,10 @@
         </select>
       </div>
       <div class="form-group">
-        <label>បន្ទប់ទឹក / Bathrooms</label>
+        <label data-km="បន្ទប់ទឹក" data-en="Bathrooms">បន្ទប់ទឹក</label>
         <select name="bathrooms">
-          <option value="មិនកំណត់">មិនកំណត់ (Any)</option>
-          <option value="មិនមាន">មិនមាន (None)</option>
+          <option value="មិនកំណត់" data-km="មិនកំណត់" data-en="Any">មិនកំណត់</option>
+          <option value="មិនមាន" data-km="មិនមាន" data-en="None">មិនមាន</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -269,43 +295,68 @@
 
     <div class="row">
       <div class="form-group">
-        <label>ទិសបែទៅ / Direction</label>
+        <label data-km="ទិសបែទៅ" data-en="Direction">ទិសបែទៅ</label>
         <select name="direction">
-          <option value="មិនកំណត់">មិនកំណត់ (Any)</option>
-          <option value="កើត">កើត (East)</option>
-          <option value="លិច">លិច (West)</option>
-          <option value="ត្បូង">ត្បូង (South)</option>
-          <option value="ជើង">ជើង (North)</option>
+          <option value="មិនកំណត់" data-km="មិនកំណត់" data-en="Any">មិនកំណត់</option>
+          <option value="កើត" data-km="កើត" data-en="East">កើត</option>
+          <option value="លិច" data-km="លិច" data-en="West">លិច</option>
+          <option value="ត្បូង" data-km="ត្បូង" data-en="South">ត្បូង</option>
+          <option value="ជើង" data-km="ជើង" data-en="North">ជើង</option>
         </select>
       </div>
       <div class="form-group">
-        <label>ចំណត / Parking</label>
+        <label data-km="ចំណត" data-en="Parking">ចំណត</label>
         <input type="text" name="parkingNeeded" placeholder="e.g. ទាំងពីរ (ឡាន និងម៉ូតូ)">
       </div>
     </div>
 
     <div class="form-group">
-      <label>គោលបំណង / Purpose</label>
+      <label data-km="គោលបំណង" data-en="Purpose">គោលបំណង</label>
       <input type="text" name="purpose" placeholder="e.g. សម្រាប់ធ្វើអាជីវកម្ម (coffee)">
     </div>
 
     <div class="form-group">
-      <label>សម្គាល់បន្ថែម / Additional Notes</label>
-      <textarea name="description" placeholder="Enter any extra details..."></textarea>
+      <label data-km="សម្គាល់បន្ថែម" data-en="Additional Notes">សម្គាល់បន្ថែម</label>
+      <textarea name="description" placeholder="..."></textarea>
     </div>
 
-    <button type="submit" class="btn-submit">បញ្ជូនទិន្នន័យ / Submit Inquiry</button>
+    <button type="submit" class="btn-submit" data-km="បញ្ជូនទិន្នន័យ" data-en="Submit Inquiry">បញ្ជូនទិន្នន័យ</button>
   </form>
 
 </div>
 
 <script>
+  let currentLang = 'km';
+
+  // Language Switcher Function
+  function setLanguage(lang) {
+    currentLang = lang;
+    
+    // Update button styles
+    const btns = document.querySelectorAll('.lang-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    if (lang === 'km') btns[0].classList.add('active');
+    else btns[1].classList.add('active');
+
+    // Update Text Elements
+    document.querySelectorAll('[data-km]').forEach(el => {
+      const text = el.getAttribute(`data-${lang}`);
+      if (text) {
+        if (el.tagName === 'OPTION') {
+          el.innerText = text;
+        } else if (el.children.length === 0 || el.classList.contains('success-header')) {
+          el.innerText = text;
+        }
+      }
+    });
+  }
+
+  // Telegram Mini App Initialization
   const tg = window.Telegram?.WebApp;
   if (tg) {
     tg.ready();
     tg.expand();
 
-    // Auto-detect Telegram username or full name
     const user = tg.initDataUnsafe?.user;
     if (user) {
       const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
@@ -314,7 +365,7 @@
     }
   }
 
-  // Toggle preferred contract term visibility depending on Rent vs Buy
+  // Toggle Contract Term field for Rent vs Buy
   const listingTypeSelect = document.getElementById('listingType');
   const preferredTermGroup = document.getElementById('preferredTermGroup');
 
@@ -343,10 +394,11 @@
       const result = await response.json();
 
       if (result.success) {
-        // Hide Form
+        // Hide Form and Language Switcher
         document.getElementById('clientInquiryForm').style.display = 'none';
+        document.getElementById('langSwitch').style.display = 'none';
 
-        // Prepare Summary Output
+        // Build Summary Card Text
         const listType = data.listingType || '';
         const propType = data.propertyType || '';
         const combinedType = `${listType}${listType && propType ? ' ' : ''}${propType}`;
