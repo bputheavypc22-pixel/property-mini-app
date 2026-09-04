@@ -180,14 +180,13 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Language Toggle Switcher -->
   <div class="top-bar">
     <div class="lang-toggle">
       <button type="button" class="lang-btn" id="btnKH" onclick="setLanguage('kh')">KH ខ្មែរ</button>
@@ -195,7 +194,6 @@
     </div>
   </div>
 
-  <!-- Header Logo & Title -->
   <div class="header">
     <img src="/logo.png" alt="Twenty5Realty Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x60?text=25Realty';">
     <h2>🔍 <span id="t_mainTitle">Client Inquiry</span></h2>
@@ -203,7 +201,6 @@
   </div>
 
   <form id="inquiryForm">
-    <!-- Section 1: Client Info -->
     <div class="section-title">👤 <span id="t_secClient">Client Information</span></div>
 
     <div class="form-group">
@@ -227,7 +224,6 @@
       <input type="text" id="telegram" name="telegram" placeholder="@username or Phone Number">
     </div>
 
-    <!-- Section 2: Property Preference -->
     <div class="section-title">🏠 <span id="t_secDetails">Property Preferences</span></div>
 
     <div class="row">
@@ -240,7 +236,7 @@
       </div>
       <div class="form-group">
         <label><span id="t_propertyType">Property Type</span> <span class="required">*</span></label>
-        <select id="propertyType" name="propertyType" required>
+        <select id="propertyType" name="propertyType" required onchange="togglePropertyTypeFields()">
           <option value="House/Flat" id="opt_house">House / Flat</option>
           <option value="Villa" id="opt_villa">Villa</option>
           <option value="Condo" id="opt_condo">Condo</option>
@@ -248,6 +244,17 @@
           <option value="Warehouse" id="opt_warehouse">Warehouse</option>
           <option value="Land" id="opt_land">Land</option>
         </select>
+      </div>
+    </div>
+
+    <div class="row hidden" id="sizeFieldsGroup">
+      <div class="form-group hidden" id="landSizeGroup">
+        <label><span id="t_landSize">Land Size</span></label>
+        <input type="text" id="landSize" name="landSize" placeholder="e.g. 10m x 20m or 500 sqm">
+      </div>
+      <div class="form-group hidden" id="buildingSizeGroup">
+        <label><span id="t_buildingSize">Building Size</span></label>
+        <input type="text" id="buildingSize" name="buildingSize" placeholder="e.g. 8m x 15m or 300 sqm">
       </div>
     </div>
 
@@ -282,7 +289,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" id="bedBathGroup">
       <div class="form-group">
         <label><span id="t_bedrooms">Bedrooms</span></label>
         <select id="bedrooms" name="bedrooms">
@@ -304,7 +311,6 @@
       </div>
     </div>
 
-    <!-- Direction and Parking Needed Dropdowns -->
     <div class="row">
       <div class="form-group">
         <label><span id="t_direction">Direction</span></label>
@@ -331,7 +337,6 @@
       </div>
     </div>
 
-    <!-- Purpose Dropdown & Conditional Business Type Input -->
     <div class="form-group">
       <label><span id="t_purpose">Rent/Buy Purpose</span> <span class="required">*</span></label>
       <select id="purpose" name="purpose" required onchange="togglePurposeFields()">
@@ -350,7 +355,6 @@
       <textarea id="description" name="description" rows="3" placeholder="e.g. High floor, pet friendly, fully furnished..."></textarea>
     </div>
 
-    <!-- Hidden Submitter field -->
     <input type="hidden" id="submittedBy" name="submittedBy">
 
     <button type="submit" class="submit-btn" id="submitBtn">SUBMIT INQUIRY</button>
@@ -378,6 +382,8 @@
       secDetails: "Property Preferences",
       listingType: "Target",
       propertyType: "Property Type",
+      landSize: "Land Size",
+      buildingSize: "Building Size",
       targetArea1: "Target Area 1",
       targetArea2: "Target Area 2",
       targetArea3: "Target Area 3",
@@ -392,6 +398,8 @@
       description: "Additional Requirements",
       submitBtn: "SUBMIT INQUIRY",
       placeholderClient: "e.g. Chan Sokha",
+      placeholderLandSize: "e.g. 10m x 20m or 500 sqm",
+      placeholderBuildingSize: "e.g. 8m x 15m or 300 sqm",
       placeholderArea1: "e.g. Toul Kork",
       placeholderArea2: "e.g. BKK1",
       placeholderArea3: "e.g. Chroy Changvar",
@@ -435,6 +443,8 @@
       secDetails: "ព័ត៌មានតម្រូវការអចលនទ្រព្យ",
       listingType: "គោលបំណង",
       propertyType: "ប្រភេទអចលនទ្រព្យ",
+      landSize: "ទំហំដី",
+      buildingSize: "ទំហំអាគារ/ឃ្លាំង",
       targetArea1: "តំបន់គោលដៅ ទី១",
       targetArea2: "តំបន់គោលដៅ ទី២",
       targetArea3: "តំបន់គោលដៅ ទី៣",
@@ -449,6 +459,8 @@
       description: "តម្រូវការបន្ថែម",
       submitBtn: "បញ្ជូនទិន្នន័យ",
       placeholderClient: "ឧ. ចាន់ សុខា",
+      placeholderLandSize: "ឧ. 10m x 20m ឬ 500 ម៉ែត្រការ៉េ",
+      placeholderBuildingSize: "ឧ. 8m x 15m ឬ 300 ម៉ែត្រការ៉េ",
       placeholderArea1: "ឧ. ទួលគោក",
       placeholderArea2: "ឧ. បឹងកេងកង១",
       placeholderArea3: "ឧ. ជ្រោយចង្វារ",
@@ -502,6 +514,8 @@
     document.getElementById('t_secDetails').innerText = t.secDetails;
     document.getElementById('t_listingType').innerText = t.listingType;
     document.getElementById('t_propertyType').innerText = t.propertyType;
+    document.getElementById('t_landSize').innerText = t.landSize;
+    document.getElementById('t_buildingSize').innerText = t.buildingSize;
     document.getElementById('t_targetArea1').innerText = t.targetArea1;
     document.getElementById('t_targetArea2').innerText = t.targetArea2;
     document.getElementById('t_targetArea3').innerText = t.targetArea3;
@@ -518,6 +532,8 @@
 
     // Placeholders
     document.getElementById('clientName').placeholder = t.placeholderClient;
+    document.getElementById('landSize').placeholder = t.placeholderLandSize;
+    document.getElementById('buildingSize').placeholder = t.placeholderBuildingSize;
     document.getElementById('targetArea1').placeholder = t.placeholderArea1;
     document.getElementById('targetArea2').placeholder = t.placeholderArea2;
     document.getElementById('targetArea3').placeholder = t.placeholderArea3;
@@ -614,6 +630,39 @@
     }
   }
 
+  // Toggle Land Size, Building Size, and Bedrooms/Bathrooms based on Property Type
+  function togglePropertyTypeFields() {
+    const pType = document.getElementById('propertyType').value;
+    
+    const sizeFieldsGroup = document.getElementById('sizeFieldsGroup');
+    const landSizeGroup = document.getElementById('landSizeGroup');
+    const buildingSizeGroup = document.getElementById('buildingSizeGroup');
+    const bedBathGroup = document.getElementById('bedBathGroup');
+
+    const isLand = pType === 'Land' || pType === 'ដី';
+    const isWarehouse = pType === 'Warehouse' || pType === 'ឃ្លាំង';
+
+    if (isLand) {
+      sizeFieldsGroup.classList.remove('hidden');
+      landSizeGroup.classList.remove('hidden');
+      buildingSizeGroup.classList.add('hidden');
+      bedBathGroup.classList.add('hidden');
+      document.getElementById('buildingSize').value = '';
+    } else if (isWarehouse) {
+      sizeFieldsGroup.classList.remove('hidden');
+      landSizeGroup.classList.remove('hidden');
+      buildingSizeGroup.classList.remove('hidden');
+      bedBathGroup.classList.add('hidden');
+    } else {
+      sizeFieldsGroup.classList.add('hidden');
+      landSizeGroup.classList.add('hidden');
+      buildingSizeGroup.classList.add('hidden');
+      bedBathGroup.classList.remove('hidden');
+      document.getElementById('landSize').value = '';
+      document.getElementById('buildingSize').value = '';
+    }
+  }
+
   // Toggle Purpose / Business Type conditional field
   function togglePurposeFields() {
     const purpose = document.getElementById('purpose').value;
@@ -656,6 +705,8 @@
       telegram: document.getElementById('telegram')?.value || '',
       listingType: document.getElementById('listingType')?.value || '',
       propertyType: document.getElementById('propertyType')?.value || '',
+      landSize: document.getElementById('landSize')?.value || '',
+      buildingSize: document.getElementById('buildingSize')?.value || '',
       targetLocation: combinedAreas,
       budget: document.getElementById('budget')?.value || '',
       preferredTerm: document.getElementById('preferredTerm')?.value || '',
@@ -693,6 +744,7 @@
           alert(msg);
           this.reset();
           togglePurposeFields();
+          togglePropertyTypeFields();
         }
       } else {
         alert('Error: ' + (result.error || 'Please try again.'));
