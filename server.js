@@ -67,7 +67,7 @@ app.get('/client-inquiry', (req, res) => {
 });
 
 // ==========================================
-// 1. CLIENT INQUIRY ENDPOINT (IMPROVED)
+// 1. CLIENT INQUIRY ENDPOINT (CUSTOM KHMER FORMAT)
 // ==========================================
 app.post(['/api/client-inquiry', '/api/inquiry'], async (req, res) => {
   try {
@@ -80,64 +80,57 @@ app.post(['/api/client-inquiry', '/api/inquiry'], async (req, res) => {
 
     const data = req.body;
 
-    // Normalizing dynamic field names for front-end compatibility
-    const clientName = data.clientName || data.name || 'N/A';
-    const tel1 = data.tel1 || data.phone || 'N/A';
-    const tel2 = data.tel2 || '';
-    const phoneDisplay = tel2 ? `${tel1} / ${tel2}` : tel1;
-    const telegram = data.telegram || '';
-    
-    const targetType = data.listingType || data.purpose || 'N/A';
-    const propertyType = data.propertyType || 'N/A';
-    const targetLocation = data.targetLocation || data.preferredLocation || 'N/A';
+    // Data parsing & fallbacks
+    const propertyType = data.propertyType || 'អចលនទ្រព្យ';
+    const listingType = data.listingType || data.purpose || 'ជួល';
+    const location = data.targetLocation || data.preferredLocation || data.location || 'N/A';
     
     let budgetDisplay = 'N/A';
     if (data.budget) {
-      budgetDisplay = `$${Number(data.budget).toLocaleString()}`;
+      budgetDisplay = `$${data.budget}`;
     } else if (data.maxBudget) {
-      budgetDisplay = data.minBudget 
-        ? `$${Number(data.minBudget).toLocaleString()} - $${Number(data.maxBudget).toLocaleString()}`
-        : `Up to $${Number(data.maxBudget).toLocaleString()}`;
+      budgetDisplay = data.minBudget ? `$${data.minBudget} - $${data.maxBudget}` : `$${data.maxBudget}`;
     }
 
-    const bed = (data.bedrooms && data.bedrooms !== 'Any' && data.bedrooms !== 'មិនកំណត់') ? data.bedrooms : 'Any';
-    const bath = (data.bathrooms && data.bathrooms !== 'Any' && data.bathrooms !== 'មិនកំណត់') ? data.bathrooms : 'Any';
-    const direction = (data.direction && data.direction !== 'Not Required' && data.direction !== 'មិនកំណត់') ? data.direction : 'N/A';
-    const parking = (data.parkingNeeded && data.parkingNeeded !== 'Not Required' && data.parkingNeeded !== 'មិនកំណត់') ? data.parkingNeeded : 'N/A';
+    const contract = data.preferredTerm || data.contract || 'N/A';
+    const bed = (data.bedrooms && data.bedrooms !== 'មិនកំណត់') ? data.bedrooms : 'N/A';
+    const bath = (data.bathrooms && data.bathrooms !== 'មិនកំណត់') ? data.bathrooms : 'N/A';
+    const direction = (data.direction && data.direction !== 'មិនកំណត់') ? data.direction : 'N/A';
+    const parking = (data.parkingNeeded || data.parking || 'N/A');
 
-    // Constructing Structured Message
+    // Format Purpose field (e.g., "For Business (លក់វត្ថុអានុស្សាវរីយ៍)")
+    let purposeDisplay = data.purposeDetail ? `${data.purpose || ''} (${data.purposeDetail})` : (data.purpose || 'N/A');
+
+    // Format Phone Numbers
+    const tel1 = data.tel1 || data.phone || 'N/A';
+    const tel2 = data.tel2 || '';
+    const phoneDisplay = tel2 ? `${tel1} / ${tel2}` : tel1;
+
+    // Formatting Message Output
     let inquiryMessage = `👤 <b>ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)</b>\n\n`;
     
-    inquiryMessage += `🔍 <b>ព័ត៌មានតម្រូវការ / Requirement Details</b>\n`;
-    inquiryMessage += `🏠 <b>${targetType} ${propertyType}</b>\n`;
-    inquiryMessage += `📍 <b>តំបន់គោលដៅ / Location:</b> ${targetLocation}\n`;
-    inquiryMessage += `• <b>ថវិកា / Budget:</b> ${budgetDisplay}\n`;
+    inquiryMessage += `🔍 <b>ភ្ញៀវកំពុងស្វែងរក</b>\n`;
+    inquiryMessage += `🏠 <b>${propertyType} ${listingType}</b>\n`;
+    inquiryMessage += `📍 <b>តំបន់គោលដៅ</b>: ${location}\n`;
+    inquiryMessage += `• <b>តម្លៃចន្លោះ</b> : ${budgetDisplay}\n`;
+    inquiryMessage += `• <b>អាចកុងត្រា</b> : ${contract}\n`;
+    inquiryMessage += `• <b>ចំនួនបន្ទប់</b> : 🛏គេង: ${bed} | 🚿 ទឹក: ${bath}\n`;
+    inquiryMessage += `• <b>ទិសបែរមុខទៅ</b> : ${direction}\n`;
+    inquiryMessage += `• <b>ត្រូវការចំណត</b> : ${parking}\n`;
+    inquiryMessage += `• <b>គោលបំណង</b> : ${purposeDisplay}\n\n`;
 
-    if (targetType === 'Rent' || targetType === 'ជួល') {
-      if (data.preferredTerm) inquiryMessage += `• <b>រយៈពេលកុងត្រា / Contract:</b> ${data.preferredTerm}\n`;
-    }
+    inquiryMessage += `📝 <b>សម្គាល់បន្ថែម / Special Notes:</b>\n`;
+    inquiryMessage += `${data.description || data.notes || 'N/A'}\n\n`;
+    inquiryMessage += `-----------------------------------\n`;
 
-    if (data.landSize) inquiryMessage += `• <b>ទំហំដី / Land Size:</b> ${data.landSize}\n`;
-    if (data.buildingSize) inquiryMessage += `• <b>ទំហំអាគារ / Building Size:</b> ${data.buildingSize}\n`;
-
-    inquiryMessage += `• <b>បន្ទប់ / Rooms:</b> 🛏️ ${bed} | 🚿 ${bath}\n`;
-    inquiryMessage += `• <b>ទិស / Direction:</b> ${direction}\n`;
-    inquiryMessage += `• <b>ចំណត / Parking:</b> ${parking}\n`;
-    
-    if (data.purpose) inquiryMessage += `• <b>គោលបំណង / Purpose:</b> ${data.purpose}\n`;
-
-    inquiryMessage += `\n📝 <b>សម្គាល់បន្ថែម / Special Notes:</b>\n`;
-    inquiryMessage += `${data.description || data.notes || 'None'}\n`;
-    inquiryMessage += `-----------------------------------\n\n`;
-
-    inquiryMessage += `👤 <b>ព័ត៌មានអតិថិជន / Client Contact</b>\n`;
-    inquiryMessage += `• <b>ឈ្មោះ / Name:</b> ${clientName}\n`;
-    inquiryMessage += `• <b>លេខទូរស័ព្ទ / Phone:</b> ${phoneDisplay}\n`;
-    if (telegram) inquiryMessage += `• <b>Telegram:</b> ${telegram}\n`;
+    inquiryMessage += `👤 <b>ព័ត៌មានអតិថិជន</b>\n`;
+    inquiryMessage += `• <b>ឈ្មោះ</b> : ${data.clientName || data.name || 'N/A'}\n`;
+    inquiryMessage += `• <b>លេខទូរស័ព្ទ</b> : ${phoneDisplay}\n`;
+    inquiryMessage += `• <b>Telegram</b> : ${data.telegram || 'N/A'}\n\n`;
 
     const now = new Date();
     const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
-    inquiryMessage += `\n<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
+    inquiryMessage += `<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
     inquiryMessage += `<b>Submitted Date:</b> ${formattedDate}`;
 
     const payload = {
