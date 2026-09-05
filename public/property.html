@@ -567,7 +567,6 @@
         noImages: "គ្មានរូបភាពត្រូវបានជ្រើសរើស",
         imgCountText: "បានជ្រើសរើស",
         submitBtn: "បញ្ជូនទិន្នន័យ",
-        successAlert: "បានចុះបញ្ជីអចលនទ្រព្យជោគជ័យ! 🎉",
         limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្ណោះ",
         minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក"
       },
@@ -638,7 +637,6 @@
         noImages: "No images selected",
         imgCountText: "selected",
         submitBtn: "SUBMIT LISTING",
-        successAlert: "Property registered successfully! 🎉",
         limitAlert: "You can only upload up to 10 images.",
         minImgAlert: "Please upload at least 1 image."
       }
@@ -887,6 +885,12 @@
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
       const formData = new FormData();
+
+      // Pass Telegram User ID for direct confirmation messaging
+      if (user?.id) {
+        formData.append('userId', user.id);
+      }
+
       formData.append('ownerName', document.getElementById('ownerName').value);
       formData.append('tel1', document.getElementById('tel1').value);
       formData.append('tel2', document.getElementById('tel2').value);
@@ -920,7 +924,7 @@
       formData.append('description', document.getElementById('description').value);
       formData.append('submittedBy', submittedBy);
 
-      // KEY FIX: Append files under key 'photos' to match multer on server.js
+      // Append image files
       selectedFiles.forEach((file) => {
         formData.append('photos', file);
       });
@@ -934,10 +938,27 @@
         const data = await response.json();
 
         if (response.ok && data.success) {
-          tg?.showAlert ? tg.showAlert(t.successAlert) : alert(t.successAlert);
-          tg?.close();
+          if (tg?.MainButton) tg.MainButton.hideProgress();
+
+          // Render on-screen confirmation card
+          document.querySelector('.container').innerHTML = `
+            <div style="text-align: center; padding: 40px 15px;">
+              <div style="font-size: 60px; margin-bottom: 16px;">🎉</div>
+              <h2 style="color: #0b2545; font-size: 20px; margin-bottom: 8px;">
+                ${currentLang === 'km' ? 'បានបញ្ជូនជោគជ័យ!' : 'Submission Successful!'}
+              </h2>
+              <p style="color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 24px;">
+                ${currentLang === 'km' 
+                  ? 'ព័ត៌មានអចលនទ្រព្យរបស់អ្នកត្រូវបានបញ្ជូនទៅកាន់ក្រុមការងារ Twenty5Realty រួចរាល់ហើយ។' 
+                  : 'Your property details have been submitted to the Twenty5Realty team.'}
+              </p>
+              <button onclick="if(tg && tg.close){ tg.close(); } else { location.reload(); }" 
+                      style="width: 100%; padding: 12px; background: #0284c7; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;">
+                ${currentLang === 'km' ? 'រួចរាល់ (Close)' : 'Done'}
+              </button>
+            </div>
+          `;
         } else {
-          // KEY FIX: Show the exact error returned by Render / Telegram API
           const errorMsg = data.error || data.message || 'Submission failed';
           tg?.showAlert ? tg.showAlert(`Error: ${errorMsg}`) : alert(`Error: ${errorMsg}`);
         }
