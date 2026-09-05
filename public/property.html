@@ -84,7 +84,6 @@
       border-bottom: 2px solid #f1f5f9;
     }
     
-    /* Layout Scaffolding for Form Fields */
     .form-group {
       margin-bottom: 12px;
     }
@@ -143,7 +142,6 @@
       min-height: 70px;
     }
 
-    /* Map Input & Compact Button Layout */
     .map-input-wrapper {
       display: flex;
       gap: 6px;
@@ -196,7 +194,6 @@
       border: 0;
     }
 
-    /* Dynamic Options Blocks */
     #rent-terms-section,
     #sale-terms-section {
       display: none;
@@ -207,7 +204,6 @@
       margin-bottom: 12px;
     }
 
-    /* Image Upload Box & Grid */
     .upload-box {
       border: 2px dashed #cbd5e1;
       border-radius: 10px;
@@ -262,6 +258,18 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .web-submit-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -481,6 +489,8 @@
         
         <div id="preview-grid" class="preview-grid"></div>
       </div>
+
+      <button type="button" id="webSubmitBtn" class="web-submit-btn" onclick="submitForm()">បញ្ជូនទិន្នន័យ</button>
     </form>
   </div>
 
@@ -737,7 +747,6 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      /* Rent Terms Translations */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -757,7 +766,6 @@
       document.getElementById('opt-con-3y').textContent = t.optCon3y;
       document.getElementById('opt-con-neg').textContent = t.optConNeg;
 
-      /* Sale Terms Translations */
       document.getElementById('lbl-certificate').textContent = t.lblCertificate;
       document.getElementById('opt-cert-none').textContent = t.optCertNone;
       document.getElementById('opt-cert-hard').textContent = t.optCertHard;
@@ -767,6 +775,7 @@
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
       document.getElementById('upload-text').textContent = t.uploadText;
+      document.getElementById('webSubmitBtn').textContent = t.submitBtn;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
@@ -849,11 +858,13 @@
       });
     }
 
-    if (tg) {
+    if (tg && tg.initData) {
       tg.ready();
       tg.expand();
       tg.setBackgroundColor('#f8fafc');
       tg.MainButton.show();
+      tg.MainButton.onClick(() => submitForm());
+      document.getElementById('webSubmitBtn').style.display = 'none';
     }
 
     const submitForm = async () => {
@@ -870,7 +881,7 @@
         return;
       }
 
-      if (tg) tg.MainButton.showProgress();
+      if (tg?.MainButton) tg.MainButton.showProgress();
 
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
@@ -892,80 +903,53 @@
       formData.append('bedrooms', document.getElementById('bedrooms').value);
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
-
+      
       const listingType = document.getElementById('listingType').value;
-      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
-      const isSale = listingType === 'លក់' || listingType === 'For Sale';
-
-      /* Append Rent Terms if Renting */
-      if (isRent) {
-        const depSelect = document.getElementById('deposit');
-        const depVal = depSelect.options[depSelect.selectedIndex].text;
-        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
-          ? document.getElementById('depositOther').value 
-          : depVal;
-          
-        const rentFeeSelect = document.getElementById('rentFee');
-        const contractSelect = document.getElementById('contract');
-
-        formData.append('deposit', finalDeposit);
-        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
-        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
-      }
-
-      /* Append Certificate if For Sale */
-      if (isSale) {
-        const certSelect = document.getElementById('certificate');
-        const certVal = certSelect.options[certSelect.selectedIndex].text;
-        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
-          ? document.getElementById('certOther').value
-          : certVal;
-
-        formData.append('certificate', finalCert);
+      if (listingType === 'ជួល' || listingType === 'For Rent') {
+        const deposit = document.getElementById('deposit').value;
+        formData.append('deposit', deposit === 'ផ្សេងៗ' ? document.getElementById('depositOther').value : deposit);
+        formData.append('rentFee', document.getElementById('rentFee').value);
+        formData.append('contract', document.getElementById('contract').value);
+      } else if (listingType === 'លក់' || listingType === 'For Sale') {
+        const cert = document.getElementById('certificate').value;
+        formData.append('certificate', cert === 'ប្រភេទផ្សេង' ? document.getElementById('certOther').value : cert);
       }
 
       formData.append('description', document.getElementById('description').value);
       formData.append('submittedBy', submittedBy);
-      formData.append('initData', tg?.initData || '');
 
       selectedFiles.forEach((file) => {
         formData.append('photos', file);
       });
 
       try {
-        const response = await fetch('/api/register-property', {
+        // REPLACE THIS URL WITH YOUR ACTUAL ENDPOINT URL
+        const backendEndpoint = '/api/submit-listing'; 
+
+        const response = await fetch(backendEndpoint, {
           method: 'POST',
           body: formData
         });
 
-        const result = await response.json();
-
-        if (tg) tg.MainButton.hideProgress();
-
-        if (result.success) {
-          if (tg) {
-            tg.showAlert(t.successAlert, () => tg.close());
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const result = await response.json();
+          if (response.ok) {
+            tg?.showAlert ? tg.showAlert(t.successAlert) : alert(t.successAlert);
+            tg?.close();
           } else {
-            alert(t.successAlert);
-            location.reload();
+            throw new Error(result.message || 'Submission failed');
           }
         } else {
-          throw new Error(result.error || 'Submission failed');
+          const textError = await response.text();
+          throw new Error(`Server returned HTML error (Status ${response.status}). Check server URL.`);
         }
       } catch (err) {
-        if (tg) tg.MainButton.hideProgress();
-        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
+        tg?.showAlert ? tg.showAlert(`Error: ${err.message}`) : alert(`Error: ${err.message}`);
+      } finally {
+        if (tg?.MainButton) tg.MainButton.hideProgress();
       }
     };
-
-    if (tg) {
-      tg.MainButton.onClick(submitForm);
-    } else {
-      document.getElementById('listingForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-      });
-    }
 
     switchLanguage(currentLang);
   </script>
