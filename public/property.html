@@ -83,8 +83,6 @@
       padding-bottom: 4px;
       border-bottom: 2px solid #f1f5f9;
     }
-    
-    /* Layout Scaffolding for Form Fields */
     .form-group {
       margin-bottom: 12px;
     }
@@ -98,7 +96,6 @@
       margin-bottom: 0;
       min-width: 0;
     }
-
     label {
       display: block;
       font-size: 12px;
@@ -142,8 +139,6 @@
       resize: vertical;
       min-height: 70px;
     }
-
-    /* Map Input & Compact Button Layout */
     .map-input-wrapper {
       display: flex;
       gap: 6px;
@@ -195,8 +190,6 @@
       height: 100%;
       border: 0;
     }
-
-    /* Dynamic Options Blocks */
     #rent-terms-section,
     #sale-terms-section {
       display: none;
@@ -206,8 +199,6 @@
       border-radius: 8px;
       margin-bottom: 12px;
     }
-
-    /* Image Upload Box & Grid */
     .upload-box {
       border: 2px dashed #cbd5e1;
       border-radius: 10px;
@@ -224,7 +215,6 @@
     .upload-icon { font-size: 24px; margin-bottom: 4px; }
     .upload-text { font-size: 13px; font-weight: 600; color: #0284c7; }
     .upload-count { font-size: 11px; color: #64748b; margin-top: 2px; }
-
     .preview-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
@@ -263,6 +253,17 @@
       justify-content: center;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
+    .submit-btn-fallback {
+      width: 100%;
+      padding: 12px;
+      background: #0284c7;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -273,7 +274,7 @@
         <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
         <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
       </div>
-      <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
+      <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img" onerror="this.style.display='none'">
       <h2 id="header-title">🏠 ចុះបញ្ជីអចលនទ្រព្យ</h2>
       <p id="header-subtitle">Property Listing Form</p>
     </div>
@@ -470,17 +471,16 @@
 
       <div class="form-group">
         <label id="lbl-images">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *</label>
-        
         <div class="upload-box" onclick="document.getElementById('photos').click()">
           <div class="upload-icon">📷</div>
           <div id="upload-text" class="upload-text">ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *</div>
           <div id="upload-count" class="upload-count">គ្មានរូបភាពត្រូវបានជ្រើសរើស</div>
         </div>
-        
         <input type="file" id="photos" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
-        
         <div id="preview-grid" class="preview-grid"></div>
       </div>
+
+      <button type="button" id="fallbackSubmit" class="submit-btn-fallback" onclick="submitForm()">SUBMIT LISTING</button>
     </form>
   </div>
 
@@ -654,7 +654,7 @@
     function toggleDepositOther() {
       const depositVal = document.getElementById('deposit').value;
       const otherInput = document.getElementById('depositOther');
-      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other' || depositVal === 'optDepOther') {
+      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -667,7 +667,7 @@
     function toggleCertOther() {
       const certVal = document.getElementById('certificate').value;
       const otherInput = document.getElementById('certOther');
-      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type' || certVal === 'optCertOther') {
+      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -737,7 +737,6 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      /* Rent Terms Translations */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -757,7 +756,6 @@
       document.getElementById('opt-con-3y').textContent = t.optCon3y;
       document.getElementById('opt-con-neg').textContent = t.optConNeg;
 
-      /* Sale Terms Translations */
       document.getElementById('lbl-certificate').textContent = t.lblCertificate;
       document.getElementById('opt-cert-none').textContent = t.optCertNone;
       document.getElementById('opt-cert-hard').textContent = t.optCertHard;
@@ -767,6 +765,7 @@
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
       document.getElementById('upload-text').textContent = t.uploadText;
+      document.getElementById('fallbackSubmit').textContent = t.submitBtn;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
@@ -854,6 +853,7 @@
       tg.expand();
       tg.setBackgroundColor('#f8fafc');
       tg.MainButton.show();
+      tg.MainButton.onClick(() => submitForm());
     }
 
     const submitForm = async () => {
@@ -892,80 +892,37 @@
       formData.append('bedrooms', document.getElementById('bedrooms').value);
       formData.append('bathrooms', document.getElementById('bathrooms').value);
       formData.append('direction', document.getElementById('direction').value);
-
-      const listingType = document.getElementById('listingType').value;
-      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
-      const isSale = listingType === 'លក់' || listingType === 'For Sale';
-
-      /* Append Rent Terms if Renting */
-      if (isRent) {
-        const depSelect = document.getElementById('deposit');
-        const depVal = depSelect.options[depSelect.selectedIndex].text;
-        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
-          ? document.getElementById('depositOther').value 
-          : depVal;
-          
-        const rentFeeSelect = document.getElementById('rentFee');
-        const contractSelect = document.getElementById('contract');
-
-        formData.append('deposit', finalDeposit);
-        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
-        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
-      }
-
-      /* Append Certificate if For Sale */
-      if (isSale) {
-        const certSelect = document.getElementById('certificate');
-        const certVal = certSelect.options[certSelect.selectedIndex].text;
-        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
-          ? document.getElementById('certOther').value
-          : certVal;
-
-        formData.append('certificate', finalCert);
-      }
-
+      formData.append('deposit', document.getElementById('deposit').value);
+      formData.append('depositOther', document.getElementById('depositOther').value);
+      formData.append('rentFee', document.getElementById('rentFee').value);
+      formData.append('contract', document.getElementById('contract').value);
+      formData.append('certificate', document.getElementById('certificate').value);
+      formData.append('certOther', document.getElementById('certOther').value);
       formData.append('description', document.getElementById('description').value);
       formData.append('submittedBy', submittedBy);
-      formData.append('initData', tg?.initData || '');
 
-      selectedFiles.forEach((file) => {
-        formData.append('photos', file);
-      });
+      selectedFiles.forEach(file => formData.append('photos', file));
 
       try {
-        const response = await fetch('/api/register-property', {
+        const response = await fetch('/api/submit', {
           method: 'POST',
           body: formData
         });
 
         const result = await response.json();
-
         if (tg) tg.MainButton.hideProgress();
 
         if (result.success) {
-          if (tg) {
-            tg.showAlert(t.successAlert, () => tg.close());
-          } else {
-            alert(t.successAlert);
-            location.reload();
-          }
+          tg?.showAlert ? tg.showAlert(t.successAlert) : alert(t.successAlert);
+          tg?.close();
         } else {
-          throw new Error(result.error || 'Submission failed');
+          alert('Error: ' + (result.error || 'Submission failed'));
         }
       } catch (err) {
         if (tg) tg.MainButton.hideProgress();
-        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
+        alert('Failed to connect to server: ' + err.message);
       }
     };
-
-    if (tg) {
-      tg.MainButton.onClick(submitForm);
-    } else {
-      document.getElementById('listingForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-      });
-    }
 
     switchLanguage(currentLang);
   </script>
