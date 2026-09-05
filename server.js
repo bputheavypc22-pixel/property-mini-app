@@ -1,322 +1,56 @@
 const express = require('express');
-const multer = require('multer');
-const axios = require('axios');
-const FormData = require('form-data');
+const { Telegraf } = require('telegraf');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
-// Environment variables mapped directly to your Render setup
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
-const CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.CHAT_ID;
-const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
-const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID;
+const bot = new Telegraf(BOT_TOKEN);
 
-// Parse incoming request payloads
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// Serve static assets
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Lightweight Telegram /start handler
-if (BOT_TOKEN) {
-  let lastUpdateId = 0;
-  const pollTelegram = async () => {
-    try {
-      const res = await axios.get(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`, {
-        params: { offset: lastUpdateId + 1, timeout: 5 }
-      });
-      if (res.data?.ok && res.data.result.length > 0) {
-        for (const update of res.data.result) {
-          lastUpdateId = update.update_id;
-          if (update.message?.text === '/start') {
-            await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-              chat_id: update.message.chat.id,
-              text: `សូមស្វាគមន៍មកកាន់ Twenty5Realty! សូមចុច Open Form ដើម្បីបំពេញបែបបទ。\n\nWelcome to Twenty5Realty! Please Click Open Form to get the Form.`
-            });
-          }
-        }
-      }
-    } catch (err) {
-      // Ignore polling timeout errors
-    } finally {
-      setTimeout(pollTelegram, 2000);
-    }
-  };
-  pollTelegram();
-} else {
-  console.error("CRITICAL ERROR: TELEGRAM_BOT_TOKEN is missing on Render settings!");
-}
-
-// Memory storage for file uploads
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }
-});
-
-// HTML Page Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'property.html'));
-});
-
-app.get('/client-inquiry', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'client-inquiry.html'));
-});
-
-// ==========================================
-// 1. CLIENT INQUIRY ENDPOINT (CUSTOM KHMER FORMAT)
-// ==========================================
-app.post(['/api/client-inquiry', '/api/inquiry'], async (req, res) => {
+// Client Inquiry Endpoint
+app.post('/api/client-inquiry', async (req, res) => {
   try {
-    if (!BOT_TOKEN || !CHAT_ID) {
-      return res.status(500).json({ 
-        success: false, 
-        error: 'TELEGRAM_BOT_TOKEN or TELEGRAM_GROUP_ID variables are missing on Render.' 
-      });
-    }
-
     const data = req.body;
-
-    // Data parsing & fallbacks
-    const propertyType = data.propertyType || 'អចលនទ្រព្យ';
-    const listingType = data.listingType || data.purpose || 'ជួល';
-    const location = data.targetLocation || data.preferredLocation || data.location || 'N/A';
-    
-    let budgetDisplay = 'N/A';
-    if (data.budget) {
-      budgetDisplay = `$${data.budget}`;
-    } else if (data.maxBudget) {
-      budgetDisplay = data.minBudget ? `$${data.minBudget} - $${data.maxBudget}` : `$${data.maxBudget}`;
-    }
-
-    const contract = data.preferredTerm || data.contract || 'N/A';
-    const bed = (data.bedrooms && data.bedrooms !== 'មិនកំណត់') ? data.bedrooms : 'N/A';
-    const bath = (data.bathrooms && data.bathrooms !== 'មិនកំណត់') ? data.bathrooms : 'N/A';
-    const direction = (data.direction && data.direction !== 'មិនកំណត់') ? data.direction : 'N/A';
-    const parking = (data.parkingNeeded || data.parking || 'N/A');
-
-    // Format Purpose field (e.g., "For Business (លក់វត្ថុអានុស្សាវរីយ៍)")
-    let purposeDisplay = data.purposeDetail ? `${data.purpose || ''} (${data.purposeDetail})` : (data.purpose || 'N/A');
-
-    // Format Phone Numbers
-    const tel1 = data.tel1 || data.phone || 'N/A';
-    const tel2 = data.tel2 || '';
-    const phoneDisplay = tel2 ? `${tel1} / ${tel2}` : tel1;
-
-    // Formatting Message Output
-    let inquiryMessage = `👤 <b>ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)</b>\n\n`;
-    
-    inquiryMessage += `🔍 <b>ភ្ញៀវកំពុងស្វែងរក</b>\n`;
-    inquiryMessage += `🏠 <b>${propertyType} ${listingType}</b>\n`;
-    inquiryMessage += `📍 <b>តំបន់គោលដៅ</b>: ${location}\n`;
-    inquiryMessage += `• <b>តម្លៃចន្លោះ</b> : ${budgetDisplay}\n`;
-    inquiryMessage += `• <b>អាចកុងត្រា</b> : ${contract}\n`;
-    inquiryMessage += `• <b>ចំនួនបន្ទប់</b> : 🛏គេង: ${bed} | 🚿 ទឹក: ${bath}\n`;
-    inquiryMessage += `• <b>ទិសបែរមុខទៅ</b> : ${direction}\n`;
-    inquiryMessage += `• <b>ត្រូវការចំណត</b> : ${parking}\n`;
-    inquiryMessage += `• <b>គោលបំណង</b> : ${purposeDisplay}\n\n`;
-
-    inquiryMessage += `📝 <b>សម្គាល់បន្ថែម / Special Notes:</b>\n`;
-    inquiryMessage += `${data.description || data.notes || 'N/A'}\n\n`;
-    inquiryMessage += `-----------------------------------\n`;
-
-    inquiryMessage += `👤 <b>ព័ត៌មានអតិថិជន</b>\n`;
-    inquiryMessage += `• <b>ឈ្មោះ</b> : ${data.clientName || data.name || 'N/A'}\n`;
-    inquiryMessage += `• <b>លេខទូរស័ព្ទ</b> : ${phoneDisplay}\n`;
-    inquiryMessage += `• <b>Telegram</b> : ${data.telegram || 'N/A'}\n\n`;
-
-    const now = new Date();
-    const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
-    inquiryMessage += `<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
-    inquiryMessage += `<b>Submitted Date:</b> ${formattedDate}`;
-
-    const payload = {
-      chat_id: CHAT_ID,
-      text: inquiryMessage,
-      parse_mode: 'HTML'
-    };
-
-    if (CLIENT_TOPIC_ID) {
-      payload.message_thread_id = Number(CLIENT_TOPIC_ID);
-    }
-
-    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
-
-    // Direct message confirmation to submitter
-    if (data.userId) {
-      try {
-        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          chat_id: data.userId,
-          text: `✅ <b>បានបញ្ជូនសំណើជោគជ័យ / Inquiry Confirmed</b>\n\nអរគុណ! ក្រុមការងារ Twenty5Realty បានទទួលសំណើស្វែងរកអចលនទ្រព្យរបស់លោកអ្នកហើយ។ ពួកយើងនឹងទាក់ទងទៅវិញក្នុងពេលឆាប់ៗនេះ។\n\nThank you! Your property inquiry has been received.`,
-          parse_mode: 'HTML'
-        });
-      } catch (dmErr) {
-        console.log('Could not send direct message to user:', dmErr.message);
-      }
-    }
-
-    return res.status(200).json({ success: true, message: 'Inquiry submitted successfully!' });
-
-  } catch (error) {
-    console.error('Client Inquiry Error:', error.response?.data || error.message);
-    return res.status(500).json({ 
-      success: false, 
-      error: error.response?.data?.description || 'Failed to submit client inquiry.' 
-    });
+    console.log('New Client Inquiry Received:', data);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error handling inquiry:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// ==========================================
-// 2. PROPERTY LISTING ENDPOINT
-// ==========================================
-app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
+// Thank-You Message Endpoint (Triggered when user clicks Close)
+app.post('/api/send-thank-you', async (req, res) => {
+  const { telegramId } = req.body;
+
+  if (!telegramId) {
+    return res.status(400).json({ success: false, error: 'Missing telegramId' });
+  }
+
+  const thankYouMessage = 
+`✅ ការបញ្ជូនបានជោគជ័យ / Submission Confirmed
+
+សូមអរគុណ! ព័ត៌មានលោកអ្នកត្រូវបានបញ្ចូលទៅក្នុងប្រព័ន្ធ Twenty5Realty រួចរាល់ហើយ។ ក្រុមការងារយើងនឹងពិនិត្យមើលក្នុងពេលឆាប់ៗនេះ។
+
+Thank you! Your data has been successfully received by Twenty5Realty.`;
+
   try {
-    if (!BOT_TOKEN || !CHAT_ID) {
-      return res.status(500).json({ 
-        success: false, 
-        error: 'TELEGRAM_BOT_TOKEN or TELEGRAM_GROUP_ID variables are missing on Render.' 
-      });
-    }
-
-    const data = req.body;
-    const files = req.files || [];
-
-    // Format Deposit & Contract Terms
-    let depositDisplay = data.deposit || 'N/A';
-    if ((data.deposit === 'ផ្សេងៗ' || data.deposit === 'Other') && data.depositOther) {
-      depositDisplay = `${data.deposit} (${data.depositOther})`;
-    }
-
-    let certDisplay = data.certificate || 'N/A';
-    if ((data.certificate === 'ប្រភេទផ្សេង' || data.certificate === 'Other type') && data.certOther) {
-      certDisplay = `${data.certificate} (${data.certOther})`;
-    }
-
-    let termsString = '';
-    if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
-      termsString = `កក់ ${depositDisplay} | បង់ ${data.rentFee || 'N/A'} | កុងត្រា ${data.contract || 'N/A'}`;
-    } else if (data.listingType === 'លក់' || data.listingType === 'For Sale') {
-      termsString = `ប្លង់កម្មសិទ្ធ: ${certDisplay}`;
-    } else {
-      termsString = 'N/A';
-    }
-
-    // Build Layout
-    let messageText = `🏠 <b>ការចុះបញ្ជីអចលនទ្រព្យថ្មី (NEW PROPERTY LISTING)</b>\n\n`;
-    
-    messageText += `📌 <b>ព័ត៌មានអចលនទ្រព្យ</b>\n`;
-    messageText += `🏠 <b>${data.propertyType || 'N/A'} ${data.listingType || ''}</b>\n`;
-    messageText += `📍 <b>ទីតាំង:</b> ${data.location || 'N/A'}\n`;
-    messageText += `• <b>តម្លៃ</b> : $${data.price || '0'}\n`;
-    
-    if (data.landSize) messageText += `• <b>ទំហំដី</b> : ${data.landSize}\n`;
-    if (data.houseSize) messageText += `• <b>ទំហំផ្ទះ</b> : ${data.houseSize}\n`;
-    
-    const front = data.frontSpace || 'N/A';
-    const back = data.backSpace || 'N/A';
-    messageText += `• <b>សល់មុខផ្ទះ:</b> ${front} | <b>សល់ក្រោយ:</b> ${back}\n`;
-
-    const bed = (data.bedrooms && data.bedrooms !== 'មិនកំណត់') ? data.bedrooms : 'N/A';
-    const bath = (data.bathrooms && data.bathrooms !== 'មិនកំណត់') ? data.bathrooms : 'N/A';
-    messageText += `• <b>បន្ទប់គេង</b> : ${bed} | <b>បន្ទប់ទឹក</b> : ${bath}\n`;
-
-    if (data.direction && data.direction !== 'មិនកំណត់') {
-      messageText += `• <b>ទិសបែរទៅ</b> : ${data.direction}\n`;
-    }
-
-    messageText += `• <b>លក្ខខណ្ឌ:</b>\n${termsString}\n`;
-    messageText += `<b>Property ID:</b> ${data.propertyId || ''}\n\n`;
-
-    messageText += `📝 <b>សម្គាល់បន្ថែម</b>\n`;
-    messageText += `${data.description || 'N/A'}\n`;
-    messageText += `-----------------------------------\n\n`;
-
-    messageText += `👤 <b>ព័ត៌មានម្ចាស់អចលនទ្រព្យ</b>\n`;
-    messageText += `• <b>ឈ្មោះ:</b> ${data.ownerName || 'N/A'}\n`;
-    messageText += `• <b>Tel 1:</b> ${data.tel1 || 'N/A'}\n`;
-    if (data.tel2) messageText += `• <b>Tel 2:</b> ${data.tel2}\n`;
-    if (data.telegram) messageText += `• <b>Telegram:</b> ${data.telegram}\n`;
-    if (data.mapLink) messageText += `• <b>Google Maps:</b> ${data.mapLink}\n`;
-
-    const now = new Date();
-    const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
-    messageText += `\n<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
-    messageText += `<b>Submitted Date:</b> ${formattedDate}`;
-
-    if (files.length === 1) {
-      const formData = new FormData();
-      formData.append('chat_id', CHAT_ID);
-      if (PROPERTY_TOPIC_ID) formData.append('message_thread_id', PROPERTY_TOPIC_ID);
-      formData.append('caption', messageText);
-      formData.append('parse_mode', 'HTML');
-      formData.append('photo', files[0].buffer, { filename: files[0].originalname });
-
-      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, formData, {
-        headers: formData.getHeaders()
-      });
-    } else if (files.length > 1) {
-      const formData = new FormData();
-      formData.append('chat_id', CHAT_ID);
-      if (PROPERTY_TOPIC_ID) formData.append('message_thread_id', PROPERTY_TOPIC_ID);
-
-      const mediaGroup = files.map((file, index) => {
-        const attachName = `photo_${index}`;
-        formData.append(attachName, file.buffer, { filename: file.originalname });
-        return {
-          type: 'photo',
-          media: `attach://${attachName}`,
-          caption: index === 0 ? messageText : '',
-          parse_mode: index === 0 ? 'HTML' : undefined
-        };
-      });
-
-      formData.append('media', JSON.stringify(mediaGroup));
-
-      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, formData, {
-        headers: formData.getHeaders()
-      });
-    } else {
-      const payload = {
-        chat_id: CHAT_ID,
-        text: messageText,
-        parse_mode: 'HTML'
-      };
-      if (PROPERTY_TOPIC_ID) payload.message_thread_id = Number(PROPERTY_TOPIC_ID);
-
-      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
-    }
-
-    if (data.userId) {
-      try {
-        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          chat_id: data.userId,
-          text: `✅ <b>ការបញ្ជូនបានជោគជ័យ / Submission Confirmed</b>\n\nសូមអរគុណ! ព័ត៌មានអចលនទ្រព្យលោកអ្នកត្រូវបានបញ្ចូលទៅក្នុងប្រព័ន្ធ Twenty5Realty រួចរាល់ហើយ។ ក្រុមការងារយើងនឹងពិនិត្យមើលក្នុងពេលឆាប់ៗនេះ។\n\nThank you! Your property listing has been successfully received by Twenty5Realty.`,
-          parse_mode: 'HTML'
-        });
-      } catch (dmErr) {
-        console.log('Could not send direct message to user:', dmErr.message);
-      }
-    }
-
-    return res.status(200).json({ success: true, message: 'Property submitted successfully!' });
-
-  } catch (error) {
-    console.error('Property Submission Error:', error.response?.data || error.message);
-    return res.status(500).json({ 
-      success: false, 
-      error: error.response?.data?.description || 'Failed to submit property listing.' 
-    });
+    await bot.telegram.sendMessage(telegramId, thankYouMessage);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error sending private thank-you message:', err);
+    res.json({ success: false, error: err.message });
   }
 });
 
-// Fallback 404 Handler for Unmatched API Requests
-app.use((req, res) => {
-  res.status(404).json({ success: false, error: 'API route not found' });
+bot.launch().then(() => {
+  console.log('Telegram Bot running...');
 });
 
-app.listen(port, () => {
-  console.log(`Twenty5Realty backend running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
