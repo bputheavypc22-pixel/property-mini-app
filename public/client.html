@@ -199,44 +199,6 @@
       line-height: 1.6;
       color: #0f172a;
     }
-
-    /* Side-by-Side Action Buttons Group */
-    .action-btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-      width: 100%;
-    }
-
-    .action-btn-group button {
-      flex: 1;
-      padding: 12px 10px;
-      font-size: 0.875rem;
-      font-weight: 700;
-      border-radius: 10px;
-      cursor: pointer;
-      border: none;
-      transition: background-color 0.2s;
-      text-transform: uppercase;
-    }
-
-    .btn-reload-sub {
-      background-color: #64748b;
-      color: #ffffff;
-    }
-
-    .btn-reload-sub:hover {
-      background-color: #475569;
-    }
-
-    .btn-close-app {
-      background-color: #cbd5e1;
-      color: #334155;
-    }
-
-    .btn-close-app:hover {
-      background-color: #94a3b8;
-    }
   </style>
 </head>
 <body>
@@ -255,20 +217,15 @@
     <p id="t_subTitle">Client Property Requirement Form</p>
   </div>
 
+  <!-- Success Summary Container (Hidden by default) -->
   <div id="summaryCard" class="hidden">
     <div style="color: #16a34a; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; text-align: center;">
       ✅ <span id="t_successTitle">Submitted Successfully!</span>
     </div>
     <div id="summaryContent"></div>
-
-    <div class="action-btn-group">
-      <button type="button" class="btn-reload-sub" onclick="window.location.reload()">
-        <span id="t_btnReload">New Submission</span>
-      </button>
-      <button type="button" class="btn-close-app" onclick="closeWebApp()">
-        <span id="t_btnClose">Close</span>
-      </button>
-    </div>
+    <button type="button" class="submit-btn" style="background-color: #64748b; margin-top: 16px;" onclick="window.location.reload()">
+      <span id="t_btnReload">New Submission</span>
+    </button>
   </div>
 
   <form id="inquiryForm">
@@ -470,7 +427,6 @@
       submitBtn: "SUBMIT INQUIRY",
       successTitle: "Submitted Successfully!",
       btnReload: "New Submission",
-      btnClose: "Close",
       placeholderClient: "e.g. Chan Sokha",
       placeholderLandSize: "e.g. 10m x 20m or 500 sqm",
       placeholderBuildingSize: "e.g. 8m x 15m or 300 sqm",
@@ -534,7 +490,6 @@
       submitBtn: "បញ្ជូនទិន្នន័យ",
       successTitle: "ផ្ញើបានជោគជ័យ!",
       btnReload: "បំពេញទម្រង់ថ្មី",
-      btnClose: "បិទ",
       placeholderClient: "ឧ. ចាន់ សុខា",
       placeholderLandSize: "ឧ. 10m x 20m ឬ 500 ម៉ែត្រការ៉េ",
       placeholderBuildingSize: "ឧ. 8m x 15m ឬ 300 ម៉ែត្រការ៉េ",
@@ -609,9 +564,6 @@
 
     document.getElementById('t_successTitle').innerText = t.successTitle;
     document.getElementById('t_btnReload').innerText = t.btnReload;
-    if (document.getElementById('t_btnClose')) {
-      document.getElementById('t_btnClose').innerText = t.btnClose;
-    }
 
     // Placeholders
     document.getElementById('clientName').placeholder = t.placeholderClient;
@@ -625,4 +577,252 @@
 
     // Dropdown Labels
     document.getElementById('opt_rent').innerText = t.optRent;
-    document.getElementById('opt_rent').
+    document.getElementById('opt_rent').value = t.optRent;
+    document.getElementById('opt_buy').innerText = t.optBuy;
+    document.getElementById('opt_buy').value = t.optBuy;
+
+    document.getElementById('opt_house').innerText = t.optHouse;
+    document.getElementById('opt_house').value = t.optHouse;
+    document.getElementById('opt_villa').innerText = t.optVilla;
+    document.getElementById('opt_villa').value = t.optVilla;
+    document.getElementById('opt_condo').innerText = t.optCondo;
+    document.getElementById('opt_condo').value = t.optCondo;
+    document.getElementById('opt_apartment').innerText = t.optApartment;
+    document.getElementById('opt_apartment').value = t.optApartment;
+    document.getElementById('opt_warehouse').innerText = t.optWarehouse;
+    document.getElementById('opt_warehouse').value = t.optWarehouse;
+    document.getElementById('opt_land').innerText = t.optLand;
+    document.getElementById('opt_land').value = t.optLand;
+
+    document.getElementById('opt_term_6m').innerText = t.optTerm6m;
+    document.getElementById('opt_term_6m').value = t.optTerm6m;
+    document.getElementById('opt_term_1y').innerText = t.optTerm1y;
+    document.getElementById('opt_term_1y').value = t.optTerm1y;
+    document.getElementById('opt_term_2y').innerText = t.optTerm2y;
+    document.getElementById('opt_term_2y').value = t.optTerm2y;
+
+    document.getElementById('opt_bed_any').innerText = t.optAny;
+    document.getElementById('opt_bed_any').value = t.optAny;
+    document.getElementById('opt_bath_any').innerText = t.optAny;
+    document.getElementById('opt_bath_any').value = t.optAny;
+
+    // Direction Dropdowns
+    document.getElementById('opt_dir_none').innerText = t.optNotRequired;
+    document.getElementById('opt_dir_none').value = t.optNotRequired;
+    document.getElementById('opt_dir_e').innerText = t.optDirE;
+    document.getElementById('opt_dir_e').value = t.optDirE;
+    document.getElementById('opt_dir_w').innerText = t.optDirW;
+    document.getElementById('opt_dir_w').value = t.optDirW;
+    document.getElementById('opt_dir_s').innerText = t.optDirS;
+    document.getElementById('opt_dir_s').value = t.optDirS;
+    document.getElementById('opt_dir_n').innerText = t.optDirN;
+    document.getElementById('opt_dir_n').value = t.optDirN;
+    document.getElementById('opt_dir_ne').innerText = t.optDirNE;
+    document.getElementById('opt_dir_ne').value = t.optDirNE;
+    document.getElementById('opt_dir_se').innerText = t.optDirSE;
+    document.getElementById('opt_dir_se').value = t.optDirSE;
+    document.getElementById('opt_dir_nw').innerText = t.optDirNW;
+    document.getElementById('opt_dir_nw').value = t.optDirNW;
+    document.getElementById('opt_dir_sw').innerText = t.optDirSW;
+    document.getElementById('opt_dir_sw').value = t.optDirSW;
+
+    // Parking Dropdowns
+    document.getElementById('opt_park_none').innerText = t.optNotRequired;
+    document.getElementById('opt_park_none').value = t.optNotRequired;
+    document.getElementById('opt_park_car').innerText = t.optParkCar;
+    document.getElementById('opt_park_car').value = t.optParkCar;
+    document.getElementById('opt_park_motor').innerText = t.optParkMotor;
+    document.getElementById('opt_park_motor').value = t.optParkMotor;
+    document.getElementById('opt_park_both').innerText = t.optParkBoth;
+    document.getElementById('opt_park_both').value = t.optParkBoth;
+
+    document.getElementById('opt_purpose_living').innerText = t.optPurposeLiving;
+    document.getElementById('opt_purpose_living').value = t.optPurposeLiving;
+    document.getElementById('opt_purpose_business').innerText = t.optPurposeBusiness;
+    document.getElementById('opt_purpose_business').value = t.optPurposeBusiness;
+  }
+
+  // Context user extraction
+  window.addEventListener('DOMContentLoaded', () => {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const u = tg.initDataUnsafe.user;
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+      const username = u.username ? `(@${u.username})` : '';
+      document.getElementById('submittedBy').value = `${name} ${username}`.trim();
+    } else {
+      document.getElementById('submittedBy').value = 'Agent/Client (Web Direct)';
+    }
+  });
+
+  // Toggle field visibility when Buy / Rent changes
+  function toggleTypeFields() {
+    const listingType = document.getElementById('listingType').value;
+    const termGroup = document.getElementById('preferredTermGroup');
+    if (listingType === 'Buy' || listingType === 'ទិញ') {
+      termGroup.classList.add('hidden');
+    } else {
+      termGroup.classList.remove('hidden');
+    }
+  }
+
+  // Toggle Land Size, Building Size, and Bedrooms/Bathrooms based on Property Type
+  function togglePropertyTypeFields() {
+    const pType = document.getElementById('propertyType').value;
+    
+    const sizeFieldsGroup = document.getElementById('sizeFieldsGroup');
+    const landSizeGroup = document.getElementById('landSizeGroup');
+    const buildingSizeGroup = document.getElementById('buildingSizeGroup');
+    const bedBathGroup = document.getElementById('bedBathGroup');
+
+    const isLand = pType === 'Land' || pType === 'ដី';
+    const isWarehouse = pType === 'Warehouse' || pType === 'ឃ្លាំង';
+
+    if (isLand) {
+      sizeFieldsGroup.classList.remove('hidden');
+      landSizeGroup.classList.remove('hidden');
+      buildingSizeGroup.classList.add('hidden');
+      bedBathGroup.classList.add('hidden');
+      document.getElementById('buildingSize').value = '';
+    } else if (isWarehouse) {
+      sizeFieldsGroup.classList.remove('hidden');
+      landSizeGroup.classList.remove('hidden');
+      buildingSizeGroup.classList.remove('hidden');
+      bedBathGroup.classList.add('hidden');
+    } else {
+      sizeFieldsGroup.classList.add('hidden');
+      landSizeGroup.classList.add('hidden');
+      buildingSizeGroup.classList.add('hidden');
+      bedBathGroup.classList.remove('hidden');
+      document.getElementById('landSize').value = '';
+      document.getElementById('buildingSize').value = '';
+    }
+  }
+
+  // Toggle Purpose / Business Type conditional field
+  function togglePurposeFields() {
+    const purpose = document.getElementById('purpose').value;
+    const busGroup = document.getElementById('businessTypeGroup');
+    const busInput = document.getElementById('businessType');
+
+    if (purpose === 'For Business' || purpose === 'សម្រាប់ធ្វើអាជីវកម្ម') {
+      busGroup.classList.remove('hidden');
+      busInput.required = true;
+    } else {
+      busGroup.classList.add('hidden');
+      busInput.required = false;
+      busInput.value = '';
+    }
+  }
+
+  // Form Submit Handler
+  document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = currentLang === 'kh' ? 'កំពុងបញ្ជូន...' : 'SUBMITTING...';
+
+    // Build combined Target Area string for backend compatibility
+    const area1 = document.getElementById('targetArea1')?.value.trim() || '';
+    const area2 = document.getElementById('targetArea2')?.value.trim() || '';
+    const area3 = document.getElementById('targetArea3')?.value.trim() || '';
+    const combinedAreas = [area1, area2, area3].filter(Boolean).join(', ');
+
+    const purposeVal = document.getElementById('purpose')?.value || '';
+    const busTypeVal = document.getElementById('businessType')?.value.trim() || '';
+    const combinedPurpose = (purposeVal === 'For Business' || purposeVal === 'សម្រាប់ធ្វើអាជីវកម្ម') && busTypeVal 
+      ? `${purposeVal} (${busTypeVal})` 
+      : purposeVal;
+
+    const payload = {
+      clientName: document.getElementById('clientName')?.value || '',
+      tel1: document.getElementById('tel1')?.value || '',
+      tel2: document.getElementById('tel2')?.value || '',
+      telegram: document.getElementById('telegram')?.value || '',
+      listingType: document.getElementById('listingType')?.value || '',
+      propertyType: document.getElementById('propertyType')?.value || '',
+      landSize: document.getElementById('landSize')?.value || '',
+      buildingSize: document.getElementById('buildingSize')?.value || '',
+      targetLocation: combinedAreas,
+      budget: document.getElementById('budget')?.value || '',
+      preferredTerm: document.getElementById('preferredTerm')?.value || '',
+      bedrooms: document.getElementById('bedrooms')?.value || '',
+      bathrooms: document.getElementById('bathrooms')?.value || '',
+      direction: document.getElementById('direction')?.value || '',
+      parkingNeeded: document.getElementById('parkingNeeded')?.value || '',
+      purpose: combinedPurpose,
+      description: document.getElementById('description')?.value || '',
+      submittedBy: document.getElementById('submittedBy')?.value || ''
+    };
+
+    try {
+      const response = await fetch('/api/client-inquiry', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response.');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Hide Form
+        document.getElementById('inquiryForm').classList.add('hidden');
+
+        // Build Summary Text
+        const isKh = currentLang === 'kh';
+        const bed = payload.bedrooms && payload.bedrooms !== 'Any' && payload.bedrooms !== 'មិនកំណត់' ? payload.bedrooms : (isKh ? 'មិនកំណត់' : 'N/A');
+        const bath = payload.bathrooms && payload.bathrooms !== 'Any' && payload.bathrooms !== 'មិនកំណត់' ? payload.bathrooms : (isKh ? 'មិនកំណត់' : 'N/A');
+        const dir = payload.direction && payload.direction !== 'Not Required' && payload.direction !== 'មិនកំណត់' ? payload.direction : (isKh ? 'មិនកំណត់' : 'N/A');
+        const phoneText = payload.tel2 ? `${payload.tel1} / ${payload.tel2}` : payload.tel1;
+
+        let summaryText = isKh ? `👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)\n\n` : `👤 CLIENT INQUIRY SUMMARY\n\n`;
+        summaryText += isKh ? `🔍 ភ្ញៀវកំពុងស្វែងរក៖\n` : `🔍 Target Requirement:\n`;
+        summaryText += `🏠 ${payload.listingType} ${payload.propertyType}\n`;
+        summaryText += isKh ? `📍 តំបន់: ${payload.targetLocation || 'មិនមាន'}\n` : `📍 Location: ${payload.targetLocation || 'N/A'}\n`;
+        summaryText += isKh ? `• តម្លៃចន្លោះ : $${payload.budget ? Number(payload.budget).toLocaleString() : 'មិនមាន'}\n` : `• Budget : $${payload.budget ? Number(payload.budget).toLocaleString() : 'N/A'}\n`;
+
+        if (payload.listingType === 'Rent' || payload.listingType === 'ជួល') {
+          if (payload.preferredTerm) summaryText += isKh ? `• រយៈពេលកុងត្រា: ${payload.preferredTerm}\n` : `• Term : ${payload.preferredTerm}\n`;
+        }
+
+        if (payload.landSize) summaryText += isKh ? `• ទំហំដី : ${payload.landSize}\n` : `• Land Size : ${payload.landSize}\n`;
+        if (payload.buildingSize) summaryText += isKh ? `• ទំហំអាគារ : ${payload.buildingSize}\n` : `• Building Size : ${payload.buildingSize}\n`;
+        summaryText += isKh ? `• បន្ទប់គេង : ${bed}  |  បន្ទប់ទឹក: ${bath}\n` : `• Bed : ${bed}  |  Bath: ${bath}\n`;
+        summaryText += isKh ? `• ទិសបែទៅ : ${dir}\n` : `• Direction : ${dir}\n`;
+        summaryText += isKh ? `• ចំណត : ${payload.parkingNeeded || 'មិនមាន'}\n` : `• Parking : ${payload.parkingNeeded || 'N/A'}\n`;
+        summaryText += isKh ? `• គោលបំណង : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
+        summaryText += isKh ? `📝 សម្គាល់បន្ថែម\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
+        summaryText += `———————————\n`;
+        summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន\n` : `👤 Client Info:\n`;
+        summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name : ${payload.clientName}\n`;
+        summaryText += `• Tel: ${phoneText}\n`;
+        summaryText += `• Telegram: ${payload.telegram || (isKh ? 'មិនមាន' : 'N/A')}\n\n`;
+        if (payload.submittedBy) summaryText += `Submitted by: ${payload.submittedBy}\n`;
+
+        // Render Summary Card
+        document.getElementById('summaryContent').innerText = summaryText;
+        document.getElementById('summaryCard').classList.remove('hidden');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert('Error: ' + (result.error || 'Please try again.'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = translations[currentLang].submitBtn;
+    }
+  });
+</script>
+
+</body>
+</html>
