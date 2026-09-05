@@ -938,7 +938,10 @@
         const data = await response.json();
 
         if (response.ok && data.success) {
-          if (tg?.MainButton) tg.MainButton.hideProgress();
+          if (tg?.MainButton) {
+            tg.MainButton.hideProgress();
+            tg.MainButton.hide();
+          }
 
           // Render on-screen confirmation card
           document.querySelector('.container').innerHTML = `
