@@ -236,6 +236,19 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
     }
 
+    // Send direct private confirmation message to the submitter if Telegram User ID exists
+    if (data.userId) {
+      try {
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          chat_id: data.userId,
+          text: `✅ <b>ការបញ្ជូនបានជោគជ័យ / Submission Confirmed</b>\n\nសូមអរគុណ! ព័ត៌មានអចលនទ្រព្យលោកអ្នកត្រូវបានបញ្ចូលទៅក្នុងប្រព័ន្ធ Twenty5Realty រួចរាល់ហើយ។ ក្រុមការងារយើងនឹងពិនិត្យមើលក្នុងពេលឆាប់ៗនេះ។\n\nThank you! Your property listing has been successfully received by Twenty5Realty.`,
+          parse_mode: 'HTML'
+        });
+      } catch (dmErr) {
+        console.log('Could not send direct message to user:', dmErr.message);
+      }
+    }
+
     return res.status(200).json({ success: true, message: 'Property submitted successfully!' });
 
   } catch (error) {
