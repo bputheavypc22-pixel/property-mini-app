@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Client Property Requirement Form | Twenty5Realty</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -17,12 +17,12 @@
       color: #1f2937;
     }
     .form-card {
-      max-width: 500px;
+      max-width: 480px;
       margin: 0 auto;
       background: #ffffff;
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
     .header {
       text-align: center;
@@ -34,8 +34,8 @@
       top: 0;
       right: 0;
       display: flex;
-      gap: 4px;
-      background: #e5e7eb;
+      gap: 2px;
+      background: #e2e8f0;
       padding: 2px;
       border-radius: 20px;
     }
@@ -43,26 +43,30 @@
       border: none;
       background: transparent;
       padding: 4px 8px;
-      font-size: 11px;
-      font-weight: bold;
+      font-size: 10px;
+      font-weight: 700;
       border-radius: 16px;
       cursor: pointer;
-      color: #4b5563;
+      color: #475569;
     }
     .lang-btn.active {
       background: #0284c7;
       color: #ffffff;
     }
     .logo {
-      max-width: 160px;
+      max-width: 140px;
       height: auto;
-      margin-top: 24px;
+      margin-top: 20px;
     }
     .title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
       margin: 8px 0 2px 0;
       color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
     .subtitle {
       font-size: 12px;
@@ -74,19 +78,20 @@
     }
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
       margin-bottom: 4px;
       color: #334155;
     }
     input, select, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 10px 12px;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       background: #f8fafc;
+      color: #0f172a;
     }
     input:focus, select:focus, textarea:focus {
       border-color: #0284c7;
@@ -106,43 +111,42 @@
       color: #ffffff;
       border: none;
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       margin-top: 10px;
-      transition: background 0.2s;
-    }
-    .btn-submit-main:hover {
-      background-color: #0369a1;
     }
 
-    /* Success Card & Summary Styling */
+    /* Summary Confirmation View */
     #successCard {
       display: none;
       background: #ffffff;
       border-radius: 12px;
-      padding: 16px;
-      border: 1px solid #e2e8f0;
     }
-    .success-header {
+    .success-badge {
       text-align: center;
       color: #16a34a;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
     .summary-box {
       background: #f8fafc;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 13px;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 12px;
       line-height: 1.6;
       white-space: pre-wrap;
       word-break: break-word;
-      border: 1px solid #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
     }
 
-    /* Action Buttons Side-by-Side */
+    /* Action Buttons Group */
     .action-btn-group {
       display: flex;
       gap: 10px;
@@ -153,68 +157,60 @@
       flex: 1;
       padding: 12px 10px;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 12px;
       border-radius: 8px;
       cursor: pointer;
       border: none;
-      transition: all 0.2s ease-in-out;
       text-transform: uppercase;
+      transition: background 0.2s;
     }
-    .btn-submit {
+    .btn-new-sub {
       background-color: #5a738e;
       color: #ffffff;
     }
-    .btn-submit:hover {
-      background-color: #4a6077;
-    }
-    .btn-secondary {
-      background-color: #e2e8f0;
-      color: #334155;
-      border: 1px solid #cbd5e1 !important;
-    }
-    .btn-secondary:hover {
+    .btn-close {
       background-color: #cbd5e1;
+      color: #334155;
     }
   </style>
 </head>
 <body>
 
 <div class="form-card">
-  <!-- Language Switcher & Header -->
-  <div class="header">
+  <div class="header" id="headerBlock">
     <div class="lang-switcher">
-      <button type="button" class="lang-btn" id="langKh" onclick="setLanguage('kh')">KH ខ្មែរ</button>
-      <button type="button" class="lang-btn active" id="langEn" onclick="setLanguage('en')">GB EN</button>
+      <button type="button" class="lang-btn active" id="langKh" onclick="setLanguage('kh')">KH ខ្មែរ</button>
+      <button type="button" class="lang-btn" id="langEn" onclick="setLanguage('en')">GB EN</button>
     </div>
     <img src="https://twenty5realty.com/logo.png" alt="25Realty Logo" class="logo" onerror="this.style.display='none'">
     <div class="title">🔍 Client Inquiry</div>
     <div class="subtitle">Client Property Requirement Form</div>
   </div>
 
-  <!-- Inquiry Form -->
   <form id="clientForm" onsubmit="submitForm(event)">
-    <div class="form-group">
-      <label>Property Type / ប្រភេទអចលនទ្រព្យ</label>
-      <select id="propertyType" required>
-        <option value="ផ្ទះ">ផ្ទះ / House</option>
-        <option value="ដី">ដី / Land</option>
-        <option value="ខុនដូ">ខុនដូ / Condo</option>
-        <option value="អាគារ">អាគារ / Building</option>
-        <option value="ឃ្លាំង">ឃ្លាំង / Warehouse</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Target / គោលបំណង</label>
-      <select id="listingType" required>
-        <option value="ជួល">ជួល / Rent</option>
-        <option value="ទិញ">ទិញ / Buy</option>
-      </select>
+    <div class="row">
+      <div class="col form-group">
+        <label>Property Type / ប្រភេទ</label>
+        <select id="propertyType" required>
+          <option value="ផ្ទះ">ផ្ទះ / House</option>
+          <option value="ដី">ដី / Land</option>
+          <option value="ខុនដូ">ខុនដូ / Condo</option>
+          <option value="អាគារ">អាគារ / Building</option>
+          <option value="ឃ្លាំង">ឃ្លាំង / Warehouse</option>
+        </select>
+      </div>
+      <div class="col form-group">
+        <label>Target / គោលបំណង</label>
+        <select id="listingType" required>
+          <option value="ជួល">ជួល / Rent</option>
+          <option value="ទិញ">ទិញ / Buy</option>
+        </select>
+      </div>
     </div>
 
     <div class="form-group">
       <label>Target Location / តំបន់គោលដៅ</label>
-      <input type="text" id="targetLocation" placeholder="e.g. BKK1, Tuol Kork, Sensok" required>
+      <input type="text" id="targetLocation" placeholder="e.g. tk, bkk, sensok" required>
     </div>
 
     <div class="row">
@@ -223,7 +219,7 @@
         <input type="number" id="budget" placeholder="500" required>
       </div>
       <div class="col form-group">
-        <label>Contract / កុងត្រា</label>
+        <label>Contract / អាចកុងត្រា</label>
         <input type="text" id="preferredTerm" placeholder="1 Year">
       </div>
     </div>
@@ -231,7 +227,7 @@
     <div class="row">
       <div class="col form-group">
         <label>Bedrooms / បន្ទប់គេង</label>
-        <input type="text" id="bedrooms" placeholder="2">
+        <input type="text" id="bedrooms" placeholder="1">
       </div>
       <div class="col form-group">
         <label>Bathrooms / បន្ទប់ទឹក</label>
@@ -241,26 +237,26 @@
 
     <div class="row">
       <div class="col form-group">
-        <label>Direction / ទិសបែរទៅ</label>
-        <input type="text" id="direction" placeholder="West / ខាងលិច">
+        <label>Direction / ទិសបែរមុខទៅ</label>
+        <input type="text" id="direction" placeholder="West / កើតឈៀងជើង">
       </div>
       <div class="col form-group">
-        <label>Parking / ចំណត</label>
+        <label>Parking / ត្រូវការចំណត</label>
         <input type="text" id="parking" placeholder="Car / ឡាន">
       </div>
     </div>
 
     <div class="form-group">
-      <label>Purpose / គោលបំណងប្រើប្រាស់</label>
+      <label>Purpose / គោលបំណង</label>
       <input type="text" id="purpose" placeholder="For Business (លក់វត្ថុអានុស្សាវរីយ៍)">
     </div>
 
     <div class="form-group">
       <label>Special Notes / សម្គាល់បន្ថែម</label>
-      <textarea id="description" rows="3" placeholder="Additional requirements..."></textarea>
+      <textarea id="description" rows="3" placeholder="សម្គាល់បន្ថែម..."></textarea>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 16px 0;">
+    <hr style="border:0; border-top: 1px solid #e2e8f0; margin: 14px 0;">
 
     <div class="form-group">
       <label>Client Name / ឈ្មោះអតិថិជន</label>
@@ -269,11 +265,11 @@
 
     <div class="row">
       <div class="col form-group">
-        <label>Tel / លេខទូរស័ព្ទ</label>
+        <label>Tel 1 / លេខទូរស័ព្ទ</label>
         <input type="text" id="tel1" placeholder="09987654" required>
       </div>
       <div class="col form-group">
-        <label>Tel 2 / លេខទី២</label>
+        <label>Tel 2 / លេខបន្ថែម</label>
         <input type="text" id="tel2" placeholder="0123456789">
       </div>
     </div>
@@ -286,22 +282,20 @@
     <button type="submit" class="btn-submit-main" id="btnSubmit">SUBMIT INQUIRY</button>
   </form>
 
-  <!-- Success Confirmation Screen -->
   <div id="successCard">
-    <div class="success-header">✅ Submitted Successfully!</div>
+    <div class="success-badge">✅ Submitted Successfully!</div>
     <div class="summary-box" id="summaryContainer"></div>
 
     <div class="action-btn-group">
-      <button type="button" class="btn-submit" onclick="resetForm()">NEW SUBMISSION</button>
-      <button type="button" class="btn-secondary" onclick="closeWebApp()">CLOSE</button>
+      <button type="button" class="btn-new-sub" onclick="resetForm()">NEW SUBMISSION</button>
+      <button type="button" class="btn-close" onclick="closeWebApp()">CLOSE</button>
     </div>
   </div>
 </div>
 
 <script>
-  // Initialize Telegram WebApp Data
   let tgUser = null;
-  let tgUserName = "Web Form";
+  let tgUserName = "Sir Jerry (@Putheavy_25Realty)";
 
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.ready();
@@ -316,13 +310,11 @@
     }
   }
 
-  // Language Switcher Toggle
   function setLanguage(lang) {
     document.getElementById('langKh').classList.toggle('active', lang === 'kh');
     document.getElementById('langEn').classList.toggle('active', lang === 'en');
   }
 
-  // Handle Form Submission
   async function submitForm(e) {
     e.preventDefault();
     const btnSubmit = document.getElementById('btnSubmit');
@@ -364,27 +356,27 @@
         alert("Error: " + (res.error || "Failed to submit inquiry"));
       }
     } catch (err) {
-      alert("Network Error: Could not reach the server.");
+      alert("Network Error: Could not reach server.");
     } finally {
       btnSubmit.disabled = false;
       btnSubmit.innerText = "SUBMIT INQUIRY";
     }
   }
 
-  // Render Confirmation Summary Card
   function showSuccessSummary(data) {
     document.getElementById('clientForm').style.display = 'none';
+    document.getElementById('headerBlock').style.display = 'none';
     
     const phoneDisplay = data.tel2 ? `${data.tel1} / ${data.tel2}` : data.tel1;
     const now = new Date();
-    const formattedDate = now.toLocaleString('en-GB');
+    const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
 
     const summaryHTML = 
-`👤 การចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)
+`👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)
 
 🔍 ភ្ញៀវកំពុងស្វែងរក
 🏠 ${data.propertyType} ${data.listingType}
-📍 តំបន់គោលដៅ : ${data.targetLocation}
+📍 តំបន់គោលដៅ: ${data.targetLocation}
 • តម្លៃចន្លោះ : $${data.budget}
 • អាចកុងត្រា : ${data.preferredTerm || 'N/A'}
 • ចំនួនបន្ទប់ : 🛏គេង: ${data.bedrooms || 'N/A'} | 🚿 ទឹក: ${data.bathrooms || 'N/A'}
@@ -409,7 +401,6 @@ Submitted Date: ${formattedDate}`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Close Telegram WebApp or Browser Window
   function closeWebApp() {
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.close();
@@ -418,10 +409,10 @@ Submitted Date: ${formattedDate}`;
     }
   }
 
-  // Reset Form for New Submission
   function resetForm() {
     document.getElementById('clientForm').reset();
     document.getElementById('successCard').style.display = 'none';
+    document.getElementById('headerBlock').style.display = 'block';
     document.getElementById('clientForm').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
