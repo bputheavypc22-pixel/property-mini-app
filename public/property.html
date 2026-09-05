@@ -884,38 +884,49 @@
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
+      // Capture values for summary output
+      const ownerNameVal = document.getElementById('ownerName').value;
+      const tel1Val = document.getElementById('tel1').value;
+      const tel2Val = document.getElementById('tel2').value;
+      const listingTypeVal = document.getElementById('listingType').value;
+      const propertyTypeVal = document.getElementById('propertyType').value;
+      const priceVal = document.getElementById('price').value;
+      const locationVal = document.getElementById('location').value;
+      const landSizeVal = document.getElementById('landSize').value;
+      const houseSizeVal = document.getElementById('houseSize').value;
+      const bedroomsVal = document.getElementById('bedrooms').value;
+      const bathroomsVal = document.getElementById('bathrooms').value;
+
       const formData = new FormData();
 
-      // Pass Telegram User ID for direct confirmation messaging
       if (user?.id) {
         formData.append('userId', user.id);
       }
 
-      formData.append('ownerName', document.getElementById('ownerName').value);
-      formData.append('tel1', document.getElementById('tel1').value);
-      formData.append('tel2', document.getElementById('tel2').value);
+      formData.append('ownerName', ownerNameVal);
+      formData.append('tel1', tel1Val);
+      formData.append('tel2', tel2Val);
       formData.append('telegram', document.getElementById('telegram').value);
-      formData.append('listingType', document.getElementById('listingType').value);
-      formData.append('propertyType', document.getElementById('propertyType').value);
-      formData.append('price', document.getElementById('price').value);
-      formData.append('location', document.getElementById('location').value);
+      formData.append('listingType', listingTypeVal);
+      formData.append('propertyType', propertyTypeVal);
+      formData.append('price', priceVal);
+      formData.append('location', locationVal);
       formData.append('mapLink', document.getElementById('mapLink').value);
-      formData.append('landSize', document.getElementById('landSize').value);
-      formData.append('houseSize', document.getElementById('houseSize').value);
+      formData.append('landSize', landSizeVal);
+      formData.append('houseSize', houseSizeVal);
       formData.append('frontSpace', document.getElementById('frontSpace').value);
       formData.append('backSpace', document.getElementById('backSpace').value);
-      formData.append('bedrooms', document.getElementById('bedrooms').value);
-      formData.append('bathrooms', document.getElementById('bathrooms').value);
+      formData.append('bedrooms', bedroomsVal);
+      formData.append('bathrooms', bathroomsVal);
       formData.append('direction', document.getElementById('direction').value);
       
-      const listingType = document.getElementById('listingType').value;
-      if (listingType === 'ជួល' || listingType === 'For Rent') {
+      if (listingTypeVal === 'ជួល' || listingTypeVal === 'For Rent') {
         const deposit = document.getElementById('deposit').value;
         formData.append('deposit', deposit);
         formData.append('depositOther', document.getElementById('depositOther').value);
         formData.append('rentFee', document.getElementById('rentFee').value);
         formData.append('contract', document.getElementById('contract').value);
-      } else if (listingType === 'លក់' || listingType === 'For Sale') {
+      } else if (listingTypeVal === 'លក់' || listingTypeVal === 'For Sale') {
         const cert = document.getElementById('certificate').value;
         formData.append('certificate', cert);
         formData.append('certOther', document.getElementById('certOther').value);
@@ -924,7 +935,6 @@
       formData.append('description', document.getElementById('description').value);
       formData.append('submittedBy', submittedBy);
 
-      // Append image files
       selectedFiles.forEach((file) => {
         formData.append('photos', file);
       });
@@ -943,18 +953,60 @@
             tg.MainButton.hide();
           }
 
-          // Render on-screen confirmation card
+          // Render summary card with congratulations
           document.querySelector('.container').innerHTML = `
-            <div style="text-align: center; padding: 40px 15px;">
-              <div style="font-size: 60px; margin-bottom: 16px;">🎉</div>
-              <h2 style="color: #0b2545; font-size: 20px; margin-bottom: 8px;">
+            <div style="text-align: center; padding: 20px 10px;">
+              <div style="font-size: 50px; margin-bottom: 8px;">🎉</div>
+              <h2 style="color: #0b2545; font-size: 18px; margin-bottom: 4px;">
                 ${currentLang === 'km' ? 'បានបញ្ជូនជោគជ័យ!' : 'Submission Successful!'}
               </h2>
-              <p style="color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 24px;">
+              <p style="color: #64748b; font-size: 12px; margin-bottom: 16px;">
                 ${currentLang === 'km' 
-                  ? 'ព័ត៌មានអចលនទ្រព្យរបស់អ្នកត្រូវបានបញ្ជូនទៅកាន់ក្រុមការងារ Twenty5Realty រួចរាល់ហើយ។' 
-                  : 'Your property details have been submitted to the Twenty5Realty team.'}
+                  ? 'អរគុណ! ព័ត៌មានអចលនទ្រព្យត្រូវបានបញ្ជូនទៅ Twenty5Realty រួចរាល់ហើយ។' 
+                  : 'Thank you! Your property listing summary:'}
               </p>
+
+              <!-- Submission Summary Card -->
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: left; margin-bottom: 20px; font-size: 13px;">
+                <div style="font-weight: bold; color: #0284c7; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                  📋 ${currentLang === 'km' ? 'សង្ខេបព័ត៌មានអចលនទ្រព្យ' : 'Property Summary'}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'ឈ្មោះម្ចាស់:' : 'Owner Name:'}</span>
+                  <span style="font-weight: 600; color: #0f172a;">${ownerNameVal}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'លេខទូរស័ព្ទ:' : 'Phone:'}</span>
+                  <span style="font-weight: 600; color: #0f172a;">${tel1Val}${tel2Val ? ' / ' + tel2Val : ''}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'ប្រភេទ / គោលបំណង:' : 'Type / Purpose:'}</span>
+                  <span style="font-weight: 600; color: #0f172a;">${propertyTypeVal} (${listingTypeVal})</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'តម្លៃ:' : 'Price:'}</span>
+                  <span style="font-weight: 700; color: #16a34a;">$${Number(priceVal).toLocaleString()}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'ទីតាំង:' : 'Location:'}</span>
+                  <span style="font-weight: 600; color: #0f172a; text-align: right; max-width: 60%;">${locationVal}</span>
+                </div>
+                ${landSizeVal ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'ទំហំដី / ផ្ទះ:' : 'Land / House Size:'}</span>
+                  <span style="font-weight: 600; color: #0f172a;">${landSizeVal} ${houseSizeVal ? '| ' + houseSizeVal : ''}</span>
+                </div>` : ''}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'បន្ទប់:' : 'Rooms:'}</span>
+                  <span style="font-weight: 600; color: #0f172a;">🛏️ ${bedroomsVal} | 🚿 ${bathroomsVal}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: #64748b;">${currentLang === 'km' ? 'រូបភាព:' : 'Photos:'}</span>
+                  <span style="font-weight: 600; color: #0f172a;">🖼️ ${selectedFiles.length} ${currentLang === 'km' ? 'សន្លឹក' : 'photos'}</span>
+                </div>
+              </div>
+
               <button onclick="if(tg && tg.close){ tg.close(); } else { location.reload(); }" 
                       style="width: 100%; padding: 12px; background: #0284c7; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;">
                 ${currentLang === 'km' ? 'រួចរាល់ (Close)' : 'Done'}
