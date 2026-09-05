@@ -10,14 +10,27 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 // Telegram Bot Configuration
-const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
-const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID_OR_CHANNEL';
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
 const WEBAPP_URL = 'https://property-mini-app.onrender.com';
 
-// Initialize Telegram Bot for /start command
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+// Initialize Telegram Bot & Clear Webhook before Polling
+const bot = new TelegramBot(BOT_TOKEN, { polling: false });
 
-// Listen for /start command
+if (BOT_TOKEN) {
+  bot.deleteWebHook()
+    .then(() => {
+      console.log('Telegram Webhook cleared. Starting polling...');
+      return bot.startPolling();
+    })
+    .catch((err) => {
+      console.error('Failed to start Telegram polling:', err.message);
+    });
+} else {
+  console.warn('BOT_TOKEN environment variable is missing!');
+}
+
+// Handle /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId, 'Welcome to Twenty5 Realty! Click the button below to submit a property listing:', {
@@ -29,7 +42,7 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
-// 1. Configure Body Parsers
+// 1. Configure Body Parsers for large payloads
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
