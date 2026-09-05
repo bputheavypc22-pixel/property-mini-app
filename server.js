@@ -3,172 +3,148 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
-const fs = require('fs');
-const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const port = process.env.PORT || 10000;
 
-// Environment Variables
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
-const WEBAPP_URL = 'https://property-mini-app.onrender.com';
 
-// Express Middleware
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// Serve Static Files
-app.use(express.static(path.join(__dirname)));
-if (fs.existsSync(path.join(__dirname, 'public'))) {
-  app.use(express.static(path.join(__dirname, 'public')));
-}
-
-// Multer Storage Configuration
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024, files: 10 }
+// Use memory storage for uploaded photos
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
 });
 
-// Initialize Telegram Bot & Polling
-let bot;
-if (BOT_TOKEN) {
-  bot = new TelegramBot(BOT_TOKEN, { polling: false });
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-  // Reset Webhook first to prevent 404/409 conflicts, then start Polling
-  bot.deleteWebHook()
-    .then(() => {
-      console.log('✅ Webhook cleared successfully. Starting polling...');
-      return bot.startPolling();
-    })
-    .then(() => {
-      console.log('🤖 Telegram Bot is actively listening for commands...');
-    })
-    .catch((err) => {
-      console.error('❌ Telegram Bot Setup Error:', err.message);
-    });
+// Serve property.html at root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'property.html'));
+});
 
-  // Handle /start Command
-  bot.onText(/\/start/, async (msg) => {
-    const chatId = msg.chat.id;
-    console.log(`📩 Received /start command from Chat ID: ${chatId}`);
-
-    try {
-      await bot.sendMessage(chatId, 'Welcome to Twenty5 Realty! Click below to submit a property listing:', {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: '🏠 Open Listing Form', web_app: { url: WEBAPP_URL } }]
-          ]
-        }
-      });
-      console.log('✅ Sent start menu response to Telegram.');
-    } catch (sendErr) {
-      console.error('❌ Failed to send /start response:', sendErr.message);
-    }
-  });
-
-  // Handle Polling Errors Gracefully
-  bot.on('polling_error', (error) => {
-    console.error('⚠️ Polling error:', error.message);
-  });
-} else {
-  console.error('❌ CRITICAL: BOT_TOKEN is missing from Environment Variables!');
-}
-
-// Health Check Endpoint
-app.get('/health', (req, res) => res.status(200).send('Server active'));
-
-// Property Submission Endpoint
+// Endpoint to handle form submissions
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
+    if (!BOT_TOKEN || !CHAT_ID) {
+      return res.status(500).json({ 
+        success: false, 
+        error: 'BOT_TOKEN or CHAT_ID environment variables are missing on the server.' 
+      });
+    }
+
     const data = req.body;
     const files = req.files || [];
 
-    let caption = `<b>🏠 NEW PROPERTY LISTING</b>\n\n`;
-    caption += `<b>👤 Owner Details</b>\n`;
-    caption += `• <b>Name:</b> ${data.ownerName || 'N/A'}\n`;
-    caption += `• <b>Tel 1:</b> ${data.tel1 || 'N/A'}\n`;
-    if (data.tel2) caption += `• <b>Tel 2:</b> ${data.tel2}\n`;
-    if (data.telegram) caption += `• <b>Telegram:</b> ${data.telegram}\n`;
-
-    caption += `\n<b>🏠 Property Information</b>\n`;
-    caption += `• <b>Purpose:</b> ${data.listingType || 'N/A'}\n`;
-    caption += `• <b>Type:</b> ${data.propertyType || 'N/A'}\n`;
-    caption += `• <b>Price:</b> $${data.price || 'N/A'}\n`;
-    caption += `• <b>Location:</b> ${data.location || 'N/A'}\n`;
-    if (data.mapLink) caption += `• <b>Map Link:</b> ${data.mapLink}\n`;
-
-    if (data.landSize) caption += `• <b>Land Size:</b> ${data.landSize}\n`;
-    if (data.houseSize) caption += `• <b>House Size:</b> ${data.houseSize}\n`;
-    if (data.frontSpace) caption += `• <b>Front Space:</b> ${data.frontSpace}\n`;
-    if (data.backSpace) caption += `• <b>Back Space:</b> ${data.backSpace}\n`;
-    if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') caption += `• <b>Bedrooms:</b> ${data.bedrooms}\n`;
-    if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') caption += `• <b>Bathrooms:</b> ${data.bathrooms}\n`;
-    if (data.direction && data.direction !== 'មិនកំណត់') caption += `• <b>Direction:</b> ${data.direction}\n`;
-
-    if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
-      const dep = (data.deposit === 'ផ្សេងៗ' || data.deposit === 'Other') ? data.depositOther : data.deposit;
-      if (dep) caption += `• <b>Deposit:</b> ${dep}\n`;
-      if (data.rentFee) caption += `• <b>Rent Fee:</b> ${data.rentFee}\n`;
-      if (data.contract) caption += `• <b>Contract:</b> ${data.contract}\n`;
-    } else if (data.listingType === 'លក់' || data.listingType === 'For Sale') {
-      const cert = (data.certificate === 'ប្រភេទផ្សេង' || data.certificate === 'Other type') ? data.certOther : data.certificate;
-      if (cert) caption += `• <b>Title/Cert:</b> ${cert}\n`;
+    // Format deposit display
+    let depositDisplay = data.deposit || 'N/A';
+    if ((data.deposit === '`ផ្សេងៗ` || data.deposit === 'Other') && data.depositOther) {
+      depositDisplay = `${data.deposit} (${data.depositOther})`;
     }
 
-    if (data.description) caption += `\n<b>📝 Notes:</b>\n${data.description}\n`;
-    if (data.submittedBy) caption += `\n<b>Submitted By:</b> ${data.submittedBy}`;
+    // Format certificate display
+    let certDisplay = data.certificate || 'N/A';
+    if ((data.certificate === 'ប្រភេទផ្សេង' || data.certificate === 'Other type') && data.certOther) {
+      certDisplay = `${data.certificate} (${data.certOther})`;
+    }
 
-    if (files.length > 0) {
-      if (files.length === 1) {
-        const formData = new FormData();
-        formData.append('chat_id', CHAT_ID);
-        formData.append('caption', caption);
-        formData.append('parse_mode', 'HTML');
-        formData.append('photo', files[0].buffer, { filename: files[0].originalname });
+    // Build Telegram message caption
+    let messageText = `<b>🏠 ព័ត៌មានអចលនទ្រព្យ / Property Listing</b>\n\n`;
+    messageText += `<b>👤 ព័ត៌មានម្ចាស់ / Owner Details:</b>\n`;
+    messageText += `• ឈ្មោះ / Name: <b>${data.ownerName || 'N/A'}</b>\n`;
+    messageText += `• លេខទូរស័ព្ទ ១ / Tel 1: <b>${data.tel1 || 'N/A'}</b>\n`;
+    if (data.tel2) messageText += `• លេខទូរស័ព្ទ ២ / Tel 2: ${data.tel2}\n`;
+    if (data.telegram) messageText += `• Telegram: ${data.telegram}\n`;
 
-        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, formData, { headers: formData.getHeaders() });
-      } else {
-        const formData = new FormData();
-        formData.append('chat_id', CHAT_ID);
+    messageText += `\n<b>📌 ព័ត៌មានអចលនទ្រព្យ / Property Info:</b>\n`;
+    messageText += `• គោលបំណង / Purpose: <b>${data.listingType || 'N/A'}</b>\n`;
+    messageText += `• ប្រភេទ / Type: <b>${data.propertyType || 'N/A'}</b>\n`;
+    messageText += `• តម្លៃ / Price: <b>$${data.price || '0'}</b>\n`;
+    messageText += `• ទីតាំង / Location: ${data.location || 'N/A'}\n`;
+    messageText += `• 📍 Google Maps: ${data.mapLink || 'N/A'}\n`;
 
-        const mediaArr = files.map((file, idx) => ({
+    if (data.landSize) messageText += `• ទំហំដី / Land Size: ${data.landSize}\n`;
+    if (data.houseSize) messageText += `• ទំហំផ្ទះ / House Size: ${data.houseSize}\n`;
+    if (data.frontSpace) messageText += `• សល់មុខ / Front Space: ${data.frontSpace}\n`;
+    if (data.backSpace) messageText += `• សល់ក្រោយ / Back Space: ${data.backSpace}\n`;
+    if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') messageText += `• បន្ទប់គេង / Bedrooms: ${data.bedrooms}\n`;
+    if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') messageText += `• បន្ទប់ទឹក / Bathrooms: ${data.bathrooms}\n`;
+    if (data.direction && data.direction !== 'មិនកំណត់') messageText += `• ទិស / Direction: ${data.direction}\n`;
+
+    if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
+      messageText += `\n<b>📝 លក្ខខណ្ឌជួល / Rental Terms:</b>\n`;
+      messageText += `• ប្រាក់កក់ / Deposit: ${depositDisplay}\n`;
+      messageText += `• ថ្លៃឈ្នួល / Rent Fee: ${data.rentFee || 'N/A'}\n`;
+      messageText += `• កុងត្រា / Contract: ${data.contract || 'N/A'}\n`;
+    } else if (data.listingType === 'លក់' || data.listingType === 'For Sale') {
+      messageText += `\n<b>📜 លក្ខខណ្ឌលក់ / Sale Terms:</b>\n`;
+      messageText += `• ប្លង់កម្មសិទ្ធ / Certificate: ${certDisplay}\n`;
+    }
+
+    if (data.description) {
+      messageText += `\n<b>📝 សម្គាល់បន្ថែម / Additional Notes:</b>\n${data.description}\n`;
+    }
+
+    messageText += `\n<b>📩 បញ្ជូនដោយ / Submitted By:</b> ${data.submittedBy || 'Web Form'}`;
+
+    // Send photo(s) to Telegram
+    if (files.length === 1) {
+      // Single photo upload
+      const formData = new FormData();
+      formData.append('chat_id', CHAT_ID);
+      formData.append('caption', messageText);
+      formData.append('parse_mode', 'HTML');
+      formData.append('photo', files[0].buffer, { filename: files[0].originalname });
+
+      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, formData, {
+        headers: formData.getHeaders()
+      });
+    } else if (files.length > 1) {
+      // Multiple photos (sendMediaGroup)
+      const formData = new FormData();
+      formData.append('chat_id', CHAT_ID);
+
+      const mediaGroup = files.map((file, index) => {
+        const attachName = `photo_${index}`;
+        formData.append(attachName, file.buffer, { filename: file.originalname });
+        
+        return {
           type: 'photo',
-          media: `attach://file_${idx}`,
-          caption: idx === 0 ? caption : '',
-          parse_mode: 'HTML'
-        }));
+          media: `attach://${attachName}`,
+          // Attach text caption to the first image in media group
+          caption: index === 0 ? messageText : '',
+          parse_mode: index === 0 ? 'HTML' : undefined
+        };
+      });
 
-        formData.append('media', JSON.stringify(mediaArr));
-        files.forEach((file, idx) => formData.append(`file_${idx}`, file.buffer, { filename: file.originalname }));
+      formData.append('media', JSON.stringify(mediaGroup));
 
-        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, formData, { headers: formData.getHeaders() });
-      }
+      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, formData, {
+        headers: formData.getHeaders()
+      });
     } else {
+      // Text-only fallback if no files attached
       await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         chat_id: CHAT_ID,
-        text: caption,
+        text: messageText,
         parse_mode: 'HTML'
       });
     }
 
-    return res.status(200).json({ success: true, message: 'Submitted successfully' });
+    return res.status(200).json({ success: true, message: 'Property submitted successfully!' });
 
   } catch (error) {
-    console.error('Submission Error:', error?.response?.data || error.message);
-    return res.status(500).json({ error: 'Submission failed on server.' });
+    console.error('Telegram API Error:', error.response?.data || error.message);
+    return res.status(500).json({ 
+      success: false, 
+      error: error.response?.data?.description || 'Failed to process submission.' 
+    });
   }
 });
 
-// Fallback Route
-app.get('*', (req, res) => {
-  const rootIndex = path.join(__dirname, 'index.html');
-  const publicIndex = path.join(__dirname, 'public', 'index.html');
-  if (fs.existsSync(rootIndex)) res.sendFile(rootIndex);
-  else if (fs.existsSync(publicIndex)) res.sendFile(publicIndex);
-  else res.status(200).send('Twenty5 Realty Bot API is online');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Twenty5Realty backend running on port ${port}`);
 });
