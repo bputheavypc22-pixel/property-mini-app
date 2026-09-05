@@ -3,659 +3,866 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>25Realty Form</title>
+  <title>Property Listing - Twenty5 Realty</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root {
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-color: #333333;
-      --primary-color: #004d7a;
-      --accent-color: #0088cc;
-      --border-color: #cccccc;
-      --danger-color: #e74c3c;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    html, body { background-color: #f8fafc !important; color: #0f172a !important; padding: 16px; padding-bottom: 30px; }
+    .container { max-width: 480px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .header { position: relative; text-align: center; margin-bottom: 20px; }
+    .lang-switcher { position: absolute; top: 0; right: 0; display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 20px; border: 1px solid #e2e8f0; }
+    .lang-btn { border: none; background: transparent; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 16px; cursor: pointer; color: #64748b; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px; }
+    .lang-btn.active { background: #0284c7; color: #ffffff; }
+    .logo-img { max-width: 130px; height: auto; margin-bottom: 10px; border-radius: 6px; }
+    .header h2 { font-size: 18px; color: #0b2545; margin-bottom: 2px; }
+    .header p { font-size: 12px; color: #64748b; }
+    .section-title { font-size: 14px; font-weight: 700; color: #0284c7; margin: 18px 0 12px 0; padding-bottom: 4px; border-bottom: 2px solid #f1f5f9; }
+    .form-group { margin-bottom: 12px; }
+    .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .form-row .form-group { flex: 1; margin-bottom: 0; min-width: 0; }
+    label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    input[type="text"], input[type="number"], input[type="tel"], input[type="url"], select, textarea { width: 100%; padding: 10px 12px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #f8fafc; color: #0f172a; font-weight: 500; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    input::placeholder, textarea::placeholder { color: #94a3b8; opacity: 1; }
+    input:focus, select:focus, textarea:focus { border-color: #0284c7; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+    textarea { resize: vertical; min-height: 70px; }
+    .map-input-wrapper { display: flex; gap: 6px; align-items: center; }
+    .map-input-wrapper input { flex: 1; }
+    .btn-gps-small { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 9px 10px; background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s ease; height: 38px; }
+    .btn-gps-small:hover { background-color: #bae6fd; }
+    .map-notice { font-size: 11px; color: #ef4444; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+    .map-container { display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; height: 180px; background: #f1f5f9; }
+    .map-container iframe { width: 100%; height: 100%; border: 0; }
+    #rent-terms-section, #sale-terms-section { display: none; background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+    .upload-box { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 16px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; }
+    .upload-box:hover { border-color: #0284c7; background: #f0f9ff; }
+    .upload-icon { font-size: 24px; margin-bottom: 4px; }
+    .upload-text { font-size: 13px; font-weight: 600; color: #0284c7; }
+    .upload-count { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-top: 12px; }
+    .preview-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .btn-submit-web { width: 100%; background-color: #0284c7; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s ease; }
+    .btn-submit-web:hover { background-color: #0369a1; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 12px;
-      box-sizing: border-box;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .lang-switch {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 12px;
-    }
-
-    .lang-btn {
-      background: none;
-      border: 1px solid var(--primary-color);
-      color: var(--primary-color);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 14px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 14px;
-      background-color: #fff;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .rent-section, .sale-section {
-      background: #f0f4f8;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 14px;
-    }
-
-    .image-preview-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .img-wrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .img-wrapper img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .remove-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(231, 76, 60, 0.85);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .submit-btn {
-      width: 100%;
-      background-color: var(--primary-color);
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 16px;
-    }
-
-    .submit-btn:hover {
-      background-color: #003352;
-    }
-
-    #summaryCard {
-      padding: 16px;
-      background: #eef7ee;
-      border: 1px solid #c3e6cb;
-      border-radius: 8px;
-    }
+    /* Success Card Styling */
+    .success-card { display: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 10px; }
+    .success-header { text-align: center; color: #16a34a; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+    .summary-title { font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .summary-body { font-size: 13px; color: #334155; line-height: 1.6; }
+    .summary-body ul { list-style: none; padding-left: 0; margin: 6px 0; }
+    .summary-body li { margin-bottom: 3px; }
+    .divider { border-top: 1px dashed #cbd5e1; margin: 12px 0; }
+    .btn-new-submit { width: 100%; background-color: #64748b; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 14px; text-align: center; transition: background 0.2s; }
+    .btn-new-submit:hover { background-color: #475569; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="lang-switch">
-    <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">EN</button>
-  </div>
-
-  <form id="listingForm" style="display: block;">
-    <!-- Owner Information -->
-    <div class="form-group">
-      <label id="lblOwnerName">ឈ្មោះម្ចាស់អចលនទ្រព្យ *</label>
-      <input type="text" id="ownerName" required>
+  <div class="container">
+    <div class="header">
+      <div class="lang-switcher">
+        <button type="button" class="lang-btn active" id="btn-km" onclick="switchLanguage('km')">🇰🇭 ខ្មែរ</button>
+        <button type="button" class="lang-btn" id="btn-en" onclick="switchLanguage('en')">🇬🇧 EN</button>
+      </div>
+      <img src="25logo.png" alt="Twenty5 Realty Logo" class="logo-img">
+      <h2 id="header-title">🏠 ចុះបញ្ជីអចលនទ្រព្យ</h2>
+      <p id="header-subtitle">Property Listing Form</p>
     </div>
 
-    <div class="grid-2">
+    <form id="listingForm">
+      <div class="section-title" id="sec-owner">👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ</div>
+      
       <div class="form-group">
-        <label id="lblTel1">លេខទូរស័ព្ទទី១ *</label>
-        <input type="tel" id="tel1" required>
+        <label id="lbl-ownerName">ឈ្មោះម្ចាស់ *</label>
+        <input type="text" id="ownerName" required data-ph-km="ឧ. ចាន់ សុខា" data-ph-en="e.g. Chan Sokha">
       </div>
-      <div class="form-group">
-        <label id="lblTel2">លេខទូរស័ព្ទទី២</label>
-        <input type="tel" id="tel2">
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label id="lblTelegram">គណនី Telegram</label>
-      <input type="text" id="telegram" placeholder="@username">
-    </div>
-
-    <!-- Property Details -->
-    <div class="grid-2">
-      <div class="form-group">
-        <label id="lblListingType">ប្រភេទប្រតិបត្តិការ *</label>
-        <select id="listingType" onchange="handleListingTypeChange()" required>
-          <option value="ជួល">ជួល (For Rent)</option>
-          <option value="លក់">លក់ (For Sale)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label id="lblPropertyType">ប្រភេទអចលនទ្រព្យ *</label>
-        <select id="propertyType" required>
-          <option value="ផ្ទះល្វែង">ផ្ទះល្វែង</option>
-          <option value="វីឡា">វីឡា</option>
-          <option value="ខុនដូ">ខុនដូ</option>
-          <option value="ដី">ដី</option>
-          <option value="ឃ្លាំង">ឃ្លាំង</option>
-          <option value="ការិយាល័យ">ការិយាល័យ</option>
-          <option value="អាជីវកម្ម">អាជីវកម្ម</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="form-group">
-        <label id="lblPrice">តម្លៃ ($) *</label>
-        <input type="number" id="price" required step="any">
-      </div>
-      <div class="form-group">
-        <label id="lblLocation">ទីតាំង/តំបន់ *</label>
-        <input type="text" id="location" required>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label id="lblMapLink">តំណភ្ជាប់ Google Map *</label>
-      <input type="url" id="mapLink" placeholder="https://maps.google.com/..." required>
-    </div>
-
-    <!-- Conditional Section: Rent -->
-    <div id="rentSection" class="rent-section">
-      <div class="grid-2">
+      <div class="form-row">
         <div class="form-group">
-          <label id="lblDeposit">ប្រាក់កក់ *</label>
-          <select id="deposit" onchange="handleDepositChange()">
-            <option value="1 ខែ">1 ខែ</option>
-            <option value="2 ខែ">2 ខែ</option>
-            <option value="3 ខែ">3 ខែ</option>
-            <option value="ផ្សេងៗ">ផ្សេងៗ</option>
+          <label id="lbl-tel1">លេខទូរស័ព្ទទី១ *</label>
+          <input type="tel" id="tel1" required placeholder="012 345 678">
+        </div>
+        <div class="form-group">
+          <label id="lbl-tel2">លេខទូរស័ព្ទទី២</label>
+          <input type="tel" id="tel2" placeholder="098 765 432">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-telegram">Telegram ម្ចាស់</label>
+        <input type="text" id="telegram" data-ph-km="@username ឬ លេខទូរស័ព្ទ" data-ph-en="@username or Phone Number">
+      </div>
+
+      <div class="section-title" id="sec-details">🏠 ព័ត៌មានអចលនទ្រព្យ</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-listingType">គោលបំណង *</label>
+          <select id="listingType" required onchange="togglePurposeSections()">
+            <option value="" id="opt-list-select">-- ជ្រើសរើស --</option>
+            <option value="លក់" id="opt-list-sale">លក់</option>
+            <option value="ជួល" id="opt-list-rent">ជួល</option>
           </select>
         </div>
         <div class="form-group">
-          <label id="lblRentFee">បង់ថ្លៃជួល *</label>
-          <select id="rentFee">
-            <option value="ដើមខែ">ដើមខែ</option>
-            <option value="ចុងខែ">ចុងខែ</option>
+          <label id="lbl-propertyType">ប្រភេទអចលនទ្រព្យ *</label>
+          <select id="propertyType" required>
+            <option value="" id="opt-type-select">-- ជ្រើសរើស --</option>
+            <option value="ផ្ទះល្វែង" id="opt-type-flat">ផ្ទះល្វែង</option>
+            <option value="វីឡា" id="opt-type-villa">វីឡា</option>
+            <option value="ខុនដូ" id="opt-type-condo">ខុនដូ</option>
+            <option value="ដី" id="opt-type-land">ដី</option>
+            <option value="ឃ្លាំង" id="opt-type-warehouse">ឃ្លាំង</option>
+            <option value="អាជីវកម្ម" id="opt-type-business">អាជីវកម្ម</option>
           </select>
         </div>
       </div>
-      <div class="form-group hidden" id="depositOtherGroup">
-        <label id="lblDepositOther">បញ្ជាក់ប្រាក់កក់ផ្សេងៗ</label>
-        <input type="text" id="depositOther">
-      </div>
+
       <div class="form-group">
-        <label id="lblContract">កុងត្រា *</label>
-        <select id="contract">
-          <option value="1 ឆ្នាំ">1 ឆ្នាំ</option>
-          <option value="2 ឆ្នាំ">2 ឆ្នាំ</option>
-          <option value="3 ឆ្នាំ">3 ឆ្នាំ</option>
-          <option value="5 ឆ្នាំ">5 ឆ្នាំ</option>
+        <label id="lbl-price">តម្លៃ ($) *</label>
+        <input type="number" id="price" step="any" required placeholder="e.g. 150000">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-location">ទីតាំង / អាសយដ្ឋាន *</label>
+        <input type="text" id="location" required data-ph-km="ឧ. សង្កាត់ទួលសង្កែ, ខណ្ឌឫស្សីកែវ" data-ph-en="e.g. Toul Sangke, Russey Keo">
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link) *</label>
+        <div class="map-input-wrapper">
+          <input type="url" id="mapLink" required data-ph-km="http://maps.google.com/..." data-ph-en="http://maps.google.com/..." oninput="previewMap()">
+          <a href="https://maps.google.com" target="_blank" class="btn-gps-small" id="btn-openMap">
+            📍 Google Maps
+          </a>
+        </div>
+        <div class="map-notice" id="notice-mapLink">
+          * សូមបញ្ចូល/ចម្លងលីង Google Maps ទីតាំងអចលនទ្រព្យដើម្បីបន្ត!
+        </div>
+        <div id="map-container" class="map-container">
+          <iframe id="map-iframe" src="" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-landSize">ទំហំដី</label>
+          <input type="text" id="landSize" data-ph-km="ឧ. 5m x 20m" data-ph-en="e.g. 5m x 20m">
+        </div>
+        <div class="form-group">
+          <label id="lbl-houseSize">ទំហំផ្ទះ</label>
+          <input type="text" id="houseSize" data-ph-km="ឧ. 4.2m x 16m" data-ph-en="e.g. 4.2m x 16m">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-frontSpace">សល់មុខផ្ទះ (Front Space)</label>
+          <input type="text" id="frontSpace" data-ph-km="ឧ. សល់មុខ 5m" data-ph-en="e.g. 5m front yard">
+        </div>
+        <div class="form-group">
+          <label id="lbl-backSpace">សល់ក្រោយផ្ទះ (Back Space)</label>
+          <input type="text" id="backSpace" data-ph-km="ឧ. សល់ក្រោយ 2m" data-ph-en="e.g. 2m back yard">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-bedrooms">បន្ទប់គេង</label>
+          <select id="bedrooms">
+            <option value="មិនកំណត់" id="opt-bed-select">-- ជ្រើសរើស --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5+">5+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl-bathrooms">បន្ទប់ទឹក</label>
+          <select id="bathrooms">
+            <option value="មិនកំណត់" id="opt-bath-select">-- ជ្រើសរើស --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5+">5+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-direction">ទិស</label>
+        <select id="direction">
+          <option value="មិនកំណត់" id="opt-dir-select">-- ជ្រើសរើស --</option>
+          <option value="កើត" id="opt-dir-east">កើត</option>
+          <option value="លិច" id="opt-dir-west">លិច</option>
+          <option value="ត្បូង" id="opt-dir-south">ត្បូង</option>
+          <option value="ជើង" id="opt-dir-north">ជើង</option>
+          <option value="កើតត្បូង" id="opt-dir-se">កើតត្បូង</option>
+          <option value="កើតជើង" id="opt-dir-ne">កើតជើង</option>
+          <option value="លិចត្បូង" id="opt-dir-sw">លិចត្បូង</option>
+          <option value="លិចជើង" id="opt-dir-nw">លិចជើង</option>
         </select>
       </div>
-    </div>
 
-    <!-- Conditional Section: Sale -->
-    <div id="saleSection" class="sale-section hidden">
+      <div id="rent-terms-section">
+        <div class="form-group">
+          <label id="lbl-deposit">ប្រាក់កក់ *</label>
+          <select id="deposit" onchange="toggleDepositOther()">
+            <option value="1ខែ" id="opt-dep-1">1 ខែ</option>
+            <option value="2ខែ" id="opt-dep-2">2 ខែ</option>
+            <option value="3ខែ" id="opt-dep-3">3 ខែ</option>
+            <option value="ផ្សេងៗ" id="opt-dep-other">ផ្សេងៗ</option>
+          </select>
+          <input type="text" id="depositOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រាក់កក់..." data-ph-en="Specify deposit terms...">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-rentFee">បង់ថ្លៃឈ្នួល *</label>
+            <select id="rentFee">
+              <option value="ដើមខែ" id="opt-fee-start">ដើមខែ</option>
+              <option value="ចុងខែ" id="opt-fee-end">ចុងខែ</option>
+              <option value="ចរចា" id="opt-fee-neg">ចរចា</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label id="lbl-contract">កុងត្រា *</label>
+            <select id="contract">
+              <option value="3ខែ" id="opt-con-3m">3 ខែ</option>
+              <option value="6ខែ" id="opt-con-6m">6 ខែ</option>
+              <option value="1ឆ្នាំ" id="opt-con-1y">1 ឆ្នាំ</option>
+              <option value="2ឆ្នាំ" id="opt-con-2y">2 ឆ្នាំ</option>
+              <option value="3ឆ្នាំ" id="opt-con-3y">3 ឆ្នាំ</option>
+              <option value="ចរចា" id="opt-con-neg">ចរចា</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="sale-terms-section">
+        <div class="form-group">
+          <label id="lbl-certificate">ប្លង់កម្មសិទ្ធ *</label>
+          <select id="certificate" onchange="toggleCertOther()">
+            <option value="មិនមាន" id="opt-cert-none">មិនមាន</option>
+            <option value="ប្លង់រឹង" id="opt-cert-hard">ប្លង់រឹង</option>
+            <option value="ប្លង់ទន់" id="opt-cert-soft">ប្លង់ទន់</option>
+            <option value="ប្រភេទផ្សេង" id="opt-cert-other">ប្រភេទផ្សេង</option>
+          </select>
+          <input type="text" id="certOther" style="display: none; margin-top: 6px;" data-ph-km="បញ្ជាក់ប្រភេទប្លង់..." data-ph-en="Specify certificate type...">
+        </div>
+      </div>
+
       <div class="form-group">
-        <label id="lblCertificate">ប្រភេទប្លង់ *</label>
-        <select id="certificate" onchange="handleCertChange()">
-          <option value="ប្លង់រឹង">ប្លង់រឹង</option>
-          <option value="ប្លង់ទន់">ប្លង់ទន់</option>
-          <option value="ប្លង់ផ្ទេរសិទ្ធិត្រឹមខណ្ឌ">ប្លង់ផ្ទេរសិទ្ធិត្រឹមខណ្ឌ</option>
-          <option value="ប្រភេទផ្សេង">ប្រភេទផ្សេង</option>
-        </select>
+        <label id="lbl-description">សម្គាល់បន្ថែម</label>
+        <textarea id="description" data-ph-km="ព័ត៌មានលម្អិតបន្ថែម..." data-ph-en="Additional details..."></textarea>
       </div>
-      <div class="form-group hidden" id="certOtherGroup">
-        <label id="lblCertOther">បញ្ជាក់ប្រភេទប្លង់</label>
-        <input type="text" id="certOther">
-      </div>
-    </div>
 
-    <!-- Dimensions & Specs -->
-    <div class="grid-2">
       <div class="form-group">
-        <label id="lblLandSize">ទំហំដី</label>
-        <input type="text" id="landSize" placeholder="e.g. 10m x 20m">
-      </div>
-      <div class="form-group">
-        <label id="lblHouseSize">ទំហំផ្ទះ</label>
-        <input type="text" id="houseSize" placeholder="e.g. 8m x 15m">
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="form-group">
-        <label id="lblFrontSpace">សល់មុខ</label>
-        <input type="text" id="frontSpace" placeholder="e.g. 5m">
-      </div>
-      <div class="form-group">
-        <label id="lblBackSpace">សល់ក្រោយ</label>
-        <input type="text" id="backSpace" placeholder="e.g. 2m">
-      </div>
-    </div>
-
-    <div class="grid-3 grid-2">
-      <div class="form-group">
-        <label id="lblBedrooms">បន្ទប់គេង</label>
-        <input type="number" id="bedrooms">
-      </div>
-      <div class="form-group">
-        <label id="lblBathrooms">បន្ទប់ទឹក</label>
-        <input type="number" id="bathrooms">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label id="lblDirection">ទិស</label>
-      <select id="direction">
-        <option value="">-- ជ្រើសរើស --</option>
-        <option value="កើត">កើត (East)</option>
-        <option value="លិច">លិច (West)</option>
-        <option value="ត្បូង">ត្បូង (South)</option>
-        <option value="ជើង">ជើង (North)</option>
-        <option value="កើតឈៀងត្បូង">កើតឈៀងត្បូង</option>
-        <option value="កើតឈៀងជើង">កើតឈៀងជើង</option>
-        <option value="លិចឈៀងត្បូង">លិចឈៀងត្បូង</option>
-        <option value="លិចឈៀងជើង">លិចឈៀងជើង</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label id="lblDescription">សម្គាល់បន្ថែម</label>
-      <textarea id="description" rows="3"></textarea>
-    </div>
-
-    <!-- Photo Upload -->
-    <div class="form-group">
-      <label id="lblPhotos">រូបថត (យ៉ាងតិច ១ សន្លឹក) *</label>
-      <input type="file" id="photoInput" accept="image/*" multiple onchange="handleFileSelect(event)">
-      <div id="imagePreviewContainer" class="image-preview-container"></div>
-    </div>
-
-    <button type="button" class="submit-btn" id="btnSubmit" onclick="submitForm()">បញ្ជូនទិន្នន័យ</button>
-  </form>
-
-  <div id="summaryCard" class="hidden">
-    <h3 style="color: #28a745; margin-top: 0;">✔ ទិន្នន័យត្រូវបានបញ្ជូនជោគជ័យ!</h3>
-    <div id="summaryContent"></div>
-    <button class="submit-btn" style="background-color: #6c757d;" onclick="window.location.reload()">បញ្ចូលថ្មី</button>
-  </div>
-</div>
-
-<script>
-  // Setup Telegram WebApp
-  const tg = window.Telegram?.WebApp;
-  if (tg) tg.expand();
-
-  // IMPORTANT: Set your live backend server URL here (e.g., Render host URL)
-  // If static HTML is hosted on Render along with Express, keep it as ''
-  const BACKEND_URL = ''; 
-
-  let currentLang = 'km';
-  let selectedFiles = [];
-
-  const translations = {
-    km: {
-      langBtn: 'EN',
-      ownerName: 'ឈ្មោះម្ចាស់អចលនទ្រព្យ *',
-      tel1: 'លេខទូរស័ព្ទទី១ *',
-      tel2: 'លេខទូរស័ព្ទទី២',
-      telegram: 'គណនី Telegram',
-      listingType: 'ប្រភេទប្រតិបត្តិការ *',
-      propertyType: 'ប្រភេទអចលនទ្រព្យ *',
-      price: 'តម្លៃ ($) *',
-      location: 'ទីតាំង/តំបន់ *',
-      mapLink: 'តំណភ្ជាប់ Google Map *',
-      deposit: 'ប្រាក់កក់ *',
-      rentFee: 'បង់ថ្លៃជួល *',
-      depositOther: 'បញ្ជាក់ប្រាក់កក់ផ្សេងៗ',
-      contract: 'កុងត្រា *',
-      certificate: 'ប្រភេទប្លង់ *',
-      certOther: 'បញ្ជាក់ប្រភេទប្លង់',
-      landSize: 'ទំហំដី',
-      houseSize: 'ទំហំផ្ទះ',
-      frontSpace: 'សល់មុខ',
-      backSpace: 'សល់ក្រោយ',
-      bedrooms: 'បន្ទប់គេង',
-      bathrooms: 'បន្ទប់ទឹក',
-      direction: 'ទិស',
-      description: 'សម្គាល់បន្ថែម',
-      photos: 'រូបថត (យ៉ាងតិច ១ សន្លឹក) *',
-      submit: 'បញ្ជូនទិន្នន័យ',
-      minImgAlert: 'សូមជ្រើសរើសរូបថតយ៉ាងតិច ១ សន្លឹក!'
-    },
-    en: {
-      langBtn: 'KM',
-      ownerName: 'Owner Name *',
-      tel1: 'Phone Number 1 *',
-      tel2: 'Phone Number 2',
-      telegram: 'Telegram Account',
-      listingType: 'Listing Type *',
-      propertyType: 'Property Type *',
-      price: 'Price ($) *',
-      location: 'Location/Area *',
-      mapLink: 'Google Map Link *',
-      deposit: 'Deposit *',
-      rentFee: 'Rent Payment *',
-      depositOther: 'Specify Deposit',
-      contract: 'Contract Term *',
-      certificate: 'Title Type *',
-      certOther: 'Specify Title Type',
-      landSize: 'Land Size',
-      houseSize: 'House Size',
-      frontSpace: 'Front Space',
-      backSpace: 'Back Space',
-      bedrooms: 'Bedrooms',
-      bathrooms: 'Bathrooms',
-      direction: 'Direction',
-      description: 'Additional Notes',
-      photos: 'Photos (Min 1 photo) *',
-      submit: 'Submit Listing',
-      minImgAlert: 'Please select at least 1 image!'
-    }
-  };
-
-  function toggleLanguage() {
-    currentLang = currentLang === 'km' ? 'en' : 'km';
-    const t = translations[currentLang];
-
-    document.getElementById('langBtn').innerText = t.langBtn;
-    document.getElementById('lblOwnerName').innerText = t.ownerName;
-    document.getElementById('lblTel1').innerText = t.tel1;
-    document.getElementById('lblTel2').innerText = t.tel2;
-    document.getElementById('lblTelegram').innerText = t.telegram;
-    document.getElementById('lblListingType').innerText = t.listingType;
-    document.getElementById('lblPropertyType').innerText = t.propertyType;
-    document.getElementById('lblPrice').innerText = t.price;
-    document.getElementById('lblLocation').innerText = t.location;
-    document.getElementById('lblMapLink').innerText = t.mapLink;
-    document.getElementById('lblDeposit').innerText = t.deposit;
-    document.getElementById('lblRentFee').innerText = t.rentFee;
-    document.getElementById('lblDepositOther').innerText = t.depositOther;
-    document.getElementById('lblContract').innerText = t.contract;
-    document.getElementById('lblCertificate').innerText = t.certificate;
-    document.getElementById('lblCertOther').innerText = t.certOther;
-    document.getElementById('lblLandSize').innerText = t.landSize;
-    document.getElementById('lblHouseSize').innerText = t.houseSize;
-    document.getElementById('lblFrontSpace').innerText = t.frontSpace;
-    document.getElementById('lblBackSpace').innerText = t.backSpace;
-    document.getElementById('lblBedrooms').innerText = t.bedrooms;
-    document.getElementById('lblBathrooms').innerText = t.bathrooms;
-    document.getElementById('lblDirection').innerText = t.direction;
-    document.getElementById('lblDescription').innerText = t.description;
-    document.getElementById('lblPhotos').innerText = t.photos;
-    document.getElementById('btnSubmit').innerText = t.submit;
-  }
-
-  function handleListingTypeChange() {
-    const val = document.getElementById('listingType').value;
-    const isRent = val === 'ជួល' || val === 'For Rent';
-    
-    if (isRent) {
-      document.getElementById('rentSection').classList.remove('hidden');
-      document.getElementById('saleSection').classList.add('hidden');
-    } else {
-      document.getElementById('rentSection').classList.add('hidden');
-      document.getElementById('saleSection').classList.remove('hidden');
-    }
-  }
-
-  function handleDepositChange() {
-    const val = document.getElementById('deposit').value;
-    if (val === 'ផ្សេងៗ' || val === 'Other') {
-      document.getElementById('depositOtherGroup').classList.remove('hidden');
-    } else {
-      document.getElementById('depositOtherGroup').classList.add('hidden');
-    }
-  }
-
-  function handleCertChange() {
-    const val = document.getElementById('certificate').value;
-    if (val === 'ប្រភេទផ្សេង' || val === 'Other type') {
-      document.getElementById('certOtherGroup').classList.remove('hidden');
-    } else {
-      document.getElementById('certOtherGroup').classList.add('hidden');
-    }
-  }
-
-  function handleFileSelect(e) {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      selectedFiles.push(file);
-    });
-    renderImagePreviews();
-    document.getElementById('photoInput').value = '';
-  }
-
-  function removeFile(index) {
-    selectedFiles.splice(index, 1);
-    renderImagePreviews();
-  }
-
-  function renderImagePreviews() {
-    const container = document.getElementById('imagePreviewContainer');
-    container.innerHTML = '';
-    selectedFiles.forEach((file, index) => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'img-wrapper';
-
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'remove-btn';
-      removeBtn.innerHTML = '✕';
-      removeBtn.onclick = (e) => {
-        e.preventDefault();
-        removeFile(index);
-      };
-
-      wrapper.appendChild(img);
-      wrapper.appendChild(removeBtn);
-      container.appendChild(wrapper);
-    });
-  }
-
-  const submitForm = async () => {
-    const t = translations[currentLang];
-    const form = document.getElementById('listingForm');
-    
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
-
-    if (selectedFiles.length === 0) {
-      tg?.showAlert ? tg.showAlert(t.minImgAlert) : alert(t.minImgAlert);
-      return;
-    }
-
-    if (tg) tg.MainButton.showProgress();
-
-    const user = tg?.initDataUnsafe?.user;
-    const submittedBy = user 
-      ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() 
-      : 'Web User';
-
-    const listingTypeVal = document.getElementById('listingType').value;
-    const isRent = listingTypeVal === 'ជួល' || listingTypeVal === 'For Rent';
-    const isSale = listingTypeVal === 'លក់' || listingTypeVal === 'For Sale';
-
-    let depositVal = '';
-    let rentFeeVal = '';
-    let contractVal = '';
-    if (isRent) {
-      const depSelect = document.getElementById('deposit');
-      depositVal = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
-        ? document.getElementById('depositOther').value 
-        : depSelect.options[depSelect.selectedIndex].text;
+        <label id="lbl-images">🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *</label>
         
-      const rentFeeSelect = document.getElementById('rentFee');
-      rentFeeVal = rentFeeSelect.options[rentFeeSelect.selectedIndex].text;
+        <div class="upload-box" onclick="document.getElementById('photos').click()">
+          <div class="upload-icon">📷</div>
+          <div id="upload-text" class="upload-text">ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *</div>
+          <div id="upload-count" class="upload-count">គ្មានរូបភាពត្រូវបានជ្រើសរើស</div>
+        </div>
+        
+        <input type="file" id="photos" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
+        
+        <div id="preview-grid" class="preview-grid"></div>
+      </div>
 
-      const contractSelect = document.getElementById('contract');
-      contractVal = contractSelect.options[contractSelect.selectedIndex].text;
-    }
+      <button type="submit" id="btn-web-submit" class="btn-submit-web">បញ្ជូនទិន្នន័យ</button>
+    </form>
 
-    let certVal = '';
-    if (isSale) {
-      const certSelect = document.getElementById('certificate');
-      certVal = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
-        ? document.getElementById('certOther').value
-        : certSelect.options[certSelect.selectedIndex].text;
-    }
+    <div id="successView" class="success-card">
+      <div class="success-header" id="txt-successHeader">✅ បានផ្ញើទិន្នន័យជោគជ័យ!</div>
+      <div class="summary-title" id="txt-summaryTitle">🏠 សង្ខេបព័ត៌មានអចលនទ្រព្យ</div>
+      <div class="summary-body" id="summaryContent"></div>
+      <button type="button" class="btn-new-submit" id="btn-newSubmit" onclick="resetFormView()">ចុះបញ្ជីថ្មីទៀត</button>
+    </div>
+  </div>
 
-    const payloadData = {
-      ownerName: document.getElementById('ownerName').value,
-      tel1: document.getElementById('tel1').value,
-      tel2: document.getElementById('tel2').value,
-      telegram: document.getElementById('telegram').value,
-      listingType: listingTypeVal,
-      propertyType: document.getElementById('propertyType').value,
-      price: document.getElementById('price').value,
-      location: document.getElementById('location').value,
-      mapLink: document.getElementById('mapLink').value,
-      landSize: document.getElementById('landSize').value,
-      houseSize: document.getElementById('houseSize').value,
-      frontSpace: document.getElementById('frontSpace').value,
-      backSpace: document.getElementById('backSpace').value,
-      bedrooms: document.getElementById('bedrooms').value,
-      bathrooms: document.getElementById('bathrooms').value,
-      direction: document.getElementById('direction').value,
-      deposit: depositVal,
-      rentFee: rentFeeVal,
-      contract: contractVal,
-      certificate: certVal,
-      description: document.getElementById('description').value,
-      submittedBy: submittedBy
+  <script>
+    const tg = window.Telegram?.WebApp;
+    let currentLang = localStorage.getItem('appLang') || 'km';
+    let selectedFiles = [];
+
+    // Set backend URL if hosted separately (e.g., 'https://my-backend.onrender.com')
+    // Keep as '' if served directly by the Express backend.
+    const BACKEND_URL = '';
+
+    const translations = {
+      km: {
+        headerTitle: "🏠 ចុះបញ្ជីអចលនទ្រព្យ",
+        headerSubtitle: "ទម្រង់បែបបទដាក់អចលនទ្រព្យលក់/ជួល",
+        secOwner: "👤 ព័ត៌មានម្ចាស់អចលនទ្រព្យ",
+        lblOwnerName: "ឈ្មោះម្ចាស់ *",
+        lblTel1: "លេខទូរស័ព្ទទី១ *",
+        lblTel2: "លេខទូរស័ព្ទទី២",
+        lblTelegram: "Telegram ម្ចាស់",
+        secDetails: "🏠 ព័ត៌មានអចលនទ្រព្យ",
+        lblListingType: "គោលបំណង *",
+        optSelect: "-- ជ្រើសរើស --",
+        optSale: "លក់",
+        optRent: "ជួល",
+        lblPropertyType: "ប្រភេទអចលនទ្រព្យ *",
+        optFlat: "ផ្ទះល្វែង",
+        optVilla: "វីឡា",
+        optCondo: "ខុនដូ",
+        optLand: "ដី",
+        optWarehouse: "ឃ្លាំង",
+        optBusiness: "អាជីវកម្ម",
+        lblPrice: "តម្លៃ ($) *",
+        lblLocation: "ទីតាំង / អាសយដ្ឋាន *",
+        lblMapLink: "📍 លីង Google Maps (Google Maps Link) *",
+        noticeMapLink: "⚠️ សូមបញ្ចូល/ចម្លងលីង Google Maps ទីតាំងអចលនទ្រព្យដើម្បីបន្ត!",
+        btnOpenMap: "📍 Google Maps",
+        lblLandSize: "ទំហំដី",
+        lblHouseSize: "ទំហំផ្ទះ",
+        lblFrontSpace: "សល់មុខផ្ទះ (Front Space)",
+        lblBackSpace: "សល់ក្រោយផ្ទះ (Back Space)",
+        lblBedrooms: "បន្ទប់គេង",
+        lblBathrooms: "បន្ទប់ទឹក",
+        lblDirection: "ទិស",
+        optEast: "កើត",
+        optWest: "លិច",
+        optSouth: "ត្បូង",
+        optNorth: "ជើង",
+        optSE: "កើតត្បូង",
+        optNE: "កើតជើង",
+        optSW: "លិចត្បូង",
+        optNW: "លិចជើង",
+        lblDeposit: "ប្រាក់កក់ *",
+        optDep1: "1 ខែ",
+        optDep2: "2 ខែ",
+        optDep3: "3 ខែ",
+        optDepOther: "ផ្សេងៗ",
+        lblRentFee: "បង់ថ្លៃឈ្នួល *",
+        optFeeStart: "ដើមខែ",
+        optFeeEnd: "ចុងខែ",
+        optFeeNeg: "ចរចា",
+        lblContract: "កុងត្រា *",
+        optCon3m: "3 ខែ",
+        optCon6m: "6 ខែ",
+        optCon1y: "1 ឆ្នាំ",
+        optCon2y: "2 ឆ្នាំ",
+        optCon3y: "3 ឆ្នាំ",
+        optConNeg: "ចរចា",
+        lblCertificate: "ប្លង់កម្មសិទ្ធ *",
+        optCertNone: "មិនមាន",
+        optCertHard: "ប្លង់រឹង",
+        optCertSoft: "ប្លង់ទន់",
+        optCertOther: "ប្រភេទផ្សេង",
+        lblDescription: "សម្គាល់បន្ថែម",
+        lblImages: "🖼️ រូបភាពអចលនទ្រព្យ (អតិបរមា 10) *",
+        uploadText: "ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព *",
+        noImages: "គ្មានរូបភាពត្រូវបានជ្រើសរើស",
+        imgCountText: "បានជ្រើសរើស",
+        submitBtn: "បញ្ជូនទិន្នន័យ",
+        successHeader: "✅ បានផ្ញើទិន្នន័យជោគជ័យ!",
+        summaryTitle: "🏠 សង្ខេបព័ត៌មានអចលនទ្រព្យ",
+        newSubmitBtn: "ចុះបញ្ជីថ្មីទៀត",
+        limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្នោះ",
+        minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក"
+      },
+      en: {
+        headerTitle: "🏠 Property Listing",
+        headerSubtitle: "Property Registration Form",
+        secOwner: "👤 Owner Information",
+        lblOwnerName: "Owner Name *",
+        lblTel1: "Phone Number 1 *",
+        lblTel2: "Phone Number 2",
+        lblTelegram: "Owner Telegram",
+        secDetails: "🏠 Property Details",
+        lblListingType: "Purpose *",
+        optSelect: "-- Select --",
+        optSale: "For Sale",
+        optRent: "For Rent",
+        lblPropertyType: "Property Type *",
+        optFlat: "Flat House",
+        optVilla: "Villa",
+        optCondo: "Condo",
+        optLand: "Land",
+        optWarehouse: "Warehouse",
+        optBusiness: "Business",
+        lblPrice: "Price ($) *",
+        lblLocation: "Location / Address *",
+        lblMapLink: "📍 Google Maps Link *",
+        noticeMapLink: "⚠️ Please paste Google Maps link to submit!",
+        btnOpenMap: "📍 Google Maps",
+        lblLandSize: "Land Size",
+        lblHouseSize: "House Size",
+        lblFrontSpace: "Front Space",
+        lblBackSpace: "Back Space",
+        lblBedrooms: "Bedrooms",
+        lblBathrooms: "Bathrooms",
+        lblDirection: "Direction",
+        optEast: "East",
+        optWest: "West",
+        optSouth: "South",
+        optNorth: "North",
+        optSE: "South East",
+        optNE: "North East",
+        optSW: "South West",
+        optNW: "North West",
+        lblDeposit: "Deposit *",
+        optDep1: "1 month",
+        optDep2: "2 months",
+        optDep3: "3 months",
+        optDepOther: "Other",
+        lblRentFee: "Rent Fee *",
+        optFeeStart: "Settle beginning of the month",
+        optFeeEnd: "Settle End of the Month",
+        optFeeNeg: "Negotiate",
+        lblContract: "Contract *",
+        optCon3m: "3 months",
+        optCon6m: "6 months",
+        optCon1y: "1 year",
+        optCon2y: "2 years",
+        optCon3y: "3 years",
+        optConNeg: "Negotiate",
+        lblCertificate: "Property Certificate *",
+        optCertNone: "No Certificate",
+        optCertHard: "Hard Title",
+        optCertSoft: "Soft Title",
+        optCertOther: "Other type",
+        lblDescription: "Additional Notes",
+        lblImages: "🖼️ Property Images (Max 10) *",
+        uploadText: "Click here to select images *",
+        noImages: "No images selected",
+        imgCountText: "selected",
+        submitBtn: "SUBMIT LISTING",
+        successHeader: "✅ Submitted Successfully!",
+        summaryTitle: "🏠 PROPERTY LISTING SUMMARY",
+        newSubmitBtn: "NEW SUBMISSION",
+        limitAlert: "You can only upload up to 10 images.",
+        minImgAlert: "Please upload at least 1 image."
+      }
     };
 
-    const formData = new FormData();
-    Object.keys(payloadData).forEach(key => {
-      formData.append(key, payloadData[key]);
-    });
+    function togglePurposeSections() {
+      const listingType = document.getElementById('listingType').value;
+      const rentSection = document.getElementById('rent-terms-section');
+      const saleSection = document.getElementById('sale-terms-section');
 
-    selectedFiles.forEach(file => {
-      formData.append('photos', file);
-    });
+      if (listingType === 'ជួល' || listingType === 'For Rent') {
+        rentSection.style.display = 'block';
+        saleSection.style.display = 'none';
+      } else if (listingType === 'លក់' || listingType === 'For Sale') {
+        saleSection.style.display = 'block';
+        rentSection.style.display = 'none';
+      } else {
+        rentSection.style.display = 'none';
+        saleSection.style.display = 'none';
+      }
+    }
 
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/register-property`, {
-        method: 'POST',
-        body: formData
+    function toggleDepositOther() {
+      const depositVal = document.getElementById('deposit').value;
+      const otherInput = document.getElementById('depositOther');
+      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    function toggleCertOther() {
+      const certVal = document.getElementById('certificate').value;
+      const otherInput = document.getElementById('certOther');
+      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('appLang', lang);
+
+      document.getElementById('btn-km').classList.toggle('active', lang === 'km');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+      const t = translations[lang];
+
+      document.getElementById('header-title').textContent = t.headerTitle;
+      document.getElementById('header-subtitle').textContent = t.headerSubtitle;
+      document.getElementById('sec-owner').textContent = t.secOwner;
+      document.getElementById('lbl-ownerName').textContent = t.lblOwnerName;
+      document.getElementById('lbl-tel1').textContent = t.lblTel1;
+      document.getElementById('lbl-tel2').textContent = t.lblTel2;
+      document.getElementById('lbl-telegram').textContent = t.lblTelegram;
+      
+      document.getElementById('sec-details').textContent = t.secDetails;
+      document.getElementById('lbl-listingType').textContent = t.lblListingType;
+      document.getElementById('opt-list-select').textContent = t.optSelect;
+      document.getElementById('opt-list-sale').textContent = t.optSale;
+      document.getElementById('opt-list-rent').textContent = t.optRent;
+
+      document.getElementById('lbl-propertyType').textContent = t.lblPropertyType;
+      document.getElementById('opt-type-select').textContent = t.optSelect;
+      document.getElementById('opt-type-flat').textContent = t.optFlat;
+      document.getElementById('opt-type-villa').textContent = t.optVilla;
+      document.getElementById('opt-type-condo').textContent = t.optCondo;
+      document.getElementById('opt-type-land').textContent = t.optLand;
+      document.getElementById('opt-type-warehouse').textContent = t.optWarehouse;
+      document.getElementById('opt-type-business').textContent = t.optBusiness;
+
+      document.getElementById('lbl-price').textContent = t.lblPrice;
+      document.getElementById('lbl-location').textContent = t.lblLocation;
+      document.getElementById('lbl-mapLink').textContent = t.lblMapLink;
+      document.getElementById('notice-mapLink').textContent = t.noticeMapLink;
+      document.getElementById('btn-openMap').textContent = t.btnOpenMap;
+      
+      document.getElementById('lbl-landSize').textContent = t.lblLandSize;
+      document.getElementById('lbl-houseSize').textContent = t.lblHouseSize;
+      document.getElementById('lbl-frontSpace').textContent = t.lblFrontSpace;
+      document.getElementById('lbl-backSpace').textContent = t.lblBackSpace;
+      
+      document.getElementById('lbl-bedrooms').textContent = t.lblBedrooms;
+      document.getElementById('opt-bed-select').textContent = t.optSelect;
+      
+      document.getElementById('lbl-bathrooms').textContent = t.lblBathrooms;
+      document.getElementById('opt-bath-select').textContent = t.optSelect;
+
+      document.getElementById('lbl-direction').textContent = t.lblDirection;
+      document.getElementById('opt-dir-select').textContent = t.optSelect;
+      document.getElementById('opt-dir-east').textContent = t.optEast;
+      document.getElementById('opt-dir-west').textContent = t.optWest;
+      document.getElementById('opt-dir-south').textContent = t.optSouth;
+      document.getElementById('opt-dir-north').textContent = t.optNorth;
+      document.getElementById('opt-dir-se').textContent = t.optSE;
+      document.getElementById('opt-dir-ne').textContent = t.optNE;
+      document.getElementById('opt-dir-sw').textContent = t.optSW;
+      document.getElementById('opt-dir-nw').textContent = t.optNW;
+
+      document.getElementById('lbl-deposit').textContent = t.lblDeposit;
+      document.getElementById('opt-dep-1').textContent = t.optDep1;
+      document.getElementById('opt-dep-2').textContent = t.optDep2;
+      document.getElementById('opt-dep-3').textContent = t.optDep3;
+      document.getElementById('opt-dep-other').textContent = t.optDepOther;
+
+      document.getElementById('lbl-rentFee').textContent = t.lblRentFee;
+      document.getElementById('opt-fee-start').textContent = t.optFeeStart;
+      document.getElementById('opt-fee-end').textContent = t.optFeeEnd;
+      document.getElementById('opt-fee-neg').textContent = t.optFeeNeg;
+
+      document.getElementById('lbl-contract').textContent = t.lblContract;
+      document.getElementById('opt-con-3m').textContent = t.optCon3m;
+      document.getElementById('opt-con-6m').textContent = t.optCon6m;
+      document.getElementById('opt-con-1y').textContent = t.optCon1y;
+      document.getElementById('opt-con-2y').textContent = t.optCon2y;
+      document.getElementById('opt-con-3y').textContent = t.optCon3y;
+      document.getElementById('opt-con-neg').textContent = t.optConNeg;
+
+      document.getElementById('lbl-certificate').textContent = t.lblCertificate;
+      document.getElementById('opt-cert-none').textContent = t.optCertNone;
+      document.getElementById('opt-cert-hard').textContent = t.optCertHard;
+      document.getElementById('opt-cert-soft').textContent = t.optCertSoft;
+      document.getElementById('opt-cert-other').textContent = t.optCertOther;
+
+      document.getElementById('lbl-description').textContent = t.lblDescription;
+      document.getElementById('lbl-images').textContent = t.lblImages;
+      document.getElementById('upload-text').textContent = t.uploadText;
+      document.getElementById('btn-web-submit').textContent = t.submitBtn;
+
+      document.getElementById('txt-successHeader').textContent = t.successHeader;
+      document.getElementById('txt-summaryTitle').textContent = t.summaryTitle;
+      document.getElementById('btn-newSubmit').textContent = t.newSubmitBtn;
+
+      document.querySelectorAll('[data-ph-km]').forEach(el => {
+        el.placeholder = el.getAttribute(`data-ph-${lang}`);
       });
 
-      const contentType = response.headers.get("content-type");
-      
-      if (!contentType || !contentType.includes("application/json")) {
-        const errorHtml = await response.text();
-        console.error("Non-JSON Server Response:", errorHtml);
-        throw new Error(`Server returned status ${response.status}. Verify endpoint path & server host URL.`);
-      }
+      renderPreviews();
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        displaySuccessSummary(payloadData, submittedBy);
-      } else {
-        const errMsg = result.error || result.message || 'Failed to submit form.';
-        tg?.showAlert ? tg.showAlert(`Error: ${errMsg}`) : alert(`Error: ${errMsg}`);
+      if (tg && tg.MainButton) {
+        tg.MainButton.setText(t.submitBtn);
       }
-    } catch (err) {
-      console.error('Submission Error:', err);
-      tg?.showAlert ? tg.showAlert(`Server error: ${err.message}`) : alert(`Server error: ${err.message}`);
-    } finally {
-      if (tg) tg.MainButton.hideProgress();
     }
-  };
 
-  function displaySuccessSummary(data, user) {
-    document.getElementById('listingForm').style.display = 'none';
-    const summaryCard = document.getElementById('summaryCard');
-    const content = document.getElementById('summaryContent');
-    
-    content.innerHTML = `
-      <p><strong>ម្ចាស់/Owner:</strong> ${data.ownerName} (${data.tel1})</p>
-      <p><strong>ប្រភេទ/Type:</strong> ${data.listingType} - ${data.propertyType}</p>
-      <p><strong>តម្លៃ/Price:</strong> $${data.price}</p>
-      <p><strong>ទីតាំង/Location:</strong> ${data.location}</p>
-      <p><strong>រូបថត/Photos:</strong> ${selectedFiles.length} files attached</p>
-      <p><small>Submitted by: ${user}</small></p>
-    `;
-    summaryCard.classList.remove('hidden');
-  }
-</script>
+    function previewMap() {
+      const url = document.getElementById('mapLink').value.trim();
+      const container = document.getElementById('map-container');
+      const iframe = document.getElementById('map-iframe');
 
+      if (!url) {
+        container.style.display = 'none';
+        iframe.src = '';
+        return;
+      }
+
+      iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+      container.style.display = 'block';
+    }
+
+    function handleFileSelect(event) {
+      const newFiles = Array.from(event.target.files);
+      const t = translations[currentLang];
+
+      if (selectedFiles.length + newFiles.length > 10) {
+        tg?.showAlert ? tg.showAlert(t.limitAlert) : alert(t.limitAlert);
+        return;
+      }
+
+      selectedFiles = selectedFiles.concat(newFiles);
+      event.target.value = '';
+      renderPreviews();
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      const grid = document.getElementById('preview-grid');
+      const countLabel = document.getElementById('upload-count');
+      const t = translations[currentLang];
+      grid.innerHTML = '';
+
+      if (selectedFiles.length === 0) {
+        countLabel.textContent = t.noImages;
+      } else {
+        countLabel.textContent = `${t.imgCountText} ${selectedFiles.length} ${currentLang === 'km' ? 'រូប' : 'image(s)'}`;
+      }
+
+      selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.onload = () => URL.revokeObjectURL(img.src);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '✕';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeFile(index);
+        };
+
+        item.appendChild(img);
+        item.appendChild(removeBtn);
+        grid.appendChild(item);
+      });
+    }
+
+    function displaySuccessSummary(data, submittedBy) {
+      const container = document.getElementById('summaryContent');
+      let html = `
+        <div style="margin-bottom:8px;">
+          🏠 <strong>${data.listingType} ${data.propertyType}</strong><br>
+          📍 <strong>Location:</strong> ${data.location}<br>
+          • <strong>Price:</strong> $${data.price}
+        </div>
+        <ul>
+      `;
+
+      if (data.landSize) html += `<li>• <strong>Land Size:</strong> ${data.landSize}</li>`;
+      if (data.houseSize) html += `<li>• <strong>House Size:</strong> ${data.houseSize}</li>`;
+      if (data.frontSpace || data.backSpace) {
+        html += `<li>• <strong>Front:</strong> ${data.frontSpace || 'N/A'} | <strong>Back:</strong> ${data.backSpace || 'N/A'}</li>`;
+      }
+      html += `<li>• <strong>Bed:</strong> ${data.bedrooms} | <strong>Bath:</strong> ${data.bathrooms}</li>`;
+      if (data.direction) html += `<li>• <strong>Direction:</strong> ${data.direction}</li>`;
+
+      if (data.deposit || data.rentFee || data.contract) {
+        html += `<li>• <strong>Terms:</strong> Deposit ${data.deposit || 'N/A'} | Fee ${data.rentFee || 'N/A'} | Contract ${data.contract || 'N/A'}</li>`;
+      }
+      if (data.certificate) {
+        html += `<li>• <strong>Certificate:</strong> ${data.certificate}</li>`;
+      }
+
+      html += `</ul>`;
+
+      if (data.description) {
+        html += `
+          <div style="margin-top:8px;">
+            📝 <strong>Notes:</strong><br>${data.description}
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="divider"></div>
+        <div>
+          👤 <strong>Owner Info:</strong>
+          <ul>
+            <li>• <strong>Name:</strong> ${data.ownerName}</li>
+            <li>• <strong>Tel:</strong> ${data.tel1} ${data.tel2 ? '/ ' + data.tel2 : ''}</li>
+            ${data.telegram ? `<li>• <strong>Telegram:</strong> ${data.telegram}</li>` : ''}
+          </ul>
+        </div>
+        <div style="margin-top:8px; font-size:11px; color:#64748b;">
+          <strong>Submitted by:</strong> ${submittedBy}
+        </div>
+      `;
+
+      container.innerHTML = html;
+      document.getElementById('listingForm').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+
+      if (tg && tg.MainButton) {
+        tg.MainButton.hide();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetFormView() {
+      document.getElementById('listingForm').reset();
+      selectedFiles = [];
+      renderPreviews();
+      togglePurposeSections();
+      document.getElementById('map-container').style.display = 'none';
+
+      document.getElementById('successView').style.display = 'none';
+      document.getElementById('listingForm').style.display = 'block';
+
+      if (tg && tg.MainButton) {
+        tg.MainButton.show();
+      }
+    }
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setBackgroundColor('#f8fafc');
+      tg.MainButton.show();
+    }
+
+    const submitForm = async () => {
+      const t = translations[currentLang];
+      const form = document.getElementById('listingForm');
+      
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      if (selectedFiles.length === 0) {
+        tg?.showAlert ? tg.showAlert(t.minImgAlert) : alert(t.minImgAlert);
+        return;
+      }
+
+      if (tg) tg.MainButton.showProgress();
+
+      const user = tg?.initDataUnsafe?.user;
+      const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
+
+      const listingTypeVal = document.getElementById('listingType').value;
+      const isRent = listingTypeVal === 'ជួល' || listingTypeVal === 'For Rent';
+      const isSale = listingTypeVal === 'លក់' || listingTypeVal === 'For Sale';
+
+      let depositVal = '';
+      let rentFeeVal = '';
+      let contractVal = '';
+      if (isRent) {
+        const depSelect = document.getElementById('deposit');
+        depositVal = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
+          ? document.getElementById('depositOther').value 
+          : depSelect.options[depSelect.selectedIndex].text;
+          
+        const rentFeeSelect = document.getElementById('rentFee');
+        rentFeeVal = rentFeeSelect.options[rentFeeSelect.selectedIndex].text;
+
+        const contractSelect = document.getElementById('contract');
+        contractVal = contractSelect.options[contractSelect.selectedIndex].text;
+      }
+
+      let certVal = '';
+      if (isSale) {
+        const certSelect = document.getElementById('certificate');
+        certVal = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
+          ? document.getElementById('certOther').value
+          : certSelect.options[certSelect.selectedIndex].text;
+      }
+
+      const payloadData = {
+        ownerName: document.getElementById('ownerName').value,
+        tel1: document.getElementById('tel1').value,
+        tel2: document.getElementById('tel2').value,
+        telegram: document.getElementById('telegram').value,
+        listingType: listingTypeVal,
+        propertyType: document.getElementById('propertyType').value,
+        price: document.getElementById('price').value,
+        location: document.getElementById('location').value,
+        mapLink: document.getElementById('mapLink').value,
+        landSize: document.getElementById('landSize').value,
+        houseSize: document.getElementById('houseSize').value,
+        frontSpace: document.getElementById('frontSpace').value,
+        backSpace: document.getElementById('backSpace').value,
+        bedrooms: document.getElementById('bedrooms').value,
+        bathrooms: document.getElementById('bathrooms').value,
+        direction: document.getElementById('direction').value,
+        deposit: depositVal,
+        rentFee: rentFeeVal,
+        contract: contractVal,
+        certificate: certVal,
+        description: document.getElementById('description').value,
+        submittedBy: submittedBy
+      };
+
+      const formData = new FormData();
+      Object.keys(payloadData).forEach(key => {
+        formData.append(key, payloadData[key]);
+      });
+
+      selectedFiles.forEach(file => {
+        formData.append('photos', file);
+      });
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/register-property`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const errorText = await response.text();
+          console.error("Non-JSON Response:", errorText);
+          throw new Error(`Endpoint returned HTTP status ${response.status}. Check API route setup.`);
+        }
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          displaySuccessSummary(payloadData, submittedBy);
+        } else {
+          const errMsg = result.error || result.message || 'Failed to send data to Telegram.';
+          tg?.showAlert ? tg.showAlert(`Error: ${errMsg}`) : alert(`Error: ${errMsg}`);
+        }
+      } catch (err) {
+        console.error('Submission Error:', err);
+        tg?.showAlert ? tg.showAlert(`Server error: ${err.message}`) : alert(`Server error: ${err.message}`);
+      } finally {
+        if (tg) tg.MainButton.hideProgress();
+      }
+    };
+
+    if (tg) {
+      tg.MainButton.onClick(submitForm);
+    }
+
+    document.getElementById('listingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitForm();
+    });
+
+    switchLanguage(currentLang);
+  </script>
 </body>
 </html>
