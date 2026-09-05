@@ -667,22 +667,22 @@
     const phoneText = payload.tel2 ? `${payload.tel1} / ${payload.tel2}` : payload.tel1;
 
     let summaryText = isKh ? `👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)\n\n` : `👤 CLIENT INQUIRY SUMMARY\n\n`;
-    summaryText += isKh ? `🔍 ភ្ញៀវកំពុងស្វែងរក៖\n` : `🔍 Target Requirement:\n`;
+    summaryText += isKh ? `🔍 ខ្ញុំកំពុងស្វែងរក៖\n` : `🔍 I'm Looking for:\n`;
     summaryText += `🏠 ${payload.listingType} ${payload.propertyType}\n`;
-    summaryText += isKh ? `📍 តំបន់: ${payload.targetLocation || 'មិនមាន'}\n` : `📍 Location: ${payload.targetLocation || 'N/A'}\n`;
+    summaryText += isKh ? `📍 តំបន់: ${payload.targetLocation || 'មិនមាន'}\n` : `📍 Target Area: ${payload.targetLocation || 'N/A'}\n`;
     summaryText += isKh ? `• តម្លៃចន្លោះ : $${payload.budget ? Number(payload.budget).toLocaleString() : 'មិនមាន'}\n` : `• Budget : $${payload.budget ? Number(payload.budget).toLocaleString() : 'N/A'}\n`;
 
     if (payload.listingType === 'Rent' || payload.listingType === 'ជួល') {
-      if (payload.preferredTerm) summaryText += isKh ? `• រយៈពេលកុងត្រា: ${payload.preferredTerm}\n` : `• Term : ${payload.preferredTerm}\n`;
+      if (payload.preferredTerm) summaryText += isKh ? `• អាចកុងត្រា : ${payload.preferredTerm}\n` : `• Term : ${payload.preferredTerm}\n`;
     }
 
     if (payload.landSize) summaryText += isKh ? `• ទំហំដី : ${payload.landSize}\n` : `• Land Size : ${payload.landSize}\n`;
     if (payload.buildingSize) summaryText += isKh ? `• ទំហំអាគារ : ${payload.buildingSize}\n` : `• Building Size : ${payload.buildingSize}\n`;
-    summaryText += isKh ? `• បន្ទប់គេង : ${bed}  |  បន្ទប់ទឹក: ${bath}\n` : `• Bed : ${bed}  |  Bath: ${bath}\n`;
-    summaryText += isKh ? `• ទិសបែទៅ : ${dir}\n` : `• Direction : ${dir}\n`;
-    summaryText += isKh ? `• ចំណត : ${payload.parkingNeeded || 'មិនមាន'}\n` : `• Parking : ${payload.parkingNeeded || 'N/A'}\n`;
-    summaryText += isKh ? `• គោលបំណង : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
-    summaryText += isKh ? `📝 សម្គាល់បន្ថែម\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
+    summaryText += isKh ? `• បន្ទប់គេង : ${bed}  |  បន្ទប់ទឹក : ${bath}\n` : `• Bed : ${bed}  |  Bath : ${bath}\n`;
+    summaryText += isKh ? `• ទិសបែរមុខទៅ : ${dir}\n` : `• Direction : ${dir}\n`;
+    summaryText += isKh ? `• ចំណតត្រូវការ : ${payload.parkingNeeded || 'មិនមាន'}\n` : `• Parking : ${payload.parkingNeeded || 'N/A'}\n`;
+    summaryText += isKh ? `• គោលដៅសម្រាប់ : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
+    summaryText += isKh ? `📝 កំណត់សម្គាល់\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
     summaryText += `———————————\n`;
     summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន៖\n` : `👤 Client Info:\n`;
     summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name: ${payload.clientName}\n`;
