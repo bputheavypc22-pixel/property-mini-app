@@ -3,28 +3,42 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
-const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
-// Environment variables mapped directly to your Render settings
+// Environment variables mapped directly to your Render setup
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.CHAT_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID;
 
-// Enable Telegram Bot Polling so /start command works directly in chat
-let bot = null;
+// Lightweight Telegram /start handler (Uses native axios, no extra packages required)
 if (BOT_TOKEN) {
-  bot = new TelegramBot(BOT_TOKEN, { polling: true });
-
-  // Respond to /start command
-  bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    const welcomeText = `សូមស្វាគមន៍មកកាន់ Twenty5Realty! សូមចុច Open Form ដើម្បីបំពេញបែបបទ។\n\nWelcome to Twenty5Realty! Please Click Open Form to get the Form.`;
-    bot.sendMessage(chatId, welcomeText);
-  });
+  let lastUpdateId = 0;
+  const pollTelegram = async () => {
+    try {
+      const res = await axios.get(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`, {
+        params: { offset: lastUpdateId + 1, timeout: 5 }
+      });
+      if (res.data?.ok && res.data.result.length > 0) {
+        for (const update of res.data.result) {
+          lastUpdateId = update.update_id;
+          if (update.message?.text === '/start') {
+            await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+              chat_id: update.message.chat.id,
+              text: `សូមស្វាគមន៍មកកាន់ Twenty5Realty! សូមចុច Open Form ដើម្បីបំពេញបែបបទ。\n\nWelcome to Twenty5Realty! Please Click Open Form to get the Form.`
+            });
+          }
+        }
+      }
+    } catch (err) {
+      // Ignore polling timeout errors
+    } finally {
+      setTimeout(pollTelegram, 2000);
+    }
+  };
+  pollTelegram();
 } else {
   console.error("CRITICAL ERROR: TELEGRAM_BOT_TOKEN is missing on Render settings!");
 }
@@ -82,7 +96,6 @@ app.post('/api/client-inquiry', async (req, res) => {
       parse_mode: 'HTML'
     };
 
-    // Forward to Client Inquiry topic thread if configured
     if (CLIENT_TOPIC_ID) {
       payload.message_thread_id = Number(CLIENT_TOPIC_ID);
     }
@@ -115,7 +128,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     const data = req.body;
     const files = req.files || [];
 
-    // Format display choices
     let depositDisplay = data.deposit || 'N/A';
     if ((data.deposit === 'ផ្សេងៗ' || data.deposit === 'Other') && data.depositOther) {
       depositDisplay = `${data.deposit} (${data.depositOther})`;
@@ -126,7 +138,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       certDisplay = `${data.certificate} (${data.certOther})`;
     }
 
-    // Build Telegram property message
     let messageText = `<b>🏠 ព័ត៌មានអចលនទ្រព្យ / Property Listing</b>\n\n`;
     messageText += `<b>👤 ព័ត៌មានម្ចាស់ / Owner Details:</b>\n`;
     messageText += `• ឈ្មោះ / Name: <b>${data.ownerName || 'N/A'}</b>\n`;
@@ -166,7 +177,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     messageText += `\n<b>📩 បញ្ជូនដោយ / Submitted By:</b> ${data.submittedBy || 'Web Form'}`;
 
     if (files.length === 1) {
-      // Single photo payload
       const formData = new FormData();
       formData.append('chat_id', CHAT_ID);
       if (PROPERTY_TOPIC_ID) formData.append('message_thread_id', PROPERTY_TOPIC_ID);
@@ -178,7 +188,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
         headers: formData.getHeaders()
       });
     } else if (files.length > 1) {
-      // Multi-photo Media Group payload
       const formData = new FormData();
       formData.append('chat_id', CHAT_ID);
       if (PROPERTY_TOPIC_ID) formData.append('message_thread_id', PROPERTY_TOPIC_ID);
@@ -200,7 +209,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
         headers: formData.getHeaders()
       });
     } else {
-      // Text-only payload fallback
       const payload = {
         chat_id: CHAT_ID,
         text: messageText,
