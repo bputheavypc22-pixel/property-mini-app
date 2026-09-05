@@ -217,15 +217,19 @@
     <p id="t_subTitle">Client Property Requirement Form</p>
   </div>
 
-  <!-- Success Summary Container (Hidden by default) -->
   <div id="summaryCard" class="hidden">
     <div style="color: #16a34a; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; text-align: center;">
       ✅ <span id="t_successTitle">Submitted Successfully!</span>
     </div>
     <div id="summaryContent"></div>
-    <button type="button" class="submit-btn" style="background-color: #64748b; margin-top: 16px;" onclick="window.location.reload()">
-      <span id="t_btnReload">New Submission</span>
-    </button>
+    <div class="row" style="margin-top: 16px;">
+      <button type="button" class="submit-btn" style="background-color: #64748b; margin-top: 0;" onclick="window.location.reload()">
+        <span id="t_btnReload">New Submission</span>
+      </button>
+      <button type="button" class="submit-btn" style="background-color: #ef4444; margin-top: 0;" onclick="closeApp()">
+        <span id="t_btnClose">Close</span>
+      </button>
+    </div>
   </div>
 
   <form id="inquiryForm">
@@ -427,6 +431,7 @@
       submitBtn: "SUBMIT INQUIRY",
       successTitle: "Submitted Successfully!",
       btnReload: "New Submission",
+      btnClose: "Close",
       placeholderClient: "e.g. Chan Sokha",
       placeholderLandSize: "e.g. 10m x 20m or 500 sqm",
       placeholderBuildingSize: "e.g. 8m x 15m or 300 sqm",
@@ -490,6 +495,7 @@
       submitBtn: "បញ្ជូនទិន្នន័យ",
       successTitle: "ផ្ញើបានជោគជ័យ!",
       btnReload: "បំពេញទម្រង់ថ្មី",
+      btnClose: "បិទ",
       placeholderClient: "ឧ. ចាន់ សុខា",
       placeholderLandSize: "ឧ. 10m x 20m ឬ 500 ម៉ែត្រការ៉េ",
       placeholderBuildingSize: "ឧ. 8m x 15m ឬ 300 ម៉ែត្រការ៉េ",
@@ -564,6 +570,7 @@
 
     document.getElementById('t_successTitle').innerText = t.successTitle;
     document.getElementById('t_btnReload').innerText = t.btnReload;
+    document.getElementById('t_btnClose').innerText = t.btnClose;
 
     // Placeholders
     document.getElementById('clientName').placeholder = t.placeholderClient;
@@ -640,6 +647,15 @@
     document.getElementById('opt_purpose_living').value = t.optPurposeLiving;
     document.getElementById('opt_purpose_business').innerText = t.optPurposeBusiness;
     document.getElementById('opt_purpose_business').value = t.optPurposeBusiness;
+  }
+
+  // Close web app function
+  function closeApp() {
+    if (tg && typeof tg.close === 'function') {
+      tg.close();
+    } else {
+      window.close();
+    }
   }
 
   // Context user extraction
@@ -800,29 +816,31 @@
         summaryText += isKh ? `• គោលបំណង : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
         summaryText += isKh ? `📝 សម្គាល់បន្ថែម\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
         summaryText += `———————————\n`;
-        summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន\n` : `👤 Client Info:\n`;
-        summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name : ${payload.clientName}\n`;
-        summaryText += `• Tel: ${phoneText}\n`;
-        summaryText += `• Telegram: ${payload.telegram || (isKh ? 'មិនមាន' : 'N/A')}\n\n`;
-        if (payload.submittedBy) summaryText += `Submitted by: ${payload.submittedBy}\n`;
+        summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន៖\n` : `👤 Client Info:\n`;
+        summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name: ${payload.clientName}\n`;
+        summaryText += isKh ? `• ទូរស័ព្ទ: ${phoneText}\n` : `• Phone: ${phoneText}\n`;
+        if (payload.telegram) summaryText += `• Telegram: ${payload.telegram}\n`;
+        if (payload.submittedBy) summaryText += isKh ? `• បញ្ជូនដោយ: ${payload.submittedBy}\n` : `• Submitted By: ${payload.submittedBy}\n`;
 
-        // Render Summary Card
         document.getElementById('summaryContent').innerText = summaryText;
         document.getElementById('summaryCard').classList.remove('hidden');
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Optional Telegram WebApp sendData signal
+        if (tg && typeof tg.sendData === 'function') {
+          tg.sendData(JSON.stringify(payload));
+        }
       } else {
-        alert('Error: ' + (result.error || 'Please try again.'));
+        alert(result.error || (currentLang === 'kh' ? 'មានបញ្ហាក្នុងការបញ្ជូនទិន្នន័យ' : 'Failed to submit form.'));
+        btn.disabled = false;
+        btn.innerText = currentLang === 'kh' ? 'បញ្ជូនទិន្នន័យ' : 'SUBMIT INQUIRY';
       }
     } catch (err) {
-      console.error(err);
-      alert('Error: ' + err.message);
-    } finally {
+      console.error('Submission error:', err);
+      alert(currentLang === 'kh' ? 'មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server' : 'Server connection error. Please try again.');
       btn.disabled = false;
-      btn.innerText = translations[currentLang].submitBtn;
+      btn.innerText = currentLang === 'kh' ? 'បញ្ជូនទិន្នន័យ' : 'SUBMIT INQUIRY';
     }
   });
 </script>
-
 </body>
 </html>
