@@ -217,6 +217,7 @@
     <p id="t_subTitle">Client Property Requirement Form</p>
   </div>
 
+  <!-- Success Summary Container (Hidden by default) -->
   <div id="summaryCard" class="hidden">
     <div style="color: #16a34a; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; text-align: center;">
       ✅ <span id="t_successTitle">Submitted Successfully!</span>
@@ -400,6 +401,9 @@
     tg.ready();
     tg.expand();
   }
+
+  // Global Payload Reference for Re-Rendering Summary on Language Switch
+  let lastSubmittedPayload = null;
 
   // Multi-Language Dictionaries
   const translations = {
@@ -647,6 +651,46 @@
     document.getElementById('opt_purpose_living').value = t.optPurposeLiving;
     document.getElementById('opt_purpose_business').innerText = t.optPurposeBusiness;
     document.getElementById('opt_purpose_business').value = t.optPurposeBusiness;
+
+    // Re-render summary text in active language if summary is currently displayed
+    if (lastSubmittedPayload && !document.getElementById('summaryCard').classList.contains('hidden')) {
+      renderSummaryText(lastSubmittedPayload);
+    }
+  }
+
+  // Render Summary Text in Current Selected Language
+  function renderSummaryText(payload) {
+    const isKh = currentLang === 'kh';
+    const bed = payload.bedrooms && payload.bedrooms !== 'Any' && payload.bedrooms !== 'មិនកំណត់' ? payload.bedrooms : (isKh ? 'មិនកំណត់' : 'N/A');
+    const bath = payload.bathrooms && payload.bathrooms !== 'Any' && payload.bathrooms !== 'មិនកំណត់' ? payload.bathrooms : (isKh ? 'មិនកំណត់' : 'N/A');
+    const dir = payload.direction && payload.direction !== 'Not Required' && payload.direction !== 'មិនកំណត់' ? payload.direction : (isKh ? 'មិនកំណត់' : 'N/A');
+    const phoneText = payload.tel2 ? `${payload.tel1} / ${payload.tel2}` : payload.tel1;
+
+    let summaryText = isKh ? `👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)\n\n` : `👤 CLIENT INQUIRY SUMMARY\n\n`;
+    summaryText += isKh ? `🔍 ភ្ញៀវកំពុងស្វែងរក៖\n` : `🔍 Target Requirement:\n`;
+    summaryText += `🏠 ${payload.listingType} ${payload.propertyType}\n`;
+    summaryText += isKh ? `📍 តំបន់: ${payload.targetLocation || 'មិនមាន'}\n` : `📍 Location: ${payload.targetLocation || 'N/A'}\n`;
+    summaryText += isKh ? `• តម្លៃចន្លោះ : $${payload.budget ? Number(payload.budget).toLocaleString() : 'មិនមាន'}\n` : `• Budget : $${payload.budget ? Number(payload.budget).toLocaleString() : 'N/A'}\n`;
+
+    if (payload.listingType === 'Rent' || payload.listingType === 'ជួល') {
+      if (payload.preferredTerm) summaryText += isKh ? `• រយៈពេលកុងត្រា: ${payload.preferredTerm}\n` : `• Term : ${payload.preferredTerm}\n`;
+    }
+
+    if (payload.landSize) summaryText += isKh ? `• ទំហំដី : ${payload.landSize}\n` : `• Land Size : ${payload.landSize}\n`;
+    if (payload.buildingSize) summaryText += isKh ? `• ទំហំអាគារ : ${payload.buildingSize}\n` : `• Building Size : ${payload.buildingSize}\n`;
+    summaryText += isKh ? `• បន្ទប់គេង : ${bed}  |  បន្ទប់ទឹក: ${bath}\n` : `• Bed : ${bed}  |  Bath: ${bath}\n`;
+    summaryText += isKh ? `• ទិសបែទៅ : ${dir}\n` : `• Direction : ${dir}\n`;
+    summaryText += isKh ? `• ចំណត : ${payload.parkingNeeded || 'មិនមាន'}\n` : `• Parking : ${payload.parkingNeeded || 'N/A'}\n`;
+    summaryText += isKh ? `• គោលបំណង : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
+    summaryText += isKh ? `📝 សម្គាល់បន្ថែម\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
+    summaryText += `———————————\n`;
+    summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន៖\n` : `👤 Client Info:\n`;
+    summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name: ${payload.clientName}\n`;
+    summaryText += isKh ? `• ទូរស័ព្ទ: ${phoneText}\n` : `• Phone: ${phoneText}\n`;
+    if (payload.telegram) summaryText += `• Telegram: ${payload.telegram}\n`;
+    if (payload.submittedBy) summaryText += isKh ? `• បញ្ជូនដោយ: ${payload.submittedBy}\n` : `• Submitted By: ${payload.submittedBy}\n`;
+
+    document.getElementById('summaryContent').innerText = summaryText;
   }
 
   // Close web app function
@@ -767,8 +811,11 @@
       parkingNeeded: document.getElementById('parkingNeeded')?.value || '',
       purpose: combinedPurpose,
       description: document.getElementById('description')?.value || '',
-      submittedBy: document.getElementById('submittedBy')?.value || ''
+      submittedBy: document.getElementById('submittedBy')?.value || '',
+      language: currentLang
     };
+
+    lastSubmittedPayload = payload;
 
     try {
       const response = await fetch('/api/client-inquiry', {
@@ -791,38 +838,8 @@
         // Hide Form
         document.getElementById('inquiryForm').classList.add('hidden');
 
-        // Build Summary Text
-        const isKh = currentLang === 'kh';
-        const bed = payload.bedrooms && payload.bedrooms !== 'Any' && payload.bedrooms !== 'មិនកំណត់' ? payload.bedrooms : (isKh ? 'មិនកំណត់' : 'N/A');
-        const bath = payload.bathrooms && payload.bathrooms !== 'Any' && payload.bathrooms !== 'មិនកំណត់' ? payload.bathrooms : (isKh ? 'មិនកំណត់' : 'N/A');
-        const dir = payload.direction && payload.direction !== 'Not Required' && payload.direction !== 'មិនកំណត់' ? payload.direction : (isKh ? 'មិនកំណត់' : 'N/A');
-        const phoneText = payload.tel2 ? `${payload.tel1} / ${payload.tel2}` : payload.tel1;
-
-        let summaryText = isKh ? `👤 ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)\n\n` : `👤 CLIENT INQUIRY SUMMARY\n\n`;
-        summaryText += isKh ? `🔍 ភ្ញៀវកំពុងស្វែងរក៖\n` : `🔍 Target Requirement:\n`;
-        summaryText += `🏠 ${payload.listingType} ${payload.propertyType}\n`;
-        summaryText += isKh ? `📍 តំបន់: ${payload.targetLocation || 'មិនមាន'}\n` : `📍 Location: ${payload.targetLocation || 'N/A'}\n`;
-        summaryText += isKh ? `• តម្លៃចន្លោះ : $${payload.budget ? Number(payload.budget).toLocaleString() : 'មិនមាន'}\n` : `• Budget : $${payload.budget ? Number(payload.budget).toLocaleString() : 'N/A'}\n`;
-
-        if (payload.listingType === 'Rent' || payload.listingType === 'ជួល') {
-          if (payload.preferredTerm) summaryText += isKh ? `• រយៈពេលកុងត្រា: ${payload.preferredTerm}\n` : `• Term : ${payload.preferredTerm}\n`;
-        }
-
-        if (payload.landSize) summaryText += isKh ? `• ទំហំដី : ${payload.landSize}\n` : `• Land Size : ${payload.landSize}\n`;
-        if (payload.buildingSize) summaryText += isKh ? `• ទំហំអាគារ : ${payload.buildingSize}\n` : `• Building Size : ${payload.buildingSize}\n`;
-        summaryText += isKh ? `• បន្ទប់គេង : ${bed}  |  បន្ទប់ទឹក: ${bath}\n` : `• Bed : ${bed}  |  Bath: ${bath}\n`;
-        summaryText += isKh ? `• ទិសបែទៅ : ${dir}\n` : `• Direction : ${dir}\n`;
-        summaryText += isKh ? `• ចំណត : ${payload.parkingNeeded || 'មិនមាន'}\n` : `• Parking : ${payload.parkingNeeded || 'N/A'}\n`;
-        summaryText += isKh ? `• គោលបំណង : ${payload.purpose || 'មិនមាន'}\n\n` : `• Purpose : ${payload.purpose || 'N/A'}\n\n`;
-        summaryText += isKh ? `📝 សម្គាល់បន្ថែម\n${payload.description || 'មិនមាន'}\n\n` : `📝 Notes:\n${payload.description || 'None'}\n\n`;
-        summaryText += `———————————\n`;
-        summaryText += isKh ? `👤 ព័ត៌មានអតិថិជន៖\n` : `👤 Client Info:\n`;
-        summaryText += isKh ? `• ឈ្មោះ: ${payload.clientName}\n` : `• Name: ${payload.clientName}\n`;
-        summaryText += isKh ? `• ទូរស័ព្ទ: ${phoneText}\n` : `• Phone: ${phoneText}\n`;
-        if (payload.telegram) summaryText += `• Telegram: ${payload.telegram}\n`;
-        if (payload.submittedBy) summaryText += isKh ? `• បញ្ជូនដោយ: ${payload.submittedBy}\n` : `• Submitted By: ${payload.submittedBy}\n`;
-
-        document.getElementById('summaryContent').innerText = summaryText;
+        // Build and display summary text in current selected language
+        renderSummaryText(payload);
         document.getElementById('summaryCard').classList.remove('hidden');
 
         // Optional Telegram WebApp sendData signal
