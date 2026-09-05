@@ -1,293 +1,604 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Twenty5 Realty - Property Form</title>
+  <title>Twenty5Realty - Property Listing</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    :root {
+      --primary-color: #0072bc;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --border-color: #e2e8f0;
+      --input-bg: #f8fafc;
+      --focus-ring: rgba(0, 114, 188, 0.2);
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
-      padding: 15px;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
     }
+
     .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #007bf5;
-      margin-bottom: 20px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    input, select, textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      max-width: 440px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      padding: 20px;
       box-sizing: border-box;
     }
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #007bf5;
-      color: white;
+
+    /* Top Bar Header */
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .lang-btn {
       border: none;
-      border-radius: 5px;
-      font-weight: bold;
+      background: transparent;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 16px;
+      color: #64748b;
+      transition: all 0.2s ease;
     }
-    button:disabled {
-      background-color: #cccccc;
+
+    .lang-btn.active {
+      background: var(--primary-color);
+      color: #ffffff;
     }
-    #statusMessage {
-      margin-top: 15px;
+
+    /* Logo & Header */
+    .header {
       text-align: center;
-      font-weight: bold;
+      margin-bottom: 24px;
+    }
+
+    .logo-img {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 12px;
+    }
+
+    .header h2 {
+      margin: 0 0 4px 0;
+      color: #0f172a;
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin: 20px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.825rem;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    label .required {
+      color: #ef4444;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #0f172a;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-color);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row .form-group {
+      flex: 1;
+    }
+
+    button.submit-btn {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 16px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    button.submit-btn:hover {
+      background-color: #005a96;
+    }
+
+    button.submit-btn:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Summary Card Styling */
+    #summaryCard {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    #summaryContent {
+      font-family: inherit;
+      white-space: pre-wrap;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: #0f172a;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>🏠 ចុះបញ្ជីអចលនទ្រព្យ / Property Listing</h2>
-  
+  <div class="top-bar">
+    <div class="lang-toggle">
+      <button type="button" class="lang-btn" id="btnKH" onclick="setLanguage('kh')">KH ខ្មែរ</button>
+      <button type="button" class="lang-btn active" id="btnEN" onclick="setLanguage('en')">GB EN</button>
+    </div>
+  </div>
+
+  <div class="header">
+    <img src="/logo.png" alt="Twenty5Realty Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x60?text=25Realty';">
+    <h2>🏠 <span id="t_mainTitle">Property Listing</span></h2>
+    <p id="t_subTitle">Property Details Form</p>
+  </div>
+
+  <!-- Success Summary Container -->
+  <div id="summaryCard" class="hidden">
+    <div style="color: #16a34a; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; text-align: center;">
+      ✅ <span id="t_successTitle">Submitted Successfully!</span>
+    </div>
+    <div id="summaryContent"></div>
+    <button type="button" class="submit-btn" style="background-color: #64748b; margin-top: 16px;" onclick="window.location.reload()">
+      <span id="t_btnReload">New Submission</span>
+    </button>
+  </div>
+
   <form id="propertyForm">
-    <!-- Owner Info -->
-    <div class="form-group">
-      <label>ឈ្មោះម្ចាស់ / Owner Name *</label>
-      <input type="text" id="ownerName" required>
+    <div class="section-title">📌 <span id="t_secProperty">Property Information</span></div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_listingType">Target</span> <span class="required">*</span></label>
+        <select id="listingType" name="listingType" required onchange="toggleTerms()">
+          <option value="ជួល" id="opt_rent">For Rent</option>
+          <option value="លក់" id="opt_sale">For Sale</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><span id="t_propertyType">Property Type</span> <span class="required">*</span></label>
+        <input type="text" id="propertyType" name="propertyType" placeholder="e.g. House, Land, Condo" required>
+      </div>
     </div>
 
     <div class="form-group">
-      <label>លេខទូរស័ព្ទ ១ / Tel 1 *</label>
-      <input type="tel" id="tel1" required>
+      <label><span id="t_location">Location</span> <span class="required">*</span></label>
+      <input type="text" id="location" name="location" placeholder="e.g. Near KC Market, Sen Sok" required>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_price">Price ($)</span> <span class="required">*</span></label>
+        <input type="number" id="price" name="price" placeholder="e.g. 250" required>
+      </div>
+      <div class="form-group">
+        <label><span id="t_mapLink">Google Maps Link</span></label>
+        <input type="url" id="mapLink" name="mapLink" placeholder="https://maps.app.goo.gl/...">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_landSize">Land Size</span></label>
+        <input type="text" id="landSize" name="landSize" placeholder="e.g. 4.2x20">
+      </div>
+      <div class="form-group">
+        <label><span id="t_houseSize">House Size</span></label>
+        <input type="text" id="houseSize" name="houseSize" placeholder="e.g. 4.2x15">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_frontSpace">Front Space</span></label>
+        <input type="text" id="frontSpace" name="frontSpace" placeholder="e.g. 4m">
+      </div>
+      <div class="form-group">
+        <label><span id="t_backSpace">Back Space</span></label>
+        <input type="text" id="backSpace" name="backSpace" placeholder="e.g. 1m">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_bedrooms">Bedrooms</span></label>
+        <input type="text" id="bedrooms" name="bedrooms" placeholder="e.g. 2">
+      </div>
+      <div class="form-group">
+        <label><span id="t_bathrooms">Bathrooms</span></label>
+        <input type="text" id="bathrooms" name="bathrooms" placeholder="e.g. 3">
+      </div>
     </div>
 
     <div class="form-group">
-      <label>លេខទូរស័ព្ទ ២ / Tel 2</label>
-      <input type="tel" id="tel2">
+      <label><span id="t_direction">Direction</span></label>
+      <input type="text" id="direction" name="direction" placeholder="e.g. South">
+    </div>
+
+    <!-- Rental / Sale Specific Terms -->
+    <div id="rentalTermsGroup">
+      <div class="row">
+        <div class="form-group">
+          <label><span id="t_deposit">Deposit</span></label>
+          <input type="text" id="deposit" name="deposit" placeholder="e.g. 1 month">
+        </div>
+        <div class="form-group">
+          <label><span id="t_rentFee">Rent Fee Payment</span></label>
+          <input type="text" id="rentFee" name="rentFee" placeholder="e.g. Advance 1 month">
+        </div>
+      </div>
+      <div class="form-group">
+        <label><span id="t_contract">Contract Term</span></label>
+        <input type="text" id="contract" name="contract" placeholder="e.g. 1 year">
+      </div>
+    </div>
+
+    <div id="saleTermsGroup" class="hidden">
+      <div class="form-group">
+        <label><span id="t_certificate">Title Certificate</span></label>
+        <input type="text" id="certificate" name="certificate" placeholder="e.g. Hard Title / Soft Title">
+      </div>
     </div>
 
     <div class="form-group">
-      <label>Telegram</label>
-      <input type="text" id="telegram">
-    </div>
-
-    <!-- Property Details -->
-    <div class="form-group">
-      <label>គោលបំណង / Purpose *</label>
-      <select id="listingType" required>
-        <option value="ជួល">ជួល / For Rent</option>
-        <option value="លក់">លក់ / For Sale</option>
-      </select>
+      <label><span id="t_propertyId">Property ID</span></label>
+      <input type="text" id="propertyId" name="propertyId" placeholder="e.g. 25R-001">
     </div>
 
     <div class="form-group">
-      <label>ប្រភេទ / Property Type *</label>
-      <input type="text" id="propertyType" placeholder="ឧ. ផ្ទះល្វែង, ដី, ខុនដូ" required>
+      <label><span id="t_description">Additional Notes</span></label>
+      <textarea id="description" name="description" rows="3" placeholder="e.g. Commission 50%..."></textarea>
+    </div>
+
+    <div class="section-title">👤 <span id="t_secOwner">Owner Information</span></div>
+
+    <div class="form-group">
+      <label><span id="t_ownerName">Owner Name</span> <span class="required">*</span></label>
+      <input type="text" id="ownerName" name="ownerName" placeholder="e.g. John Doe" required>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label><span id="t_tel1">Phone Number 1</span> <span class="required">*</span></label>
+        <input type="tel" id="tel1" name="tel1" placeholder="012 345 678" required>
+      </div>
+      <div class="form-group">
+        <label><span id="t_tel2">Phone Number 2</span></label>
+        <input type="tel" id="tel2" name="tel2" placeholder="098 765 432">
+      </div>
     </div>
 
     <div class="form-group">
-      <label>តម្លៃ ($) / Price ($) *</label>
-      <input type="number" id="price" required>
+      <label><span id="t_telegram">Telegram Account</span></label>
+      <input type="text" id="telegram" name="telegram" placeholder="098 765 432 or @username">
     </div>
 
     <div class="form-group">
-      <label>ទីតាំង / Location *</label>
-      <input type="text" id="location" required>
+      <label><span id="t_photos">Property Photos (Max 10)</span></label>
+      <input type="file" id="photos" name="photos" accept="image/*" multiple>
     </div>
 
-    <div class="form-group">
-      <label>Google Maps Link</label>
-      <input type="url" id="mapLink">
-    </div>
+    <input type="hidden" id="submittedBy" name="submittedBy">
 
-    <!-- Dimensions -->
-    <div class="form-group">
-      <label>ទំហំដី / Land Size</label>
-      <input type="text" id="landSize" placeholder="ឧ. 4.2x20">
-    </div>
-
-    <div class="form-group">
-      <label>ទំហំផ្ទះ / House Size</label>
-      <input type="text" id="houseSize" placeholder="ឧ. 4.2x15">
-    </div>
-
-    <div class="form-group">
-      <label>សល់មុខផ្ទះ / Front Space</label>
-      <input type="text" id="frontSpace">
-    </div>
-
-    <div class="form-group">
-      <label>សល់ក្រោយ / Back Space</label>
-      <input type="text" id="backSpace">
-    </div>
-
-    <div class="form-group">
-      <label>បន្ទប់គេង / Bedrooms</label>
-      <input type="text" id="bedrooms">
-    </div>
-
-    <div class="form-group">
-      <label>បន្ទប់ទឹក / Bathrooms</label>
-      <input type="text" id="bathrooms">
-    </div>
-
-    <div class="form-group">
-      <label>ទិស / Direction</label>
-      <input type="text" id="direction">
-    </div>
-
-    <!-- Terms & ID -->
-    <div class="form-group">
-      <label>ប្រាក់កក់ / Deposit</label>
-      <input type="text" id="deposit">
-    </div>
-
-    <div class="form-group">
-      <label>ថ្លៃឈ្នួល / Rent Fee</label>
-      <input type="text" id="rentFee">
-    </div>
-
-    <div class="form-group">
-      <label>កុងត្រា / Contract</label>
-      <input type="text" id="contract">
-    </div>
-
-    <div class="form-group">
-      <label>ប្លង់កម្មសិទ្ធ / Certificate</label>
-      <input type="text" id="certificate">
-    </div>
-
-    <div class="form-group">
-      <label>Property ID</label>
-      <input type="text" id="propertyId">
-    </div>
-
-    <div class="form-group">
-      <label>កំណត់សម្គាល់បន្ថែម / Additional Notes</label>
-      <textarea id="description" rows="3"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>អ្នកបញ្ចូល / Submitted By</label>
-      <input type="text" id="submittedBy" placeholder="ឧ. Admin / Telegram Username">
-    </div>
-
-    <!-- Photos Upload -->
-    <div class="form-group">
-      <label>រូបភាព / Photos (Max 10)</label>
-      <input type="file" id="photoInput" accept="image/*" multiple>
-    </div>
-
-    <button type="submit" id="submitBtn">SUBMIT LISTING</button>
+    <button type="submit" class="submit-btn" id="submitBtn">SUBMIT PROPERTY</button>
   </form>
-
-  <div id="statusMessage"></div>
 </div>
 
 <script>
-  // Convert selected images to Base64 arrays
-  const convertFilesToBase64 = (files) => {
-    return Promise.all(Array.from(files).map(file => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve({
-          name: file.name,
-          data: reader.result.split(',')[1] // Strip base64 metadata prefix
-        });
-        reader.onerror = error => reject(error);
-      });
-    }));
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+  const translations = {
+    en: {
+      mainTitle: "Property Listing",
+      subTitle: "Property Details Form",
+      secProperty: "Property Information",
+      listingType: "Target",
+      propertyType: "Property Type",
+      location: "Location",
+      price: "Price ($)",
+      mapLink: "Google Maps Link",
+      landSize: "Land Size",
+      houseSize: "House Size",
+      frontSpace: "Front Space",
+      backSpace: "Back Space",
+      bedrooms: "Bedrooms",
+      bathrooms: "Bathrooms",
+      direction: "Direction",
+      deposit: "Deposit",
+      rentFee: "Rent Fee Payment",
+      contract: "Contract Term",
+      certificate: "Title Certificate",
+      propertyId: "Property ID",
+      description: "Additional Notes",
+      secOwner: "Owner Information",
+      ownerName: "Owner Name",
+      tel1: "Phone Number 1",
+      tel2: "Phone Number 2",
+      telegram: "Telegram Account",
+      photos: "Property Photos (Max 10)",
+      submitBtn: "SUBMIT PROPERTY",
+      successTitle: "Submitted Successfully!",
+      btnReload: "New Submission",
+      optRent: "For Rent",
+      optSale: "For Sale"
+    },
+    kh: {
+      mainTitle: "ការចុះបញ្ជីអចលនទ្រព្យ",
+      subTitle: "ទម្រង់បែបបទចុះបញ្ជីអចលនទ្រព្យ",
+      secProperty: "ព័ត៌មានអចលនទ្រព្យ",
+      listingType: "គោលបំណង",
+      propertyType: "ប្រភេទអចលនទ្រព្យ",
+      location: "ទីតាំង",
+      price: "តម្លៃ ($)",
+      mapLink: "តំណភ្ជាប់ Google Maps",
+      landSize: "ទំហំដី",
+      houseSize: "ទំហំផ្ទះ",
+      frontSpace: "សល់មុខផ្ទះ",
+      backSpace: "សល់ក្រោយ",
+      bedrooms: "បន្ទប់គេង",
+      bathrooms: "បន្ទប់ទឹក",
+      direction: "ទិសបែរទៅ",
+      deposit: "ប្រាក់កក់",
+      rentFee: "ការបង់ថ្លៃឈ្នួល",
+      contract: "កុងត្រា",
+      certificate: "ប្លង់កម្មសិទ្ធ",
+      propertyId: "Property ID",
+      description: "សម្គាល់បន្ថែម",
+      secOwner: "ព័ត៌មានម្ចាស់អចលនទ្រព្យ",
+      ownerName: "ឈ្មោះម្ចាស់",
+      tel1: "លេខទូរស័ព្ទទី១",
+      tel2: "លេខទូរស័ព្ទទី២",
+      telegram: "គណនី Telegram",
+      photos: "រូបភាពអចលនទ្រព្យ (អតិបរមា ១០)",
+      submitBtn: "បញ្ជូនទិន្នន័យ",
+      successTitle: "ផ្ញើបានជោគជ័យ!",
+      btnReload: "បំពេញទម្រង់ថ្មី",
+      optRent: "ជួល",
+      optSale: "លក់"
+    }
   };
 
-  document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+  let currentLang = 'en';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    document.getElementById('btnKH').classList.toggle('active', lang === 'kh');
+    document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+
+    document.getElementById('t_mainTitle').innerText = t.mainTitle;
+    document.getElementById('t_subTitle').innerText = t.subTitle;
+    document.getElementById('t_secProperty').innerText = t.secProperty;
+    document.getElementById('t_listingType').innerText = t.listingType;
+    document.getElementById('t_propertyType').innerText = t.propertyType;
+    document.getElementById('t_location').innerText = t.location;
+    document.getElementById('t_price').innerText = t.price;
+    document.getElementById('t_mapLink').innerText = t.mapLink;
+    document.getElementById('t_landSize').innerText = t.landSize;
+    document.getElementById('t_houseSize').innerText = t.houseSize;
+    document.getElementById('t_frontSpace').innerText = t.frontSpace;
+    document.getElementById('t_backSpace').innerText = t.backSpace;
+    document.getElementById('t_bedrooms').innerText = t.bedrooms;
+    document.getElementById('t_bathrooms').innerText = t.bathrooms;
+    document.getElementById('t_direction').innerText = t.direction;
+    document.getElementById('t_deposit').innerText = t.deposit;
+    document.getElementById('t_rentFee').innerText = t.rentFee;
+    document.getElementById('t_contract').innerText = t.contract;
+    document.getElementById('t_certificate').innerText = t.certificate;
+    document.getElementById('t_propertyId').innerText = t.propertyId;
+    document.getElementById('t_description').innerText = t.description;
+    document.getElementById('t_secOwner').innerText = t.secOwner;
+    document.getElementById('t_ownerName').innerText = t.ownerName;
+    document.getElementById('t_tel1').innerText = t.tel1;
+    document.getElementById('t_tel2').innerText = t.tel2;
+    document.getElementById('t_telegram').innerText = t.telegram;
+    document.getElementById('t_photos').innerText = t.photos;
+    document.getElementById('submitBtn').innerText = t.submitBtn;
+
+    document.getElementById('t_successTitle').innerText = t.successTitle;
+    document.getElementById('t_btnReload').innerText = t.btnReload;
+
+    document.getElementById('opt_rent').innerText = t.optRent;
+    document.getElementById('opt_sale').innerText = t.optSale;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const u = tg.initDataUnsafe.user;
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+      const username = u.username ? `(@${u.username})` : '';
+      document.getElementById('submittedBy').value = `${name} ${username}`.trim();
+    } else {
+      document.getElementById('submittedBy').value = 'Sir Jerry (@Putheavy_25Realty)';
+    }
+  });
+
+  function toggleTerms() {
+    const val = document.getElementById('listingType').value;
+    const rentalGroup = document.getElementById('rentalTermsGroup');
+    const saleGroup = document.getElementById('saleTermsGroup');
+
+    if (val === 'លក់' || val === 'For Sale') {
+      rentalGroup.classList.add('hidden');
+      saleGroup.classList.remove('hidden');
+    } else {
+      rentalGroup.classList.remove('hidden');
+      saleGroup.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('propertyForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = currentLang === 'kh' ? 'កំពុងបញ្ជូន...' : 'SUBMITTING...';
 
-    const submitBtn = document.getElementById('submitBtn');
-    const statusMsg = document.getElementById('statusMessage');
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-    statusMsg.style.color = '#333';
-    statusMsg.textContent = 'Processing submission...';
+    const formData = new FormData(this);
 
     try {
-      const fileInput = document.getElementById('photoInput');
-      let base64Photos = [];
-      
-      if (fileInput.files.length > 0) {
-        base64Photos = await convertFilesToBase64(fileInput.files);
-      }
-
-      // JSON Payload matching client.html structure
-      const payload = {
-        ownerName: document.getElementById('ownerName').value,
-        tel1: document.getElementById('tel1').value,
-        tel2: document.getElementById('tel2').value,
-        telegram: document.getElementById('telegram').value,
-        listingType: document.getElementById('listingType').value,
-        propertyType: document.getElementById('propertyType').value,
-        price: document.getElementById('price').value,
-        location: document.getElementById('location').value,
-        mapLink: document.getElementById('mapLink').value,
-        landSize: document.getElementById('landSize').value,
-        houseSize: document.getElementById('houseSize').value,
-        frontSpace: document.getElementById('frontSpace').value,
-        backSpace: document.getElementById('backSpace').value,
-        bedrooms: document.getElementById('bedrooms').value,
-        bathrooms: document.getElementById('bathrooms').value,
-        direction: document.getElementById('direction').value,
-        deposit: document.getElementById('deposit').value,
-        rentFee: document.getElementById('rentFee').value,
-        contract: document.getElementById('contract').value,
-        certificate: document.getElementById('certificate').value,
-        propertyId: document.getElementById('propertyId').value,
-        description: document.getElementById('description').value,
-        submittedBy: document.getElementById('submittedBy').value,
-        photos: base64Photos
-      };
-
       const response = await fetch('/api/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       const result = await response.json();
 
-      if (response.ok && result.success) {
-        statusMsg.style.color = 'green';
-        statusMsg.textContent = '✅ Property submitted successfully!';
-        document.getElementById('propertyForm').reset();
+      if (result.success) {
+        document.getElementById('propertyForm').classList.add('hidden');
+
+        const isKh = currentLang === 'kh';
+        const pType = formData.get('propertyType') || 'N/A';
+        const lType = formData.get('listingType') || '';
+        const loc = formData.get('location') || 'N/A';
+        const pr = formData.get('price') || '0';
+        const lSize = formData.get('landSize') || '';
+        const hSize = formData.get('houseSize') || '';
+        const fSpace = formData.get('frontSpace') || 'N/A';
+        const bSpace = formData.get('backSpace') || 'N/A';
+        const bed = formData.get('bedrooms') || 'N/A';
+        const bath = formData.get('bathrooms') || 'N/A';
+        const dir = formData.get('direction') || '';
+        const pId = formData.get('propertyId') || '';
+        const desc = formData.get('description') || 'N/A';
+        const own = formData.get('ownerName') || 'N/A';
+        const t1 = formData.get('tel1') || 'N/A';
+        const t2 = formData.get('tel2') || '';
+        const tele = formData.get('telegram') || 'N/A';
+        const map = formData.get('mapLink') || 'N/A';
+        const subBy = formData.get('submittedBy') || 'Web Form';
+
+        let termsText = '';
+        if (lType === 'ជួល' || lType === 'For Rent') {
+          termsText = `កក់ ${formData.get('deposit') || 'N/A'} | បង់ ${formData.get('rentFee') || 'N/A'} | កុងត្រា ${formData.get('contract') || 'N/A'}`;
+        } else {
+          termsText = `ប្លង់កម្មសិទ្ធ: ${formData.get('certificate') || 'N/A'}`;
+        }
+
+        let summaryText = `🏠 <b>ការចុះបញ្ជីអចលនទ្រព្យថ្មី (NEW PROPERTY LISTING)</b>\n\n`;
+        summaryText += `📌 <b>ព័ត៌មានអចលនទ្រព្យ</b>\n`;
+        summaryText += `🏠 <b>${pType} ${lType}</b>\n`;
+        summaryText += `📍 <b>ទីតាំង:</b> ${loc}\n`;
+        summaryText += `• <b>តម្លៃ</b> : $${pr}\n`;
+        if (lSize) summaryText += `• <b>ទំហំដី</b> : ${lSize}\n`;
+        if (hSize) summaryText += `• <b>ទំហំផ្ទះ</b> : ${hSize}\n`;
+        summaryText += `• <b>សល់មុខផ្ទះ:</b> ${fSpace} | <b>សល់ក្រោយ:</b> ${bSpace}\n`;
+        summaryText += `• <b>បន្ទប់គេង</b> : ${bed} | <b>បន្ទប់ទឹក</b> : ${bath}\n`;
+        if (dir) summaryText += `• <b>ទិសបែរទៅ</b> : ${dir}\n`;
+        summaryText += `• <b>លក្ខខណ្ឌ:</b>\n${termsText}\n`;
+        if (pId) summaryText += `<b>Property ID:</b> ${pId}\n\n`;
+
+        summaryText += `📝 <b>សម្គាល់បន្ថែម</b>\n${desc}\n`;
+        summaryText += `-----------------------------------\n\n`;
+        summaryText += `👤 <b>ព័ត៌មានម្ចាស់អចលនទ្រព្យ</b>\n`;
+        summaryText += `• <b>ឈ្មោះ:</b> ${own}\n`;
+        summaryText += `• <b>Tel 1:</b> ${t1}\n`;
+        if (t2) summaryText += `• <b>Tel 2:</b> ${t2}\n`;
+        if (tele) summaryText += `• <b>Telegram:</b> ${tele}\n`;
+        if (map) summaryText += `• <b>Google Maps:</b> ${map}\n\n`;
+        summaryText += `Submitted by: ${subBy}`;
+
+        document.getElementById('summaryContent').innerHTML = summaryText;
+        document.getElementById('summaryCard').classList.remove('hidden');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = '❌ Error: ' + (result.error || 'Submission failed.');
+        alert('Error: ' + (result.error || 'Please try again.'));
       }
     } catch (err) {
-      statusMsg.style.color = 'red';
-      statusMsg.textContent = '❌ Failed to connect to server.';
       console.error(err);
+      alert('Error connecting to server.');
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'SUBMIT LISTING';
+      btn.disabled = false;
+      btn.innerText = translations[currentLang].submitBtn;
     }
   });
 </script>
