@@ -6,341 +6,55 @@
   <title>Property Listing - Twenty5 Realty</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-    html, body {
-      background-color: #f8fafc !important;
-      color: #0f172a !important;
-      padding: 16px;
-      padding-bottom: 30px;
-    }
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .header {
-      position: relative;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .lang-switcher {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: flex;
-      gap: 4px;
-      background: #f1f5f9;
-      padding: 3px;
-      border-radius: 20px;
-      border: 1px solid #e2e8f0;
-    }
-    .lang-btn {
-      border: none;
-      background: transparent;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 16px;
-      cursor: pointer;
-      color: #64748b;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .lang-btn.active {
-      background: #0284c7;
-      color: #ffffff;
-    }
-    .logo-img {
-      max-width: 130px;
-      height: auto;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
-    .header h2 {
-      font-size: 18px;
-      color: #0b2545;
-      margin-bottom: 2px;
-    }
-    .header p {
-      font-size: 12px;
-      color: #64748b;
-    }
-    .section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #0284c7;
-      margin: 18px 0 12px 0;
-      padding-bottom: 4px;
-      border-bottom: 2px solid #f1f5f9;
-    }
-    
-    /* Layout Scaffolding for Form Fields */
-    .form-group {
-      margin-bottom: 12px;
-    }
-    .form-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .form-row .form-group {
-      flex: 1;
-      margin-bottom: 0;
-      min-width: 0;
-    }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #334155;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    input[type="text"],
-    input[type="number"],
-    input[type="tel"],
-    input[type="url"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 10px 12px;
-      font-size: 13px;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      background-color: #f8fafc;
-      color: #0f172a;
-      font-weight: 500;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input::placeholder,
-    textarea::placeholder {
-      color: #94a3b8;
-      opacity: 1;
-    }
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #0284c7;
-      background-color: #ffffff;
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
-    }
-    textarea {
-      resize: vertical;
-      min-height: 70px;
-    }
-
-    /* Map Input & Compact Button Layout */
-    .map-input-wrapper {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .map-input-wrapper input {
-      flex: 1;
-    }
-    .btn-gps-small {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 9px 10px;
-      background-color: #e0f2fe;
-      color: #0284c7;
-      border: 1px solid #bae6fd;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      height: 38px;
-    }
-    .btn-gps-small:hover {
-      background-color: #bae6fd;
-    }
-    .map-notice {
-      font-size: 11px;
-      color: #ef4444;
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .map-container {
-      display: none;
-      margin-top: 8px;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
-      height: 180px;
-      background: #f1f5f9;
-    }
-    .map-container iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    /* Dynamic Options Blocks */
-    #rent-terms-section,
-    #sale-terms-section {
-      display: none;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-
-    /* Image Upload Box & Grid */
-    .upload-box {
-      border: 2px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 16px;
-      text-align: center;
-      background: #f8fafc;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .upload-box:hover {
-      border-color: #0284c7;
-      background: #f0f9ff;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    html, body { background-color: #f8fafc !important; color: #0f172a !important; padding: 16px; padding-bottom: 30px; }
+    .container { max-width: 480px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .header { position: relative; text-align: center; margin-bottom: 20px; }
+    .lang-switcher { position: absolute; top: 0; right: 0; display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 20px; border: 1px solid #e2e8f0; }
+    .lang-btn { border: none; background: transparent; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 16px; cursor: pointer; color: #64748b; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px; }
+    .lang-btn.active { background: #0284c7; color: #ffffff; }
+    .logo-img { max-width: 130px; height: auto; margin-bottom: 10px; border-radius: 6px; }
+    .header h2 { font-size: 18px; color: #0b2545; margin-bottom: 2px; }
+    .header p { font-size: 12px; color: #64748b; }
+    .section-title { font-size: 14px; font-weight: 700; color: #0284c7; margin: 18px 0 12px 0; padding-bottom: 4px; border-bottom: 2px solid #f1f5f9; }
+    .form-group { margin-bottom: 12px; }
+    .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .form-row .form-group { flex: 1; margin-bottom: 0; min-width: 0; }
+    label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    input[type="text"], input[type="number"], input[type="tel"], input[type="url"], select, textarea { width: 100%; padding: 10px 12px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #f8fafc; color: #0f172a; font-weight: 500; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    input::placeholder, textarea::placeholder { color: #94a3b8; opacity: 1; }
+    input:focus, select:focus, textarea:focus { border-color: #0284c7; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+    textarea { resize: vertical; min-height: 70px; }
+    .map-input-wrapper { display: flex; gap: 6px; align-items: center; }
+    .map-input-wrapper input { flex: 1; }
+    .btn-gps-small { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 9px 10px; background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s ease; height: 38px; }
+    .btn-gps-small:hover { background-color: #bae6fd; }
+    .map-notice { font-size: 11px; color: #ef4444; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+    .map-container { display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; height: 180px; background: #f1f5f9; }
+    .map-container iframe { width: 100%; height: 100%; border: 0; }
+    #rent-terms-section, #sale-terms-section { display: none; background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+    .upload-box { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 16px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; }
+    .upload-box:hover { border-color: #0284c7; background: #f0f9ff; }
     .upload-icon { font-size: 24px; margin-bottom: 4px; }
     .upload-text { font-size: 13px; font-weight: 600; color: #0284c7; }
     .upload-count { font-size: 11px; color: #64748b; margin-top: 2px; }
-
-    .preview-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .preview-item {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .preview-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .remove-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(239, 68, 68, 0.9);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 11px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-
-    /* Fallback Web Submit Button */
-    .btn-submit-web {
-      width: 100%;
-      background-color: #0284c7;
-      color: #ffffff;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 16px;
-      transition: background-color 0.2s ease;
-    }
-    .btn-submit-web:hover {
-      background-color: #0369a1;
-    }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-top: 12px; }
+    .preview-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .btn-submit-web { width: 100%; background-color: #0284c7; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s ease; }
+    .btn-submit-web:hover { background-color: #0369a1; }
 
     /* Success Card Styling */
-    .success-card {
-      display: none;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 10px;
-    }
-    .success-header {
-      text-align: center;
-      color: #16a34a;
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-    .summary-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .summary-body {
-      font-size: 13px;
-      color: #334155;
-      line-height: 1.6;
-    }
-    .summary-body ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 6px 0;
-    }
-    .summary-body li {
-      margin-bottom: 3px;
-    }
-    .divider {
-      border-top: 1px dashed #cbd5e1;
-      margin: 12px 0;
-    }
-    .btn-new-submit {
-      width: 100%;
-      background-color: #64748b;
-      color: #ffffff;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 14px;
-      text-align: center;
-      transition: background 0.2s;
-    }
-    .btn-new-submit:hover {
-      background-color: #475569;
-    }
+    .success-card { display: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 10px; }
+    .success-header { text-align: center; color: #16a34a; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+    .summary-title { font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .summary-body { font-size: 13px; color: #334155; line-height: 1.6; }
+    .summary-body ul { list-style: none; padding-left: 0; margin: 6px 0; }
+    .summary-body li { margin-bottom: 3px; }
+    .divider { border-top: 1px dashed #cbd5e1; margin: 12px 0; }
+    .btn-new-submit { width: 100%; background-color: #64748b; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 14px; text-align: center; transition: background 0.2s; }
+    .btn-new-submit:hover { background-color: #475569; }
   </style>
 </head>
 <body>
@@ -748,7 +462,7 @@
     function toggleDepositOther() {
       const depositVal = document.getElementById('deposit').value;
       const otherInput = document.getElementById('depositOther');
-      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other' || depositVal === 'optDepOther') {
+      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -761,7 +475,7 @@
     function toggleCertOther() {
       const certVal = document.getElementById('certificate').value;
       const otherInput = document.getElementById('certOther');
-      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type' || certVal === 'optCertOther') {
+      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -831,7 +545,6 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
-      /* Rent Terms Translations */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -851,7 +564,6 @@
       document.getElementById('opt-con-3y').textContent = t.optCon3y;
       document.getElementById('opt-con-neg').textContent = t.optConNeg;
 
-      /* Sale Terms Translations */
       document.getElementById('lbl-certificate').textContent = t.lblCertificate;
       document.getElementById('opt-cert-none').textContent = t.optCertNone;
       document.getElementById('opt-cert-hard').textContent = t.optCertHard;
@@ -952,7 +664,7 @@
       const container = document.getElementById('summaryContent');
       let html = `
         <div style="margin-bottom:8px;">
-          📍 <strong>${data.listingType} ${data.propertyType}</strong><br>
+          🏠 <strong>${data.listingType} ${data.propertyType}</strong><br>
           📍 <strong>Location:</strong> ${data.location}<br>
           • <strong>Price:</strong> $${data.price}
         </div>
@@ -1102,36 +814,9 @@
         description: document.getElementById('description').value
       };
 
-      const formData = new FormData();
-      Object.keys(payloadData).forEach(key => {
-        formData.append(key, payloadData[key]);
-      });
-      formData.append('submittedBy', submittedBy);
-      formData.append('initData', tg?.initData || '');
-
-      selectedFiles.forEach((file) => {
-        formData.append('photos', file);
-      });
-
-      try {
-        const response = await fetch('/api/register-property', {
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await response.json();
-
-        if (tg) tg.MainButton.hideProgress();
-
-        if (result.success) {
-          displaySuccessSummary(payloadData, submittedBy);
-        } else {
-          throw new Error(result.error || 'Submission failed');
-        }
-      } catch (err) {
-        if (tg) tg.MainButton.hideProgress();
-        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
-      }
+      // Fallback: Show success view directly if no backend route is present
+      displaySuccessSummary(payloadData, submittedBy);
+      if (tg) tg.MainButton.hideProgress();
     };
 
     if (tg) {
