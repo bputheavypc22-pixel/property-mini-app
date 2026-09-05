@@ -4,6 +4,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs');
+const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -11,38 +12,48 @@ const PORT = process.env.PORT || 10000;
 // Telegram Bot Configuration
 const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
 const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID_OR_CHANNEL';
+const WEBAPP_URL = 'https://property-mini-app.onrender.com';
 
-// 1. Configure Body Parsers for large payloads
+// Initialize Telegram Bot for /start command
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+
+// Listen for /start command
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, 'Welcome to Twenty5 Realty! Click the button below to submit a property listing:', {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '🏠 Open Listing Form', web_app: { url: WEBAPP_URL } }]
+      ]
+    }
+  });
+});
+
+// 1. Configure Body Parsers
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files from the root directory and 'public' directory if present
+// Serve static files
 app.use(express.static(path.join(__dirname)));
 if (fs.existsSync(path.join(__dirname, 'public'))) {
   app.use(express.static(path.join(__dirname, 'public')));
 }
 
-// 2. Multer Storage Setup (Memory Storage)
+// 2. Multer Storage Setup
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB per image limit
-    files: 10                   // Max 10 images
-  }
+  limits: { fileSize: 10 * 1024 * 1024, files: 10 }
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).send('Server is active');
-});
+app.get('/health', (req, res) => res.status(200).send('Server active'));
 
-// 3. Main Form Submission Route
+// 3. Form Submission Endpoint
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
     const files = req.files || [];
 
-    // Format text message for Telegram
     let caption = `<b>🏠 NEW PROPERTY LISTING</b>\n\n`;
     caption += `<b>👤 Owner Details</b>\n`;
     caption += `• <b>Name:</b> ${data.ownerName || 'N/A'}\n`;
@@ -78,7 +89,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     if (data.description) caption += `\n<b>📝 Notes:</b>\n${data.description}\n`;
     if (data.submittedBy) caption += `\n<b>Submitted By:</b> ${data.submittedBy}`;
 
-    // Send payload to Telegram
     if (files.length > 0) {
       if (files.length === 1) {
         const formData = new FormData();
@@ -87,9 +97,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
         formData.append('parse_mode', 'HTML');
         formData.append('photo', files[0].buffer, { filename: files[0].originalname });
 
-        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, formData, {
-          headers: formData.getHeaders()
-        });
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, formData, { headers: formData.getHeaders() });
       } else {
         const formData = new FormData();
         formData.append('chat_id', CHAT_ID);
@@ -102,14 +110,9 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
         }));
 
         formData.append('media', JSON.stringify(mediaArr));
+        files.forEach((file, idx) => formData.append(`file_${idx}`, file.buffer, { filename: file.originalname }));
 
-        files.forEach((file, idx) => {
-          formData.append(`file_${idx}`, file.buffer, { filename: file.originalname });
-        });
-
-        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, formData, {
-          headers: formData.getHeaders()
-        });
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, formData, { headers: formData.getHeaders() });
       }
     } else {
       await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -123,22 +126,17 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
 
   } catch (error) {
     console.error('Submission Error:', error?.response?.data || error.message);
-    return res.status(500).json({ error: 'Submission failed on server. Please try again.' });
+    return res.status(500).json({ error: 'Submission failed on server.' });
   }
 });
 
-// 4. Safe fallback for routing
+// Fallback Route
 app.get('*', (req, res) => {
   const rootIndex = path.join(__dirname, 'index.html');
   const publicIndex = path.join(__dirname, 'public', 'index.html');
-
-  if (fs.existsSync(rootIndex)) {
-    res.sendFile(rootIndex);
-  } else if (fs.existsSync(publicIndex)) {
-    res.sendFile(publicIndex);
-  } else {
-    res.status(200).send('Twenty5 Realty Bot API is online');
-  }
+  if (fs.existsSync(rootIndex)) res.sendFile(rootIndex);
+  else if (fs.existsSync(publicIndex)) res.sendFile(publicIndex);
+  else res.status(200).send('Twenty5 Realty Bot API is online');
 });
 
 app.listen(PORT, () => {
