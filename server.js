@@ -9,59 +9,76 @@ const TelegramBot = require('node-telegram-bot-api');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Telegram Bot Configuration
+// Environment Variables
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 const WEBAPP_URL = 'https://property-mini-app.onrender.com';
 
-// Initialize Telegram Bot & Clear Webhook before Polling
-const bot = new TelegramBot(BOT_TOKEN, { polling: false });
-
-if (BOT_TOKEN) {
-  bot.deleteWebHook()
-    .then(() => {
-      console.log('Telegram Webhook cleared. Starting polling...');
-      return bot.startPolling();
-    })
-    .catch((err) => {
-      console.error('Failed to start Telegram polling:', err.message);
-    });
-} else {
-  console.warn('BOT_TOKEN environment variable is missing!');
-}
-
-// Handle /start command
-bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Welcome to Twenty5 Realty! Click the button below to submit a property listing:', {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: '🏠 Open Listing Form', web_app: { url: WEBAPP_URL } }]
-      ]
-    }
-  });
-});
-
-// 1. Configure Body Parsers for large payloads
+// Express Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files
+// Serve Static Files
 app.use(express.static(path.join(__dirname)));
 if (fs.existsSync(path.join(__dirname, 'public'))) {
   app.use(express.static(path.join(__dirname, 'public')));
 }
 
-// 2. Multer Storage Setup
+// Multer Storage Configuration
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024, files: 10 }
 });
 
-// Health check endpoint
+// Initialize Telegram Bot & Polling
+let bot;
+if (BOT_TOKEN) {
+  bot = new TelegramBot(BOT_TOKEN, { polling: false });
+
+  // Reset Webhook first to prevent 404/409 conflicts, then start Polling
+  bot.deleteWebHook()
+    .then(() => {
+      console.log('✅ Webhook cleared successfully. Starting polling...');
+      return bot.startPolling();
+    })
+    .then(() => {
+      console.log('🤖 Telegram Bot is actively listening for commands...');
+    })
+    .catch((err) => {
+      console.error('❌ Telegram Bot Setup Error:', err.message);
+    });
+
+  // Handle /start Command
+  bot.onText(/\/start/, async (msg) => {
+    const chatId = msg.chat.id;
+    console.log(`📩 Received /start command from Chat ID: ${chatId}`);
+
+    try {
+      await bot.sendMessage(chatId, 'Welcome to Twenty5 Realty! Click below to submit a property listing:', {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '🏠 Open Listing Form', web_app: { url: WEBAPP_URL } }]
+          ]
+        }
+      });
+      console.log('✅ Sent start menu response to Telegram.');
+    } catch (sendErr) {
+      console.error('❌ Failed to send /start response:', sendErr.message);
+    }
+  });
+
+  // Handle Polling Errors Gracefully
+  bot.on('polling_error', (error) => {
+    console.error('⚠️ Polling error:', error.message);
+  });
+} else {
+  console.error('❌ CRITICAL: BOT_TOKEN is missing from Environment Variables!');
+}
+
+// Health Check Endpoint
 app.get('/health', (req, res) => res.status(200).send('Server active'));
 
-// 3. Form Submission Endpoint
+// Property Submission Endpoint
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
