@@ -145,6 +145,19 @@ app.post(['/api/client-inquiry', '/api/inquiry'], async (req, res) => {
 
     await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
 
+    // Direct confirmation DM to submitter
+    if (data.userId) {
+      try {
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          chat_id: data.userId,
+          text: `✅ <b>បានបញ្ជូនសំណើជោគជ័យ / Inquiry Confirmed</b>\n\nអរគុណ! ក្រុមការងារ Twenty5Realty បានទទួលសំណើស្វែងរកអចលនទ្រព្យរបស់លោកអ្នកហើយ។ ពួកយើងនឹងទាក់ទងទៅវិញក្នុងពេលឆាប់ៗនេះ。\n\nThank you! Your property inquiry has been received.`,
+          parse_mode: 'HTML'
+        });
+      } catch (dmErr) {
+        console.log('Could not send direct message to user:', dmErr.message);
+      }
+    }
+
     return res.status(200).json({ success: true, message: 'Inquiry submitted successfully!' });
 
   } catch (error) {
@@ -276,6 +289,19 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
     }
 
+    // Direct confirmation DM to submitter for Property Listing
+    if (data.userId) {
+      try {
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          chat_id: data.userId,
+          text: `✅ <b>ការបញ្ជូនបានជោគជ័យ / Submission Confirmed</b>\n\nសូមអរគុណ! ព័ត៌មានអចលនទ្រព្យលោកអ្នកត្រូវបានបញ្ចូលទៅក្នុងប្រព័ន្ធ Twenty5Realty រួចរាល់ហើយ។ ក្រុមការងារយើងនឹងពិនិត្យមើលក្នុងពេលឆាប់ៗនេះ。\n\nThank you! Your property listing has been successfully received by Twenty5Realty.`,
+          parse_mode: 'HTML'
+        });
+      } catch (dmErr) {
+        console.log('Could not send direct message to user:', dmErr.message);
+      }
+    }
+
     return res.status(200).json({ success: true, message: 'Property submitted successfully!' });
 
   } catch (error) {
@@ -288,7 +314,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
 });
 
 // ==========================================
-// 3. THANK-YOU MESSAGE ENDPOINT (Triggered on Close button)
+// 3. THANK-YOU MESSAGE ENDPOINT (Triggered on Close button for either form)
 // ==========================================
 app.post('/api/send-thank-you', async (req, res) => {
   const { telegramId } = req.body;
