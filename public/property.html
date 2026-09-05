@@ -44,8 +44,6 @@
     .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
     .btn-submit-web { width: 100%; background-color: #0284c7; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s ease; }
     .btn-submit-web:hover { background-color: #0369a1; }
-
-    /* Success Card Styling */
     .success-card { display: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 10px; }
     .success-header { text-align: center; color: #16a34a; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
     .summary-title { font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
@@ -132,7 +130,7 @@
       <div class="form-group">
         <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link) *</label>
         <div class="map-input-wrapper">
-          <input type="url" id="mapLink" required data-ph-km="http://maps.google.com/..." data-ph-en="http://maps.google.com/..." oninput="previewMap()">
+          <input type="url" id="mapLink" required data-ph-km="https://maps.google.com/..." data-ph-en="https://maps.google.com/..." oninput="previewMap()">
           <a href="https://maps.google.com" target="_blank" class="btn-gps-small" id="btn-openMap">
             📍 Google Maps
           </a>
@@ -290,8 +288,8 @@
     let currentLang = localStorage.getItem('appLang') || 'km';
     let selectedFiles = [];
 
-    // Set backend URL if hosted separately (e.g., 'https://my-backend.onrender.com')
-    // Keep as '' if served directly by the Express backend.
+    // SET THIS TO YOUR HOSTED BACKEND DOMAIN IF NOT HOSTING ON SAME SERVER
+    // Example: const BACKEND_URL = 'https://my-backend-app.onrender.com';
     const BACKEND_URL = '';
 
     const translations = {
@@ -842,7 +840,7 @@
         if (response.ok && result.success) {
           displaySuccessSummary(payloadData, submittedBy);
         } else {
-          const errMsg = result.error || result.message || 'Failed to send data to Telegram.';
+          const errMsg = result.error || result.message || 'Failed to submit property.';
           tg?.showAlert ? tg.showAlert(`Error: ${errMsg}`) : alert(`Error: ${errMsg}`);
         }
       } catch (err) {
