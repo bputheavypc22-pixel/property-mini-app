@@ -3,45 +3,61 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
+const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
 const port = process.env.PORT || 10000;
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
-// Optional: If you use a dedicated Chat ID or Topic ID for Client Inquiries
-const INQUIRY_CHAT_ID = process.env.INQUIRY_CHAT_ID || CHAT_ID; 
+// Environment variables mapped directly to your Render settings
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.CHAT_ID;
+const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
+const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID;
 
-// Memory storage for property uploads
+// Enable Telegram Bot Polling so /start command works directly in chat
+let bot = null;
+if (BOT_TOKEN) {
+  bot = new TelegramBot(BOT_TOKEN, { polling: true });
+
+  // Respond to /start command
+  bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    const welcomeText = `សូមស្វាគមន៍មកកាន់ Twenty5Realty! សូមចុច Open Form ដើម្បីបំពេញបែបបទ។\n\nWelcome to Twenty5Realty! Please Click Open Form to get the Form.`;
+    bot.sendMessage(chatId, welcomeText);
+  });
+} else {
+  console.error("CRITICAL ERROR: TELEGRAM_BOT_TOKEN is missing on Render settings!");
+}
+
+// Memory storage for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB per file
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve main property form
+// HTML Page Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'property.html'));
 });
 
-// Serve client inquiry form
 app.get('/client-inquiry', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'client-inquiry.html'));
 });
 
 // ==========================================
-// 1. CLIENT INQUIRY ENDPOINT (PRESERVED)
+// 1. CLIENT INQUIRY ENDPOINT (Target Topic: CLIENT_TOPIC_ID)
 // ==========================================
 app.post('/api/client-inquiry', async (req, res) => {
   try {
-    if (!BOT_TOKEN || !INQUIRY_CHAT_ID) {
+    if (!BOT_TOKEN || !CHAT_ID) {
       return res.status(500).json({ 
         success: false, 
-        error: 'BOT_TOKEN or INQUIRY_CHAT_ID environment variables are missing.' 
+        error: 'TELEGRAM_BOT_TOKEN or TELEGRAM_GROUP_ID variables are missing on Render.' 
       });
     }
 
@@ -60,11 +76,18 @@ app.post('/api/client-inquiry', async (req, res) => {
     if (data.preferredLocation) inquiryMessage += `• ទីតាំងចង់បាន / Preferred Location: ${data.preferredLocation}\n`;
     if (data.notes) inquiryMessage += `\n<b>📝 កំណត់សម្គាល់បន្ថែម / Additional Notes:</b>\n${data.notes}\n`;
 
-    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      chat_id: INQUIRY_CHAT_ID,
+    const payload = {
+      chat_id: CHAT_ID,
       text: inquiryMessage,
       parse_mode: 'HTML'
-    });
+    };
+
+    // Forward to Client Inquiry topic thread if configured
+    if (CLIENT_TOPIC_ID) {
+      payload.message_thread_id = Number(CLIENT_TOPIC_ID);
+    }
+
+    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
 
     return res.status(200).json({ success: true, message: 'Inquiry submitted successfully!' });
 
@@ -72,26 +95,27 @@ app.post('/api/client-inquiry', async (req, res) => {
     console.error('Client Inquiry Error:', error.response?.data || error.message);
     return res.status(500).json({ 
       success: false, 
-      error: error.response?.data?.description || 'Failed to submit inquiry.' 
+      error: error.response?.data?.description || 'Failed to submit client inquiry.' 
     });
   }
 });
 
 // ==========================================
-// 2. PROPERTY LISTING ENDPOINT (UPDATED)
+// 2. PROPERTY LISTING ENDPOINT (Target Topic: PROPERTY_TOPIC_ID)
 // ==========================================
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
     if (!BOT_TOKEN || !CHAT_ID) {
       return res.status(500).json({ 
         success: false, 
-        error: 'BOT_TOKEN or CHAT_ID environment variables are missing.' 
+        error: 'TELEGRAM_BOT_TOKEN or TELEGRAM_GROUP_ID variables are missing on Render.' 
       });
     }
 
     const data = req.body;
     const files = req.files || [];
 
+    // Format display choices
     let depositDisplay = data.deposit || 'N/A';
     if ((data.deposit === 'ផ្សេងៗ' || data.deposit === 'Other') && data.depositOther) {
       depositDisplay = `${data.deposit} (${data.depositOther})`;
@@ -102,6 +126,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       certDisplay = `${data.certificate} (${data.certOther})`;
     }
 
+    // Build Telegram property message
     let messageText = `<b>🏠 ព័ត៌មានអចលនទ្រព្យ / Property Listing</b>\n\n`;
     messageText += `<b>👤 ព័ត៌មានម្ចាស់ / Owner Details:</b>\n`;
     messageText += `• ឈ្មោះ / Name: <b>${data.ownerName || 'N/A'}</b>\n`;
@@ -141,8 +166,10 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     messageText += `\n<b>📩 បញ្ជូនដោយ / Submitted By:</b> ${data.submittedBy || 'Web Form'}`;
 
     if (files.length === 1) {
+      // Single photo payload
       const formData = new FormData();
       formData.append('chat_id', CHAT_ID);
+      if (PROPERTY_TOPIC_ID) formData.append('message_thread_id', PROPERTY_TOPIC_ID);
       formData.append('caption', messageText);
       formData.append('parse_mode', 'HTML');
       formData.append('photo', files[0].buffer, { filename: files[0].originalname });
@@ -151,8 +178,10 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
         headers: formData.getHeaders()
       });
     } else if (files.length > 1) {
+      // Multi-photo Media Group payload
       const formData = new FormData();
       formData.append('chat_id', CHAT_ID);
+      if (PROPERTY_TOPIC_ID) formData.append('message_thread_id', PROPERTY_TOPIC_ID);
 
       const mediaGroup = files.map((file, index) => {
         const attachName = `photo_${index}`;
@@ -171,11 +200,15 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
         headers: formData.getHeaders()
       });
     } else {
-      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      // Text-only payload fallback
+      const payload = {
         chat_id: CHAT_ID,
         text: messageText,
         parse_mode: 'HTML'
-      });
+      };
+      if (PROPERTY_TOPIC_ID) payload.message_thread_id = Number(PROPERTY_TOPIC_ID);
+
+      await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
     }
 
     return res.status(200).json({ success: true, message: 'Property submitted successfully!' });
@@ -184,7 +217,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     console.error('Property Submission Error:', error.response?.data || error.message);
     return res.status(500).json({ 
       success: false, 
-      error: error.response?.data?.description || 'Failed to submit property.' 
+      error: error.response?.data?.description || 'Failed to submit property listing.' 
     });
   }
 });
