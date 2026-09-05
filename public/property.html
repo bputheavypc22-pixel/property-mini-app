@@ -278,13 +278,13 @@
     </form>
 
     <div id="successView" class="success-card">
-      <div class="success-header" id="txt-successHeader">✅ Submitted Successfully!</div>
+      <div class="success-header" id="txt-successHeader">✅ បានផ្ញើទិន្នន័យជោគជ័យ!</div>
       
-      <div class="summary-title" id="txt-summaryTitle">🏠 PROPERTY LISTING SUMMARY</div>
+      <div class="summary-title" id="txt-summaryTitle">🏠 សង្ខេបព័ត៌មានអចលនទ្រព្យ</div>
       
       <div class="summary-body" id="summaryContent"></div>
 
-      <button type="button" class="btn-new-submit" id="btn-newSubmit" onclick="resetFormView()">NEW SUBMISSION</button>
+      <button type="button" class="btn-new-submit" id="btn-newSubmit" onclick="resetFormView()">ចុះបញ្ជីថ្មីទៀត</button>
     </div>
   </div>
 
@@ -811,12 +811,39 @@
         rentFee: rentFeeVal,
         contract: contractVal,
         certificate: certVal,
-        description: document.getElementById('description').value
+        description: document.getElementById('description').value,
+        submittedBy: submittedBy
       };
 
-      // Fallback: Show success view directly if no backend route is present
-      displaySuccessSummary(payloadData, submittedBy);
-      if (tg) tg.MainButton.hideProgress();
+      const formData = new FormData();
+      Object.keys(payloadData).forEach(key => {
+        formData.append(key, payloadData[key]);
+      });
+
+      selectedFiles.forEach(file => {
+        formData.append('photos', file);
+      });
+
+      try {
+        const response = await fetch('/api/register-property', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          displaySuccessSummary(payloadData, submittedBy);
+        } else {
+          const errMsg = result.error || result.message || 'Failed to submit to Telegram server.';
+          tg?.showAlert ? tg.showAlert(`Error: ${errMsg}`) : alert(`Error: ${errMsg}`);
+        }
+      } catch (err) {
+        console.error('Submission Error:', err);
+        tg?.showAlert ? tg.showAlert(`Server error: ${err.message}`) : alert(`Server error: ${err.message}`);
+      } finally {
+        if (tg) tg.MainButton.hideProgress();
+      }
     };
 
     if (tg) {
