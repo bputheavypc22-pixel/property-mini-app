@@ -3,11 +3,12 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Telegram Bot Configuration (Get these from Render Environment Variables or replace directly)
+// Telegram Bot Configuration
 const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
 const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID_OR_CHANNEL';
 
@@ -15,30 +16,33 @@ const CHAT_ID = process.env.CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID_OR_CHANNEL';
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files from the root directory
+// Serve static files from the root directory and 'public' directory if present
 app.use(express.static(path.join(__dirname)));
+if (fs.existsSync(path.join(__dirname, 'public'))) {
+  app.use(express.static(path.join(__dirname, 'public')));
+}
 
 // 2. Multer Storage Setup (Memory Storage)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB per image
+    fileSize: 10 * 1024 * 1024, // 10MB per image limit
     files: 10                   // Max 10 images
   }
 });
 
-// Health check route
+// Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).send('Server is active');
 });
 
-// 3. API Route to Handle Submission
+// 3. Main Form Submission Route
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
     const data = req.body;
     const files = req.files || [];
 
-    // Construct text message
+    // Format text message for Telegram
     let caption = `<b>🏠 NEW PROPERTY LISTING</b>\n\n`;
     caption += `<b>👤 Owner Details</b>\n`;
     caption += `• <b>Name:</b> ${data.ownerName || 'N/A'}\n`;
@@ -74,7 +78,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     if (data.description) caption += `\n<b>📝 Notes:</b>\n${data.description}\n`;
     if (data.submittedBy) caption += `\n<b>Submitted By:</b> ${data.submittedBy}`;
 
-    // Send to Telegram
+    // Send payload to Telegram
     if (files.length > 0) {
       if (files.length === 1) {
         const formData = new FormData();
@@ -123,9 +127,18 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   }
 });
 
-// Fallback to serve index.html for frontend routing
+// 4. Safe fallback for routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  const rootIndex = path.join(__dirname, 'index.html');
+  const publicIndex = path.join(__dirname, 'public', 'index.html');
+
+  if (fs.existsSync(rootIndex)) {
+    res.sendFile(rootIndex);
+  } else if (fs.existsSync(publicIndex)) {
+    res.sendFile(publicIndex);
+  } else {
+    res.status(200).send('Twenty5 Realty Bot API is online');
+  }
 });
 
 app.listen(PORT, () => {
