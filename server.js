@@ -13,7 +13,7 @@ const CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.CHAT_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID;
 
-// Lightweight Telegram /start handler (Uses native axios, no extra packages required)
+// Lightweight Telegram /start handler
 if (BOT_TOKEN) {
   let lastUpdateId = 0;
   const pollTelegram = async () => {
@@ -47,7 +47,7 @@ if (BOT_TOKEN) {
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per image
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -64,7 +64,7 @@ app.get('/client-inquiry', (req, res) => {
 });
 
 // ==========================================
-// 1. CLIENT INQUIRY ENDPOINT (Target Topic: CLIENT_TOPIC_ID)
+// 1. CLIENT INQUIRY ENDPOINT
 // ==========================================
 app.post('/api/client-inquiry', async (req, res) => {
   try {
@@ -114,7 +114,7 @@ app.post('/api/client-inquiry', async (req, res) => {
 });
 
 // ==========================================
-// 2. PROPERTY LISTING ENDPOINT (Target Topic: PROPERTY_TOPIC_ID)
+// 2. PROPERTY LISTING ENDPOINT (MATCHES YOUR IMAGE FORMAT)
 // ==========================================
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
@@ -128,6 +128,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     const data = req.body;
     const files = req.files || [];
 
+    // Format Deposit & Contract Terms
     let depositDisplay = data.deposit || 'N/A';
     if ((data.deposit === 'ផ្សេងៗ' || data.deposit === 'Other') && data.depositOther) {
       depositDisplay = `${data.deposit} (${data.depositOther})`;
@@ -138,43 +139,57 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       certDisplay = `${data.certificate} (${data.certOther})`;
     }
 
-    let messageText = `<b>🏠 ព័ត៌មានអចលនទ្រព្យ / Property Listing</b>\n\n`;
-    messageText += `<b>👤 ព័ត៌មានម្ចាស់ / Owner Details:</b>\n`;
-    messageText += `• ឈ្មោះ / Name: <b>${data.ownerName || 'N/A'}</b>\n`;
-    messageText += `• លេខទូរស័ព្ទ ១ / Tel 1: <b>${data.tel1 || 'N/A'}</b>\n`;
-    if (data.tel2) messageText += `• លេខទូរស័ព្ទ ២ / Tel 2: ${data.tel2}\n`;
-    if (data.telegram) messageText += `• Telegram: ${data.telegram}\n`;
-
-    messageText += `\n<b>📌 ព័ត៌មានអចលនទ្រព្យ / Property Info:</b>\n`;
-    messageText += `• គោលបំណង / Purpose: <b>${data.listingType || 'N/A'}</b>\n`;
-    messageText += `• ប្រភេទ / Type: <b>${data.propertyType || 'N/A'}</b>\n`;
-    messageText += `• តម្លៃ / Price: <b>$${data.price || '0'}</b>\n`;
-    messageText += `• ទីតាំង / Location: ${data.location || 'N/A'}\n`;
-    messageText += `• 📍 Google Maps: ${data.mapLink || 'N/A'}\n`;
-
-    if (data.landSize) messageText += `• ទំហំដី / Land Size: ${data.landSize}\n`;
-    if (data.houseSize) messageText += `• ទំហំផ្ទះ / House Size: ${data.houseSize}\n`;
-    if (data.frontSpace) messageText += `• សល់មុខ / Front Space: ${data.frontSpace}\n`;
-    if (data.backSpace) messageText += `• សល់ក្រោយ / Back Space: ${data.backSpace}\n`;
-    if (data.bedrooms && data.bedrooms !== 'មិនកំណត់') messageText += `• បន្ទប់គេង / Bedrooms: ${data.bedrooms}\n`;
-    if (data.bathrooms && data.bathrooms !== 'មិនកំណត់') messageText += `• បន្ទប់ទឹក / Bathrooms: ${data.bathrooms}\n`;
-    if (data.direction && data.direction !== 'មិនកំណត់') messageText += `• ទិស / Direction: ${data.direction}\n`;
-
+    let termsString = '';
     if (data.listingType === 'ជួល' || data.listingType === 'For Rent') {
-      messageText += `\n<b>📝 លក្ខខណ្ឌជួល / Rental Terms:</b>\n`;
-      messageText += `• ប្រាក់កក់ / Deposit: ${depositDisplay}\n`;
-      messageText += `• ថ្លៃឈ្នួល / Rent Fee: ${data.rentFee || 'N/A'}\n`;
-      messageText += `• កុងត្រា / Contract: ${data.contract || 'N/A'}\n`;
+      termsString = `កក់ ${depositDisplay} | បង់ ${data.rentFee || 'N/A'} | កុងត្រា ${data.contract || 'N/A'}`;
     } else if (data.listingType === 'លក់' || data.listingType === 'For Sale') {
-      messageText += `\n<b>📜 លក្ខខណ្ឌលក់ / Sale Terms:</b>\n`;
-      messageText += `• ប្លង់កម្មសិទ្ធ / Certificate: ${certDisplay}\n`;
+      termsString = `ប្លង់កម្មសិទ្ធ: ${certDisplay}`;
+    } else {
+      termsString = 'N/A';
     }
 
-    if (data.description) {
-      messageText += `\n<b>📝 សម្គាល់បន្ថែម / Additional Notes:</b>\n${data.description}\n`;
+    // Build Exact Layout matching the image
+    let messageText = `🏠 <b>ការចុះបញ្ជីអចលនទ្រព្យថ្មី (NEW PROPERTY LISTING)</b>\n\n`;
+    
+    messageText += `📌 <b>ព័ត៌មានអចលនទ្រព្យ</b>\n`;
+    messageText += `🏠 <b>${data.propertyType || 'N/A'} ${data.listingType || ''}</b>\n`;
+    messageText += `📍 <b>ទីតាំង:</b> ${data.location || 'N/A'}\n`;
+    messageText += `• <b>តម្លៃ</b> : $${data.price || '0'}\n`;
+    
+    if (data.landSize) messageText += `• <b>ទំហំដី</b> : ${data.landSize}\n`;
+    if (data.houseSize) messageText += `• <b>ទំហំផ្ទះ</b> : ${data.houseSize}\n`;
+    
+    const front = data.frontSpace || 'N/A';
+    const back = data.backSpace || 'N/A';
+    messageText += `• <b>សល់មុខផ្ទះ:</b> ${front} | <b>សល់ក្រោយ:</b> ${back}\n`;
+
+    const bed = (data.bedrooms && data.bedrooms !== 'មិនកំណត់') ? data.bedrooms : 'N/A';
+    const bath = (data.bathrooms && data.bathrooms !== 'មិនកំណត់') ? data.bathrooms : 'N/A';
+    messageText += `• <b>បន្ទប់គេង</b> : ${bed} | <b>បន្ទប់ទឹក</b> : ${bath}\n`;
+
+    if (data.direction && data.direction !== 'មិនកំណត់') {
+      messageText += `• <b>ទិសបែរទៅ</b> : ${data.direction}\n`;
     }
 
-    messageText += `\n<b>📩 បញ្ជូនដោយ / Submitted By:</b> ${data.submittedBy || 'Web Form'}`;
+    messageText += `• <b>លក្ខខណ្ឌ:</b>\n${termsString}\n`;
+    messageText += `<b>Property ID:</b> ${data.propertyId || ''}\n\n`;
+
+    messageText += `📝 <b>សម្គាល់បន្ថែម</b>\n`;
+    messageText += `${data.description || 'N/A'}\n`;
+    messageText += `-----------------------------------\n\n`;
+
+    messageText += `👤 <b>ព័ត៌មានម្ចាស់អចលនទ្រព្យ</b>\n`;
+    messageText += `• <b>ឈ្មោះ:</b> ${data.ownerName || 'N/A'}\n`;
+    messageText += `• <b>Tel 1:</b> ${data.tel1 || 'N/A'}\n`;
+    if (data.tel2) messageText += `• <b>Tel 2:</b> ${data.tel2}\n`;
+    if (data.telegram) messageText += `• <b>Telegram:</b> ${data.telegram}\n`;
+    if (data.mapLink) messageText += `• <b>Google Maps:</b> ${data.mapLink}\n`;
+
+    // Timestamp & Submitter Info
+    const now = new Date();
+    const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
+    messageText += `\n<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
+    messageText += `<b>Submitted Date:</b> ${formattedDate}`;
 
     if (files.length === 1) {
       const formData = new FormData();
