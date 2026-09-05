@@ -67,9 +67,9 @@ app.get('/client-inquiry', (req, res) => {
 });
 
 // ==========================================
-// 1. CLIENT INQUIRY ENDPOINT
+// 1. CLIENT INQUIRY ENDPOINT (IMPROVED)
 // ==========================================
-app.post('/api/client-inquiry', async (req, res) => {
+app.post(['/api/client-inquiry', '/api/inquiry'], async (req, res) => {
   try {
     if (!BOT_TOKEN || !CHAT_ID) {
       return res.status(500).json({ 
@@ -80,18 +80,65 @@ app.post('/api/client-inquiry', async (req, res) => {
 
     const data = req.body;
 
-    let inquiryMessage = `<b>📩 ព័ត៌មានស្វែងរកអចលនទ្រព្យ / Client Inquiry</b>\n\n`;
-    inquiryMessage += `<b>👤 ព័ត៌មានអតិថិជន / Client Details:</b>\n`;
-    inquiryMessage += `• ឈ្មោះ / Name: <b>${data.name || 'N/A'}</b>\n`;
-    inquiryMessage += `• លេខទូរស័ព្ទ / Phone: <b>${data.phone || 'N/A'}</b>\n`;
-    if (data.telegram) inquiryMessage += `• Telegram: ${data.telegram}\n`;
+    // Normalizing dynamic field names for front-end compatibility
+    const clientName = data.clientName || data.name || 'N/A';
+    const tel1 = data.tel1 || data.phone || 'N/A';
+    const tel2 = data.tel2 || '';
+    const phoneDisplay = tel2 ? `${tel1} / ${tel2}` : tel1;
+    const telegram = data.telegram || '';
+    
+    const targetType = data.listingType || data.purpose || 'N/A';
+    const propertyType = data.propertyType || 'N/A';
+    const targetLocation = data.targetLocation || data.preferredLocation || 'N/A';
+    
+    let budgetDisplay = 'N/A';
+    if (data.budget) {
+      budgetDisplay = `$${Number(data.budget).toLocaleString()}`;
+    } else if (data.maxBudget) {
+      budgetDisplay = data.minBudget 
+        ? `$${Number(data.minBudget).toLocaleString()} - $${Number(data.maxBudget).toLocaleString()}`
+        : `Up to $${Number(data.maxBudget).toLocaleString()}`;
+    }
 
-    inquiryMessage += `\n<b>🎯 តម្រូវការ / Requirements:</b>\n`;
-    inquiryMessage += `• គោលបំណង / Purpose: <b>${data.purpose || 'N/A'}</b>\n`;
-    inquiryMessage += `• ប្រភេទ / Property Type: <b>${data.propertyType || 'N/A'}</b>\n`;
-    if (data.budget) inquiryMessage += `• ថវិកា / Budget: <b>$${data.budget}</b>\n`;
-    if (data.preferredLocation) inquiryMessage += `• ទីតាំងចង់បាន / Preferred Location: ${data.preferredLocation}\n`;
-    if (data.notes) inquiryMessage += `\n<b>📝 កំណត់សម្គាល់បន្ថែម / Additional Notes:</b>\n${data.notes}\n`;
+    const bed = (data.bedrooms && data.bedrooms !== 'Any' && data.bedrooms !== 'មិនកំណត់') ? data.bedrooms : 'Any';
+    const bath = (data.bathrooms && data.bathrooms !== 'Any' && data.bathrooms !== 'មិនកំណត់') ? data.bathrooms : 'Any';
+    const direction = (data.direction && data.direction !== 'Not Required' && data.direction !== 'មិនកំណត់') ? data.direction : 'N/A';
+    const parking = (data.parkingNeeded && data.parkingNeeded !== 'Not Required' && data.parkingNeeded !== 'មិនកំណត់') ? data.parkingNeeded : 'N/A';
+
+    // Constructing Structured Message
+    let inquiryMessage = `👤 <b>ការចុះបញ្ជីតម្រូវការអតិថិជន (NEW CLIENT INQUIRY)</b>\n\n`;
+    
+    inquiryMessage += `🔍 <b>ព័ត៌មានតម្រូវការ / Requirement Details</b>\n`;
+    inquiryMessage += `🏠 <b>${targetType} ${propertyType}</b>\n`;
+    inquiryMessage += `📍 <b>តំបន់គោលដៅ / Location:</b> ${targetLocation}\n`;
+    inquiryMessage += `• <b>ថវិកា / Budget:</b> ${budgetDisplay}\n`;
+
+    if (targetType === 'Rent' || targetType === 'ជួល') {
+      if (data.preferredTerm) inquiryMessage += `• <b>រយៈពេលកុងត្រា / Contract:</b> ${data.preferredTerm}\n`;
+    }
+
+    if (data.landSize) inquiryMessage += `• <b>ទំហំដី / Land Size:</b> ${data.landSize}\n`;
+    if (data.buildingSize) inquiryMessage += `• <b>ទំហំអាគារ / Building Size:</b> ${data.buildingSize}\n`;
+
+    inquiryMessage += `• <b>បន្ទប់ / Rooms:</b> 🛏️ ${bed} | 🚿 ${bath}\n`;
+    inquiryMessage += `• <b>ទិស / Direction:</b> ${direction}\n`;
+    inquiryMessage += `• <b>ចំណត / Parking:</b> ${parking}\n`;
+    
+    if (data.purpose) inquiryMessage += `• <b>គោលបំណង / Purpose:</b> ${data.purpose}\n`;
+
+    inquiryMessage += `\n📝 <b>សម្គាល់បន្ថែម / Special Notes:</b>\n`;
+    inquiryMessage += `${data.description || data.notes || 'None'}\n`;
+    inquiryMessage += `-----------------------------------\n\n`;
+
+    inquiryMessage += `👤 <b>ព័ត៌មានអតិថិជន / Client Contact</b>\n`;
+    inquiryMessage += `• <b>ឈ្មោះ / Name:</b> ${clientName}\n`;
+    inquiryMessage += `• <b>លេខទូរស័ព្ទ / Phone:</b> ${phoneDisplay}\n`;
+    if (telegram) inquiryMessage += `• <b>Telegram:</b> ${telegram}\n`;
+
+    const now = new Date();
+    const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
+    inquiryMessage += `\n<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
+    inquiryMessage += `<b>Submitted Date:</b> ${formattedDate}`;
 
     const payload = {
       chat_id: CHAT_ID,
@@ -104,6 +151,19 @@ app.post('/api/client-inquiry', async (req, res) => {
     }
 
     await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
+
+    // Direct message confirmation to submitter
+    if (data.userId) {
+      try {
+        await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          chat_id: data.userId,
+          text: `✅ <b>បានបញ្ជូនសំណើជោគជ័យ / Inquiry Confirmed</b>\n\nអរគុណ! ក្រុមការងារ Twenty5Realty បានទទួលសំណើស្វែងរកអចលនទ្រព្យរបស់លោកអ្នកហើយ។ ពួកយើងនឹងទាក់ទងទៅវិញក្នុងពេលឆាប់ៗនេះ។\n\nThank you! Your property inquiry has been received.`,
+          parse_mode: 'HTML'
+        });
+      } catch (dmErr) {
+        console.log('Could not send direct message to user:', dmErr.message);
+      }
+    }
 
     return res.status(200).json({ success: true, message: 'Inquiry submitted successfully!' });
 
@@ -236,7 +296,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, payload);
     }
 
-    // Send direct private confirmation message to the submitter if Telegram User ID exists
     if (data.userId) {
       try {
         await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
