@@ -13,6 +13,13 @@ const CHAT_ID = process.env.TELEGRAM_GROUP_ID || process.env.CHAT_ID;
 const PROPERTY_TOPIC_ID = process.env.PROPERTY_TOPIC_ID;
 const CLIENT_TOPIC_ID = process.env.CLIENT_TOPIC_ID;
 
+// Parse incoming request payloads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Serve static assets
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Lightweight Telegram /start handler
 if (BOT_TOKEN) {
   let lastUpdateId = 0;
@@ -49,10 +56,6 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // HTML Page Routes
 app.get('/', (req, res) => {
@@ -114,7 +117,7 @@ app.post('/api/client-inquiry', async (req, res) => {
 });
 
 // ==========================================
-// 2. PROPERTY LISTING ENDPOINT (MATCHES YOUR IMAGE FORMAT)
+// 2. PROPERTY LISTING ENDPOINT
 // ==========================================
 app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
   try {
@@ -148,7 +151,7 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       termsString = 'N/A';
     }
 
-    // Build Exact Layout matching the image
+    // Build Layout
     let messageText = `🏠 <b>ការចុះបញ្ជីអចលនទ្រព្យថ្មី (NEW PROPERTY LISTING)</b>\n\n`;
     
     messageText += `📌 <b>ព័ត៌មានអចលនទ្រព្យ</b>\n`;
@@ -185,7 +188,6 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
     if (data.telegram) messageText += `• <b>Telegram:</b> ${data.telegram}\n`;
     if (data.mapLink) messageText += `• <b>Google Maps:</b> ${data.mapLink}\n`;
 
-    // Timestamp & Submitter Info
     const now = new Date();
     const formattedDate = now.toLocaleString('en-GB', { timeZone: 'Asia/Phnom_Penh' });
     messageText += `\n<b>Submitted by:</b> ${data.submittedBy || 'Web Form'}\n`;
@@ -243,6 +245,11 @@ app.post('/api/submit', upload.array('photos', 10), async (req, res) => {
       error: error.response?.data?.description || 'Failed to submit property listing.' 
     });
   }
+});
+
+// Fallback 404 Handler for Unmatched API Requests
+app.use((req, res) => {
+  res.status(404).json({ success: false, error: 'API route not found' });
 });
 
 app.listen(port, () => {
