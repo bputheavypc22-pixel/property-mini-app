@@ -217,7 +217,6 @@
     <p id="t_subTitle">Client Property Requirement Form</p>
   </div>
 
-  <!-- Success Summary Container (Hidden by default) -->
   <div id="summaryCard" class="hidden">
     <div style="color: #16a34a; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; text-align: center;">
       ✅ <span id="t_successTitle">Submitted Successfully!</span>
@@ -693,8 +692,22 @@
     document.getElementById('summaryContent').innerText = summaryText;
   }
 
-  // Close web app function
-  function closeApp() {
+  // Close web app and send thank-you message
+  async function closeApp() {
+    const userId = tg?.initDataUnsafe?.user?.id;
+
+    if (userId) {
+      try {
+        await fetch('/api/send-thank-you', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegramId: userId })
+        });
+      } catch (err) {
+        console.error('Failed to trigger thank-you message:', err);
+      }
+    }
+
     if (tg && typeof tg.close === 'function') {
       tg.close();
     } else {
