@@ -263,6 +263,84 @@
       justify-content: center;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
+
+    /* Fallback Web Submit Button */
+    .btn-submit-web {
+      width: 100%;
+      background-color: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background-color 0.2s ease;
+    }
+    .btn-submit-web:hover {
+      background-color: #0369a1;
+    }
+
+    /* Success Card Styling */
+    .success-card {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+    .success-header {
+      text-align: center;
+      color: #16a34a;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .summary-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .summary-body {
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .summary-body ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 6px 0;
+    }
+    .summary-body li {
+      margin-bottom: 3px;
+    }
+    .divider {
+      border-top: 1px dashed #cbd5e1;
+      margin: 12px 0;
+    }
+    .btn-new-submit {
+      width: 100%;
+      background-color: #64748b;
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 14px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .btn-new-submit:hover {
+      background-color: #475569;
+    }
   </style>
 </head>
 <body>
@@ -481,7 +559,19 @@
         
         <div id="preview-grid" class="preview-grid"></div>
       </div>
+
+      <button type="submit" id="btn-web-submit" class="btn-submit-web">បញ្ជូនទិន្នន័យ</button>
     </form>
+
+    <div id="successView" class="success-card">
+      <div class="success-header" id="txt-successHeader">✅ Submitted Successfully!</div>
+      
+      <div class="summary-title" id="txt-summaryTitle">🏠 PROPERTY LISTING SUMMARY</div>
+      
+      <div class="summary-body" id="summaryContent"></div>
+
+      <button type="button" class="btn-new-submit" id="btn-newSubmit" onclick="resetFormView()">NEW SUBMISSION</button>
+    </div>
   </div>
 
   <script>
@@ -557,8 +647,10 @@
         noImages: "គ្មានរូបភាពត្រូវបានជ្រើសរើស",
         imgCountText: "បានជ្រើសរើស",
         submitBtn: "បញ្ជូនទិន្នន័យ",
-        successAlert: "បានចុះបញ្ជីអចលនទ្រព្យជោគជ័យ! 🎉",
-        limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្ណោះ",
+        successHeader: "✅ បានផ្ញើទិន្នន័យជោគជ័យ!",
+        summaryTitle: "🏠 សង្ខេបព័ត៌មានអចលនទ្រព្យ",
+        newSubmitBtn: "ចុះបញ្ជីថ្មីទៀត",
+        limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្នោះ",
         minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក"
       },
       en: {
@@ -628,7 +720,9 @@
         noImages: "No images selected",
         imgCountText: "selected",
         submitBtn: "SUBMIT LISTING",
-        successAlert: "Property registered successfully! 🎉",
+        successHeader: "✅ Submitted Successfully!",
+        summaryTitle: "🏠 PROPERTY LISTING SUMMARY",
+        newSubmitBtn: "NEW SUBMISSION",
         limitAlert: "You can only upload up to 10 images.",
         minImgAlert: "Please upload at least 1 image."
       }
@@ -767,6 +861,11 @@
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
       document.getElementById('upload-text').textContent = t.uploadText;
+      document.getElementById('btn-web-submit').textContent = t.submitBtn;
+
+      document.getElementById('txt-successHeader').textContent = t.successHeader;
+      document.getElementById('txt-summaryTitle').textContent = t.summaryTitle;
+      document.getElementById('btn-newSubmit').textContent = t.newSubmitBtn;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
@@ -849,6 +948,82 @@
       });
     }
 
+    function displaySuccessSummary(data, submittedBy) {
+      const container = document.getElementById('summaryContent');
+      let html = `
+        <div style="margin-bottom:8px;">
+          📍 <strong>${data.listingType} ${data.propertyType}</strong><br>
+          📍 <strong>Location:</strong> ${data.location}<br>
+          • <strong>Price:</strong> $${data.price}
+        </div>
+        <ul>
+      `;
+
+      if (data.landSize) html += `<li>• <strong>Land Size:</strong> ${data.landSize}</li>`;
+      if (data.houseSize) html += `<li>• <strong>House Size:</strong> ${data.houseSize}</li>`;
+      if (data.frontSpace || data.backSpace) {
+        html += `<li>• <strong>Front:</strong> ${data.frontSpace || 'N/A'} | <strong>Back:</strong> ${data.backSpace || 'N/A'}</li>`;
+      }
+      html += `<li>• <strong>Bed:</strong> ${data.bedrooms} | <strong>Bath:</strong> ${data.bathrooms}</li>`;
+      if (data.direction) html += `<li>• <strong>Direction:</strong> ${data.direction}</li>`;
+
+      if (data.deposit || data.rentFee || data.contract) {
+        html += `<li>• <strong>Terms:</strong> Deposit ${data.deposit || 'N/A'} | Fee ${data.rentFee || 'N/A'} | Contract ${data.contract || 'N/A'}</li>`;
+      }
+      if (data.certificate) {
+        html += `<li>• <strong>Certificate:</strong> ${data.certificate}</li>`;
+      }
+
+      html += `</ul>`;
+
+      if (data.description) {
+        html += `
+          <div style="margin-top:8px;">
+            📝 <strong>Notes:</strong><br>${data.description}
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="divider"></div>
+        <div>
+          👤 <strong>Owner Info:</strong>
+          <ul>
+            <li>• <strong>Name:</strong> ${data.ownerName}</li>
+            <li>• <strong>Tel:</strong> ${data.tel1} ${data.tel2 ? '/ ' + data.tel2 : ''}</li>
+            ${data.telegram ? `<li>• <strong>Telegram:</strong> ${data.telegram}</li>` : ''}
+          </ul>
+        </div>
+        <div style="margin-top:8px; font-size:11px; color:#64748b;">
+          <strong>Submitted by:</strong> ${submittedBy}
+        </div>
+      `;
+
+      container.innerHTML = html;
+      document.getElementById('listingForm').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+
+      if (tg && tg.MainButton) {
+        tg.MainButton.hide();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetFormView() {
+      document.getElementById('listingForm').reset();
+      selectedFiles = [];
+      renderPreviews();
+      togglePurposeSections();
+      document.getElementById('map-container').style.display = 'none';
+
+      document.getElementById('successView').style.display = 'none';
+      document.getElementById('listingForm').style.display = 'block';
+
+      if (tg && tg.MainButton) {
+        tg.MainButton.show();
+      }
+    }
+
     if (tg) {
       tg.ready();
       tg.expand();
@@ -875,56 +1050,62 @@
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
-      const formData = new FormData();
-      formData.append('ownerName', document.getElementById('ownerName').value);
-      formData.append('tel1', document.getElementById('tel1').value);
-      formData.append('tel2', document.getElementById('tel2').value);
-      formData.append('telegram', document.getElementById('telegram').value);
-      formData.append('listingType', document.getElementById('listingType').value);
-      formData.append('propertyType', document.getElementById('propertyType').value);
-      formData.append('price', document.getElementById('price').value);
-      formData.append('location', document.getElementById('location').value);
-      formData.append('mapLink', document.getElementById('mapLink').value);
-      formData.append('landSize', document.getElementById('landSize').value);
-      formData.append('houseSize', document.getElementById('houseSize').value);
-      formData.append('frontSpace', document.getElementById('frontSpace').value);
-      formData.append('backSpace', document.getElementById('backSpace').value);
-      formData.append('bedrooms', document.getElementById('bedrooms').value);
-      formData.append('bathrooms', document.getElementById('bathrooms').value);
-      formData.append('direction', document.getElementById('direction').value);
+      const listingTypeVal = document.getElementById('listingType').value;
+      const isRent = listingTypeVal === 'ជួល' || listingTypeVal === 'For Rent';
+      const isSale = listingTypeVal === 'លក់' || listingTypeVal === 'For Sale';
 
-      const listingType = document.getElementById('listingType').value;
-      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
-      const isSale = listingType === 'លក់' || listingType === 'For Sale';
-
-      /* Append Rent Terms if Renting */
+      let depositVal = '';
+      let rentFeeVal = '';
+      let contractVal = '';
       if (isRent) {
         const depSelect = document.getElementById('deposit');
-        const depVal = depSelect.options[depSelect.selectedIndex].text;
-        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
+        depositVal = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
           ? document.getElementById('depositOther').value 
-          : depVal;
+          : depSelect.options[depSelect.selectedIndex].text;
           
         const rentFeeSelect = document.getElementById('rentFee');
-        const contractSelect = document.getElementById('contract');
+        rentFeeVal = rentFeeSelect.options[rentFeeSelect.selectedIndex].text;
 
-        formData.append('deposit', finalDeposit);
-        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
-        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
+        const contractSelect = document.getElementById('contract');
+        contractVal = contractSelect.options[contractSelect.selectedIndex].text;
       }
 
-      /* Append Certificate if For Sale */
+      let certVal = '';
       if (isSale) {
         const certSelect = document.getElementById('certificate');
-        const certVal = certSelect.options[certSelect.selectedIndex].text;
-        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
+        certVal = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
           ? document.getElementById('certOther').value
-          : certVal;
-
-        formData.append('certificate', finalCert);
+          : certSelect.options[certSelect.selectedIndex].text;
       }
 
-      formData.append('description', document.getElementById('description').value);
+      const payloadData = {
+        ownerName: document.getElementById('ownerName').value,
+        tel1: document.getElementById('tel1').value,
+        tel2: document.getElementById('tel2').value,
+        telegram: document.getElementById('telegram').value,
+        listingType: listingTypeVal,
+        propertyType: document.getElementById('propertyType').value,
+        price: document.getElementById('price').value,
+        location: document.getElementById('location').value,
+        mapLink: document.getElementById('mapLink').value,
+        landSize: document.getElementById('landSize').value,
+        houseSize: document.getElementById('houseSize').value,
+        frontSpace: document.getElementById('frontSpace').value,
+        backSpace: document.getElementById('backSpace').value,
+        bedrooms: document.getElementById('bedrooms').value,
+        bathrooms: document.getElementById('bathrooms').value,
+        direction: document.getElementById('direction').value,
+        deposit: depositVal,
+        rentFee: rentFeeVal,
+        contract: contractVal,
+        certificate: certVal,
+        description: document.getElementById('description').value
+      };
+
+      const formData = new FormData();
+      Object.keys(payloadData).forEach(key => {
+        formData.append(key, payloadData[key]);
+      });
       formData.append('submittedBy', submittedBy);
       formData.append('initData', tg?.initData || '');
 
@@ -943,12 +1124,7 @@
         if (tg) tg.MainButton.hideProgress();
 
         if (result.success) {
-          if (tg) {
-            tg.showAlert(t.successAlert, () => tg.close());
-          } else {
-            alert(t.successAlert);
-            location.reload();
-          }
+          displaySuccessSummary(payloadData, submittedBy);
         } else {
           throw new Error(result.error || 'Submission failed');
         }
@@ -960,12 +1136,12 @@
 
     if (tg) {
       tg.MainButton.onClick(submitForm);
-    } else {
-      document.getElementById('listingForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-      });
     }
+
+    document.getElementById('listingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitForm();
+    });
 
     switchLanguage(currentLang);
   </script>
