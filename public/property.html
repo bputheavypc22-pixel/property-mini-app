@@ -6,53 +6,263 @@
   <title>Property Listing - Twenty5 Realty</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    html, body { background-color: #f8fafc !important; color: #0f172a !important; padding: 16px; padding-bottom: 30px; }
-    .container { max-width: 480px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .header { position: relative; text-align: center; margin-bottom: 20px; }
-    .lang-switcher { position: absolute; top: 0; right: 0; display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 20px; border: 1px solid #e2e8f0; }
-    .lang-btn { border: none; background: transparent; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 16px; cursor: pointer; color: #64748b; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px; }
-    .lang-btn.active { background: #0284c7; color: #ffffff; }
-    .logo-img { max-width: 130px; height: auto; margin-bottom: 10px; border-radius: 6px; }
-    .header h2 { font-size: 18px; color: #0b2545; margin-bottom: 2px; }
-    .header p { font-size: 12px; color: #64748b; }
-    .section-title { font-size: 14px; font-weight: 700; color: #0284c7; margin: 18px 0 12px 0; padding-bottom: 4px; border-bottom: 2px solid #f1f5f9; }
-    .form-group { margin-bottom: 12px; }
-    .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
-    .form-row .form-group { flex: 1; margin-bottom: 0; min-width: 0; }
-    label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    input[type="text"], input[type="number"], input[type="tel"], input[type="url"], select, textarea { width: 100%; padding: 10px 12px; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #f8fafc; color: #0f172a; font-weight: 500; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-    input::placeholder, textarea::placeholder { color: #94a3b8; opacity: 1; }
-    input:focus, select:focus, textarea:focus { border-color: #0284c7; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
-    textarea { resize: vertical; min-height: 70px; }
-    .map-input-wrapper { display: flex; gap: 6px; align-items: center; }
-    .map-input-wrapper input { flex: 1; }
-    .btn-gps-small { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 9px 10px; background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.2s ease; height: 38px; }
-    .btn-gps-small:hover { background-color: #bae6fd; }
-    .map-notice { font-size: 11px; color: #ef4444; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-    .map-container { display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; height: 180px; background: #f1f5f9; }
-    .map-container iframe { width: 100%; height: 100%; border: 0; }
-    #rent-terms-section, #sale-terms-section { display: none; background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px; border-radius: 8px; margin-bottom: 12px; }
-    .upload-box { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 16px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; }
-    .upload-box:hover { border-color: #0284c7; background: #f0f9ff; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    html, body {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      padding: 16px;
+      padding-bottom: 30px;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .header {
+      position: relative;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .lang-switcher {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 4px;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+    }
+    .lang-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .lang-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .logo-img {
+      max-width: 130px;
+      height: auto;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    .header h2 {
+      font-size: 18px;
+      color: #0b2545;
+      margin-bottom: 2px;
+    }
+    .header p {
+      font-size: 12px;
+      color: #64748b;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0284c7;
+      margin: 18px 0 12px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    
+    /* Layout Scaffolding for Form Fields */
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #334155;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 13px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: #94a3b8;
+      opacity: 1;
+    }
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #0284c7;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    /* Map Input & Compact Button Layout */
+    .map-input-wrapper {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .map-input-wrapper input {
+      flex: 1;
+    }
+    .btn-gps-small {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 9px 10px;
+      background-color: #e0f2fe;
+      color: #0284c7;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      height: 38px;
+    }
+    .btn-gps-small:hover {
+      background-color: #bae6fd;
+    }
+    .map-notice {
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .map-container {
+      display: none;
+      margin-top: 8px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      height: 180px;
+      background: #f1f5f9;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Dynamic Options Blocks */
+    #rent-terms-section,
+    #sale-terms-section {
+      display: none;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* Image Upload Box & Grid */
+    .upload-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .upload-box:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
     .upload-icon { font-size: 24px; margin-bottom: 4px; }
     .upload-text { font-size: 13px; font-weight: 600; color: #0284c7; }
     .upload-count { font-size: 11px; color: #64748b; margin-top: 2px; }
-    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-top: 12px; }
-    .preview-item { position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-    .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-    .btn-submit-web { width: 100%; background-color: #0284c7; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s ease; }
-    .btn-submit-web:hover { background-color: #0369a1; }
-    .success-card { display: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 10px; }
-    .success-header { text-align: center; color: #16a34a; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
-    .summary-title { font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .summary-body { font-size: 13px; color: #334155; line-height: 1.6; }
-    .summary-body ul { list-style: none; padding-left: 0; margin: 6px 0; }
-    .summary-body li { margin-bottom: 3px; }
-    .divider { border-top: 1px dashed #cbd5e1; margin: 12px 0; }
-    .btn-new-submit { width: 100%; background-color: #64748b; color: #ffffff; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 14px; text-align: center; transition: background 0.2s; }
-    .btn-new-submit:hover { background-color: #475569; }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .preview-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
@@ -130,7 +340,7 @@
       <div class="form-group">
         <label id="lbl-mapLink">📍 លីង Google Maps (Google Maps Link) *</label>
         <div class="map-input-wrapper">
-          <input type="url" id="mapLink" required data-ph-km="https://maps.google.com/..." data-ph-en="https://maps.google.com/..." oninput="previewMap()">
+          <input type="url" id="mapLink" required data-ph-km="https://maps.app.goo.gl/..." data-ph-en="https://maps.app.goo.gl/..." oninput="previewMap()">
           <a href="https://maps.google.com" target="_blank" class="btn-gps-small" id="btn-openMap">
             📍 Google Maps
           </a>
@@ -271,26 +481,13 @@
         
         <div id="preview-grid" class="preview-grid"></div>
       </div>
-
-      <button type="submit" id="btn-web-submit" class="btn-submit-web">បញ្ជូនទិន្នន័យ</button>
     </form>
-
-    <div id="successView" class="success-card">
-      <div class="success-header" id="txt-successHeader">✅ បានផ្ញើទិន្នន័យជោគជ័យ!</div>
-      <div class="summary-title" id="txt-summaryTitle">🏠 សង្ខេបព័ត៌មានអចលនទ្រព្យ</div>
-      <div class="summary-body" id="summaryContent"></div>
-      <button type="button" class="btn-new-submit" id="btn-newSubmit" onclick="resetFormView()">ចុះបញ្ជីថ្មីទៀត</button>
-    </div>
   </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
     let currentLang = localStorage.getItem('appLang') || 'km';
     let selectedFiles = [];
-
-    // SET THIS TO YOUR HOSTED BACKEND DOMAIN IF NOT HOSTING ON SAME SERVER
-    // Example: const BACKEND_URL = 'https://my-backend-app.onrender.com';
-    const BACKEND_URL = '';
 
     const translations = {
       km: {
@@ -360,10 +557,8 @@
         noImages: "គ្មានរូបភាពត្រូវបានជ្រើសរើស",
         imgCountText: "បានជ្រើសរើស",
         submitBtn: "បញ្ជូនទិន្នន័យ",
-        successHeader: "✅ បានផ្ញើទិន្នន័យជោគជ័យ!",
-        summaryTitle: "🏠 សង្ខេបព័ត៌មានអចលនទ្រព្យ",
-        newSubmitBtn: "ចុះបញ្ជីថ្មីទៀត",
-        limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្នោះ",
+        successAlert: "បានចុះបញ្ជីអចលនទ្រព្យជោគជ័យ! 🎉",
+        limitAlert: "អ្នកអាចជ្រើសរើសបានអតិបរមា ១០ រូបភាពប៉ុណ្ណោះ",
         minImgAlert: "សូមជ្រើសរើសរូបភាពយ៉ាងហោចណាស់ ១ សន្លឹក"
       },
       en: {
@@ -433,9 +628,7 @@
         noImages: "No images selected",
         imgCountText: "selected",
         submitBtn: "SUBMIT LISTING",
-        successHeader: "✅ Submitted Successfully!",
-        summaryTitle: "🏠 PROPERTY LISTING SUMMARY",
-        newSubmitBtn: "NEW SUBMISSION",
+        successAlert: "Property registered successfully! 🎉",
         limitAlert: "You can only upload up to 10 images.",
         minImgAlert: "Please upload at least 1 image."
       }
@@ -461,7 +654,7 @@
     function toggleDepositOther() {
       const depositVal = document.getElementById('deposit').value;
       const otherInput = document.getElementById('depositOther');
-      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other') {
+      if (depositVal === 'ផ្សេងៗ' || depositVal === 'Other' || depositVal === 'optDepOther') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -474,7 +667,7 @@
     function toggleCertOther() {
       const certVal = document.getElementById('certificate').value;
       const otherInput = document.getElementById('certOther');
-      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type') {
+      if (certVal === 'ប្រភេទផ្សេង' || certVal === 'Other type' || certVal === 'optCertOther') {
         otherInput.style.display = 'block';
         otherInput.required = true;
       } else {
@@ -544,6 +737,7 @@
       document.getElementById('opt-dir-sw').textContent = t.optSW;
       document.getElementById('opt-dir-nw').textContent = t.optNW;
 
+      /* Rent Terms Translations */
       document.getElementById('lbl-deposit').textContent = t.lblDeposit;
       document.getElementById('opt-dep-1').textContent = t.optDep1;
       document.getElementById('opt-dep-2').textContent = t.optDep2;
@@ -563,6 +757,7 @@
       document.getElementById('opt-con-3y').textContent = t.optCon3y;
       document.getElementById('opt-con-neg').textContent = t.optConNeg;
 
+      /* Sale Terms Translations */
       document.getElementById('lbl-certificate').textContent = t.lblCertificate;
       document.getElementById('opt-cert-none').textContent = t.optCertNone;
       document.getElementById('opt-cert-hard').textContent = t.optCertHard;
@@ -572,11 +767,6 @@
       document.getElementById('lbl-description').textContent = t.lblDescription;
       document.getElementById('lbl-images').textContent = t.lblImages;
       document.getElementById('upload-text').textContent = t.uploadText;
-      document.getElementById('btn-web-submit').textContent = t.submitBtn;
-
-      document.getElementById('txt-successHeader').textContent = t.successHeader;
-      document.getElementById('txt-summaryTitle').textContent = t.summaryTitle;
-      document.getElementById('btn-newSubmit').textContent = t.newSubmitBtn;
 
       document.querySelectorAll('[data-ph-km]').forEach(el => {
         el.placeholder = el.getAttribute(`data-ph-${lang}`);
@@ -600,7 +790,8 @@
         return;
       }
 
-      iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+      let embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+      iframe.src = embedUrl;
       container.style.display = 'block';
     }
 
@@ -658,82 +849,6 @@
       });
     }
 
-    function displaySuccessSummary(data, submittedBy) {
-      const container = document.getElementById('summaryContent');
-      let html = `
-        <div style="margin-bottom:8px;">
-          🏠 <strong>${data.listingType} ${data.propertyType}</strong><br>
-          📍 <strong>Location:</strong> ${data.location}<br>
-          • <strong>Price:</strong> $${data.price}
-        </div>
-        <ul>
-      `;
-
-      if (data.landSize) html += `<li>• <strong>Land Size:</strong> ${data.landSize}</li>`;
-      if (data.houseSize) html += `<li>• <strong>House Size:</strong> ${data.houseSize}</li>`;
-      if (data.frontSpace || data.backSpace) {
-        html += `<li>• <strong>Front:</strong> ${data.frontSpace || 'N/A'} | <strong>Back:</strong> ${data.backSpace || 'N/A'}</li>`;
-      }
-      html += `<li>• <strong>Bed:</strong> ${data.bedrooms} | <strong>Bath:</strong> ${data.bathrooms}</li>`;
-      if (data.direction) html += `<li>• <strong>Direction:</strong> ${data.direction}</li>`;
-
-      if (data.deposit || data.rentFee || data.contract) {
-        html += `<li>• <strong>Terms:</strong> Deposit ${data.deposit || 'N/A'} | Fee ${data.rentFee || 'N/A'} | Contract ${data.contract || 'N/A'}</li>`;
-      }
-      if (data.certificate) {
-        html += `<li>• <strong>Certificate:</strong> ${data.certificate}</li>`;
-      }
-
-      html += `</ul>`;
-
-      if (data.description) {
-        html += `
-          <div style="margin-top:8px;">
-            📝 <strong>Notes:</strong><br>${data.description}
-          </div>
-        `;
-      }
-
-      html += `
-        <div class="divider"></div>
-        <div>
-          👤 <strong>Owner Info:</strong>
-          <ul>
-            <li>• <strong>Name:</strong> ${data.ownerName}</li>
-            <li>• <strong>Tel:</strong> ${data.tel1} ${data.tel2 ? '/ ' + data.tel2 : ''}</li>
-            ${data.telegram ? `<li>• <strong>Telegram:</strong> ${data.telegram}</li>` : ''}
-          </ul>
-        </div>
-        <div style="margin-top:8px; font-size:11px; color:#64748b;">
-          <strong>Submitted by:</strong> ${submittedBy}
-        </div>
-      `;
-
-      container.innerHTML = html;
-      document.getElementById('listingForm').style.display = 'none';
-      document.getElementById('successView').style.display = 'block';
-
-      if (tg && tg.MainButton) {
-        tg.MainButton.hide();
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function resetFormView() {
-      document.getElementById('listingForm').reset();
-      selectedFiles = [];
-      renderPreviews();
-      togglePurposeSections();
-      document.getElementById('map-container').style.display = 'none';
-
-      document.getElementById('successView').style.display = 'none';
-      document.getElementById('listingForm').style.display = 'block';
-
-      if (tg && tg.MainButton) {
-        tg.MainButton.show();
-      }
-    }
-
     if (tg) {
       tg.ready();
       tg.expand();
@@ -760,105 +875,97 @@
       const user = tg?.initDataUnsafe?.user;
       const submittedBy = user ? `${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'no_username'})`.trim() : 'Web User';
 
-      const listingTypeVal = document.getElementById('listingType').value;
-      const isRent = listingTypeVal === 'ជួល' || listingTypeVal === 'For Rent';
-      const isSale = listingTypeVal === 'លក់' || listingTypeVal === 'For Sale';
+      const formData = new FormData();
+      formData.append('ownerName', document.getElementById('ownerName').value);
+      formData.append('tel1', document.getElementById('tel1').value);
+      formData.append('tel2', document.getElementById('tel2').value);
+      formData.append('telegram', document.getElementById('telegram').value);
+      formData.append('listingType', document.getElementById('listingType').value);
+      formData.append('propertyType', document.getElementById('propertyType').value);
+      formData.append('price', document.getElementById('price').value);
+      formData.append('location', document.getElementById('location').value);
+      formData.append('mapLink', document.getElementById('mapLink').value);
+      formData.append('landSize', document.getElementById('landSize').value);
+      formData.append('houseSize', document.getElementById('houseSize').value);
+      formData.append('frontSpace', document.getElementById('frontSpace').value);
+      formData.append('backSpace', document.getElementById('backSpace').value);
+      formData.append('bedrooms', document.getElementById('bedrooms').value);
+      formData.append('bathrooms', document.getElementById('bathrooms').value);
+      formData.append('direction', document.getElementById('direction').value);
 
-      let depositVal = '';
-      let rentFeeVal = '';
-      let contractVal = '';
+      const listingType = document.getElementById('listingType').value;
+      const isRent = listingType === 'ជួល' || listingType === 'For Rent';
+      const isSale = listingType === 'លក់' || listingType === 'For Sale';
+
+      /* Append Rent Terms if Renting */
       if (isRent) {
         const depSelect = document.getElementById('deposit');
-        depositVal = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
+        const depVal = depSelect.options[depSelect.selectedIndex].text;
+        const finalDeposit = (depSelect.value === 'ផ្សេងៗ' || depSelect.value === 'Other') 
           ? document.getElementById('depositOther').value 
-          : depSelect.options[depSelect.selectedIndex].text;
+          : depVal;
           
         const rentFeeSelect = document.getElementById('rentFee');
-        rentFeeVal = rentFeeSelect.options[rentFeeSelect.selectedIndex].text;
-
         const contractSelect = document.getElementById('contract');
-        contractVal = contractSelect.options[contractSelect.selectedIndex].text;
+
+        formData.append('deposit', finalDeposit);
+        formData.append('rentFee', rentFeeSelect.options[rentFeeSelect.selectedIndex].text);
+        formData.append('contract', contractSelect.options[contractSelect.selectedIndex].text);
       }
 
-      let certVal = '';
+      /* Append Certificate if For Sale */
       if (isSale) {
         const certSelect = document.getElementById('certificate');
-        certVal = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
+        const certVal = certSelect.options[certSelect.selectedIndex].text;
+        const finalCert = (certSelect.value === 'ប្រភេទផ្សេង' || certSelect.value === 'Other type')
           ? document.getElementById('certOther').value
-          : certSelect.options[certSelect.selectedIndex].text;
+          : certVal;
+
+        formData.append('certificate', finalCert);
       }
 
-      const payloadData = {
-        ownerName: document.getElementById('ownerName').value,
-        tel1: document.getElementById('tel1').value,
-        tel2: document.getElementById('tel2').value,
-        telegram: document.getElementById('telegram').value,
-        listingType: listingTypeVal,
-        propertyType: document.getElementById('propertyType').value,
-        price: document.getElementById('price').value,
-        location: document.getElementById('location').value,
-        mapLink: document.getElementById('mapLink').value,
-        landSize: document.getElementById('landSize').value,
-        houseSize: document.getElementById('houseSize').value,
-        frontSpace: document.getElementById('frontSpace').value,
-        backSpace: document.getElementById('backSpace').value,
-        bedrooms: document.getElementById('bedrooms').value,
-        bathrooms: document.getElementById('bathrooms').value,
-        direction: document.getElementById('direction').value,
-        deposit: depositVal,
-        rentFee: rentFeeVal,
-        contract: contractVal,
-        certificate: certVal,
-        description: document.getElementById('description').value,
-        submittedBy: submittedBy
-      };
+      formData.append('description', document.getElementById('description').value);
+      formData.append('submittedBy', submittedBy);
+      formData.append('initData', tg?.initData || '');
 
-      const formData = new FormData();
-      Object.keys(payloadData).forEach(key => {
-        formData.append(key, payloadData[key]);
-      });
-
-      selectedFiles.forEach(file => {
+      selectedFiles.forEach((file) => {
         formData.append('photos', file);
       });
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/register-property`, {
+        const response = await fetch('/api/register-property', {
           method: 'POST',
           body: formData
         });
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const errorText = await response.text();
-          console.error("Non-JSON Response:", errorText);
-          throw new Error(`Endpoint returned HTTP status ${response.status}. Check API route setup.`);
-        }
-
         const result = await response.json();
 
-        if (response.ok && result.success) {
-          displaySuccessSummary(payloadData, submittedBy);
+        if (tg) tg.MainButton.hideProgress();
+
+        if (result.success) {
+          if (tg) {
+            tg.showAlert(t.successAlert, () => tg.close());
+          } else {
+            alert(t.successAlert);
+            location.reload();
+          }
         } else {
-          const errMsg = result.error || result.message || 'Failed to submit property.';
-          tg?.showAlert ? tg.showAlert(`Error: ${errMsg}`) : alert(`Error: ${errMsg}`);
+          throw new Error(result.error || 'Submission failed');
         }
       } catch (err) {
-        console.error('Submission Error:', err);
-        tg?.showAlert ? tg.showAlert(`Server error: ${err.message}`) : alert(`Server error: ${err.message}`);
-      } finally {
         if (tg) tg.MainButton.hideProgress();
+        tg?.showAlert ? tg.showAlert('Error: ' + err.message) : alert('Error: ' + err.message);
       }
     };
 
     if (tg) {
       tg.MainButton.onClick(submitForm);
+    } else {
+      document.getElementById('listingForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitForm();
+      });
     }
-
-    document.getElementById('listingForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      submitForm();
-    });
 
     switchLanguage(currentLang);
   </script>
